@@ -48,6 +48,7 @@
             Controls.Add(textBox1);
             Name = "FrmLog";
             Text = "Logger";
+            FormClosing += FrmLog_FormClosing;
             Load += FrmLog_Load;
             ResumeLayout(false);
             PerformLayout();

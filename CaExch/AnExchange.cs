@@ -1,9 +1,13 @@
-﻿using CryptoExchange.Net.CommonObjects;
+﻿using amLogger;
+using CryptoExchange.Net.CommonObjects;
 
 namespace CaExch;
 
 public abstract class AnExchange
 {
+    public static event Action<string, Kline>? OnKline;
+    protected void SendKline(string s, Kline k) => OnKline?.Invoke(s, k);
+
     public abstract int ID { get; }
     public abstract string Name { get; }
     
@@ -56,9 +60,5 @@ public abstract class AnExchange
         }
 
         return ts;
-    }
-    protected int GetKlineIntervalFromString(string inter)
-    {
-        return 60 * 15;
     }
 }

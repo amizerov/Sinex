@@ -1,15 +1,18 @@
-using CaExch;
+using CryptoExchange.Net.CommonObjects;
+using Microsoft.EntityFrameworkCore;
+
 namespace bot2;
 
 public partial class FrmMain : Form
 {
     Charty Charty;
-    string Symbol = "BUSDUSDT";
+    bool IsLoadingProducts = false;
 
     public FrmMain()
     {
         InitializeComponent();
         Charty = new(chart);
+        Charty.OnLastKline += OnLastKline;
     }
 
     private void Form1_Load(object sender, EventArgs e)
@@ -18,17 +21,35 @@ public partial class FrmMain : Form
         cbExchange.SelectedIndex = 0;
 
         chart.MouseWheel += chart_MouseWheel;
-        LoadProducts(cbExchange.SelectedIndex + 1);
 
-        button1_Click(sender, e);
+        Charty.Exchange = 1;
+        LoadProducts(Charty.Exchange);
 
         new FrmLog().Show(this);
     }
-
+    void OnLastKline(Kline k)
+    {
+        Invoke(new Action(() => { 
+            lblSymbol.Text = $"{Charty.Symbol}({k.ClosePrice})";
+        }));
+    }
     private void button1_Click(object sender, EventArgs e)
     {
-        Charty.GetKlines(cbExchange.SelectedIndex + 1, Symbol, cbInterval.Text);
+        if(IsLoadingProducts ||
+            Charty.Symbol == "") return;
+
+        Charty.GetKlines();
         Charty.populate();
+
+        Task.Run(() =>
+        {
+            Thread.Sleep(100);
+            Invoke(new Action(() =>
+            {
+                btnZoomIn_Click(this, e);
+                btnZoomOut_Click(this, e);
+            }));
+        });
     }
 
     private void btnZoomOut_Click(object sender, EventArgs e)
@@ -62,42 +83,34 @@ public partial class FrmMain : Form
 
     private void cbInterval_SelectedIndexChanged(object sender, EventArgs e)
     {
+        Charty.Interval = cbInterval.Text;
         button1_Click(sender, e);
     }
     private void cbExchange_SelectedIndexChanged(object sender, EventArgs e)
     {
-        LoadProducts(cbExchange.SelectedIndex + 1);
+        Charty.Exchange = cbExchange.SelectedIndex + 1;
+        LoadProducts(Charty.Exchange);
     }
 
     private void lbProducts_SelectedIndexChanged(object sender, EventArgs e)
     {
-        lblSymbol.Text = Symbol = lbProducts.Text;
+        lblSymbol.Text = Charty.Symbol = lbProducts.Text;
         button1_Click(this, e);
-        Task.Run(() =>
-        {
-            Thread.Sleep(100);
-            Invoke(new Action(() =>
-            {
-                btnZoomIn_Click(this, e);
-                btnZoomOut_Click(this, e);
-            }));
-        });
     }
 
     void LoadProducts(int exha)
     {
+        IsLoadingProducts = true;
+        lbProducts.DataSource = null;
+
         using (CaDbContext dbContext = new CaDbContext())
         {
-            var prods = from p in dbContext.Products
-                        where p.exchange == exha
-                              && p.Version == 1
-                              && p.cnt1 > 60
-                              && p.cnt3 == 100
-                              && p.liquidity > 90
-                        orderby p.volatility descending, p.cnt3 descending
-                        select p.symbol;
+            var prods = dbContext.Products?.FromSql($"Get_Products2 {Charty.Exchange}");
 
-            lbProducts.DataSource = prods.ToList();
+            lbProducts.DisplayMember = "symbol";
+            lbProducts.DataSource = prods?.ToList();
         }
+        IsLoadingProducts = false;
+        button1_Click(this, null);
     }
 }

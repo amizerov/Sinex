@@ -7,6 +7,12 @@ namespace bot2;
 
 public class Charty
 {
+    public event Action<Kline>? OnLastKline;
+
+    public int Exchange = 0;
+    public string Symbol = "";
+    public string Interval = "";
+
     Chart _ch;
     ChartArea _cha;
     Series sKlines = new Series("Klines");
@@ -27,11 +33,11 @@ public class Charty
         }
     }
 
-    public void GetKlines(int eid, string symbo, string inter)
+    public void GetKlines()
     {
-        var excha = exchas.FirstOrDefault(e => e.ID == eid);
+        var excha = exchas.FirstOrDefault(e => e.ID == Exchange);
         if(excha != null)
-            klines = excha.GetKlines(symbo, inter);
+            klines = excha.GetKlines(Symbol, Interval);
     }
 
     public Charty(Chart chart)
@@ -48,12 +54,22 @@ public class Charty
         sKlines["PriceDownColor"] = "Red";
 
         _cha = _ch.ChartAreas[0];
+
         _cha.AxisY2.ScrollBar.Enabled = false;
         _cha.AxisY2.Enabled = AxisEnabled.True;
         _cha.AxisY2.IsStartedFromZero = _ch.ChartAreas[0].AxisY.IsStartedFromZero;
         sKlines.YAxisType = AxisType.Secondary;
 
+        _cha.AxisX.LabelStyle.Format = "yy-MM-dd hh:mm";
+
         _ch.Legends.Clear();
+
+        AnExchange.OnKline += OnKline;
+    }
+    void OnKline(string s, Kline k)
+    {
+        OnLastKline?.Invoke(k);
+        UpdateKline(k);
     }
     public void populate() 
     {
@@ -69,10 +85,23 @@ public class Charty
         double ymin = Convert.ToDouble(ks.Min(k => k.LowPrice));
         
         _cha.AxisY2.ScaleView.Zoom(ymin, ymax);
-        _cha.AxisX.LabelStyle.Format = "yy-MM-dd hh:mm";
+    }
 
-        double cc = ymax - ymin;
-        double c = _cha.AxisY2.Maximum - _cha.AxisY2.Minimum;
-        Logger.Write(new Log() { msg = $"c={c} - {cc}" });
+    void UpdateKline(Kline k)
+    {
+        var lk = klines.Last();
+        if (lk.OpenTime == k.OpenTime)
+        {
+            Series sKlines = _ch.Series["Klines"];
+            sKlines.Points.RemoveAt(sKlines.Points.Count - 1);
+            sKlines.Points.AddXY(k.OpenTime, k.HighPrice, k.LowPrice, k.OpenPrice, k.ClosePrice);
+
+            Logger.Write(new Log() { msg = $"deal -> {k.ClosePrice}" });
+        }
+        else
+        {
+            GetKlines();
+            populate();
+        }
     }
 }

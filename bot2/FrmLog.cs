@@ -13,14 +13,25 @@ public partial class FrmLog : Form
     private void FrmLog_Load(object sender, EventArgs e)
     {
         Top = Owner!.Top;
-        Left = Owner!.Right-20;
+        Left = Owner!.Right - 20;
         Height = Owner!.Height;
 
-        Logger.Instance.Init((Log log) =>
-            textBox1.Text =
-                DateTime.Now.ToString("G") + " - " +
-                log.msg + "\r\n" +
-                textBox1.Text
-        );
+        Logger.Instance.Init((Log log) => DoLog(log));
+    }
+    void DoLog(Log log)
+    {
+        if (Tag?.ToString() == "111") return;
+
+        Invoke(new Action(() =>
+        {
+            textBox1.Text = DateTime.Now.ToString("G") + " - " +
+                            log.msg + "\r\n" +
+                            textBox1.Text;
+        }));
+    }
+
+    private void FrmLog_FormClosing(object sender, FormClosingEventArgs e)
+    {
+        Tag = "111";
     }
 }
