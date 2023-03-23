@@ -5,8 +5,8 @@ namespace CaExch;
 
 public abstract class AnExchange
 {
-    public static event Action<string, Kline>? OnKline;
-    protected void SendKline(string s, Kline k) => OnKline?.Invoke(s, k);
+    public static event Action<int, string, Kline>? OnKline;
+    protected void SendKline(int ID, string s, Kline k) => OnKline?.Invoke(ID, s, k);
 
     public abstract int ID { get; }
     public abstract string Name { get; }

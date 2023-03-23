@@ -53,7 +53,7 @@ public class Huobi : AnExchange
                     kline.Volume = k.Volume;
                     kline.OpenTime = k.OpenTime;
 
-                    SendKline(symbol, kline);
+                    SendKline(ID, symbol, kline);
                     Log.Info(ID, "qqq", $"{symbol} {k.OpenTime} {k.ClosePrice}");
                 });
 
