@@ -56,12 +56,8 @@ public class Bittrex : AnExchange
     {
         List<Kline> klines = new List<Kline>();
 
-        int m = CaInfo.KlineInterval % 60;
-        int h = (CaInfo.KlineInterval - m) / 60;
-        TimeSpan klInterval = new TimeSpan(h, m, 0);
-
         var r = client.SpotApi.CommonSpotClient
-            .GetKlinesAsync(symbol, klInterval).Result;
+            .GetKlinesAsync(symbol, TimeSpan.FromMinutes(CaInfo.KlineInterval)).Result;
 
         if (r.Success)
         {

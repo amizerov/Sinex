@@ -8,8 +8,8 @@ namespace caLibProdStat;
 
 public class Bybit : AnExchange
 {
-    public override int ID => 4;
-    public override string Name => "Bittrex";
+    public override int ID => 5;
+    public override string Name => "Bybit";
 
     BybitClient client = new();
 
