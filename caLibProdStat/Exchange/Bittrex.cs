@@ -1,44 +1,45 @@
-﻿using Binance.Net.Clients;
-using Binance.Net.Objects.Models.Spot;
+﻿using Bittrex.Net.Clients;
+using Bittrex.Net.Enums;
+using Bittrex.Net.Objects.Models;
 using CryptoExchange.Net.CommonObjects;
 using amLogger;
 
 namespace caLibProdStat;
 
-public class Binance : AnExchange
+public class Bittrex : AnExchange
 {
-    public override int ID => 1;
-    public override string Name => "Binance";
+    public override int ID => 4;
+    public override string Name => "Bittrex";
 
-    BinanceClient client = new();
+    BittrexClient client = new();
 
     protected override Product ToProduct(object p)
     {
-        BinanceProduct binaProd = (BinanceProduct)p;
+        BittrexSymbol bittProd = (BittrexSymbol)p;
 
         Product product = new();
-        product.symbol = binaProd.Symbol;
+        product.symbol = bittProd.Name;
         product.exchange = ID;
-        product.baseasset = binaProd.BaseAsset;
-        product.quoteasset = binaProd.QuoteAsset;
+        product.baseasset = bittProd.BaseAsset;
+        product.quoteasset = bittProd.QuoteAsset;
 
-        product.IsTradingEnabled = binaProd.Status == "TRADING";
+        product.IsTradingEnabled = bittProd.Status == SymbolStatus.Online;
 
         return product;
     }
     protected override List<Product> GetProducts()
     {
         List<Product> products = new List<Product>();
-        
-        var r = client.SpotApi.ExchangeData.GetProductsAsync().Result;
+
+        var r = client.SpotApi.ExchangeData.GetSymbolsAsync().Result;
         if (r.Success)
         {
             Log.Info(ID, "GetProducts", "start");
             foreach (var p in r.Data)
             {
                 Product product = ToProduct(p);
-                if (product.IsTradingEnabled) 
-                { 
+                if (product.IsTradingEnabled)
+                {
                     products.Add(product);
                 }
             }
@@ -55,8 +56,12 @@ public class Binance : AnExchange
     {
         List<Kline> klines = new List<Kline>();
 
+        int m = CaInfo.KlineInterval % 60;
+        int h = (CaInfo.KlineInterval - m) / 60;
+        TimeSpan klInterval = new TimeSpan(h, m, 0);
+
         var r = client.SpotApi.CommonSpotClient
-            .GetKlinesAsync(symbol, TimeSpan.FromMinutes(CaInfo.KlineInterval)).Result;
+            .GetKlinesAsync(symbol, klInterval).Result;
 
         if (r.Success)
         {

@@ -8,8 +8,9 @@ public class CaInfo
     {
         new Binance(),
         new Kucoin(),
-        new Huobi()
+        new Huobi(),
+        new Bittrex()
     };
 
-    public static int KlineInterval = 30;
+    public static int KlineInterval = 1;
 }

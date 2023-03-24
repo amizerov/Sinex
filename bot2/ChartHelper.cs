@@ -9,7 +9,17 @@ public class Charty
 {
     public event Action<Kline>? OnLastKline;
 
-    public int Exchange = 0;
+    int _excha = 0;
+    public int Exchange { get { return _excha; } 
+        set {
+            if (_excha != value)
+            {
+                var excha = Exchanges.FirstOrDefault(e => e.ID == _excha);
+                excha?.Unsub();
+            }
+            _excha = value; 
+        } 
+    }
     public string Symbol = "";
     public string Interval = "";
 
@@ -18,10 +28,11 @@ public class Charty
     Series sKlines = new Series("Klines");
     List<Kline> klines = new();
     
-    List<AnExchange> exchas = new(){
+    public List<AnExchange> Exchanges = new(){
         new CaExch.Binance(),
         new CaExch.Kucoin(),
-        new CaExch.Huobi()
+        new CaExch.Huobi(),
+        new CaExch.Bittrex(),
     };
 
     int zoom = 50;
@@ -35,7 +46,7 @@ public class Charty
 
     public void GetKlines()
     {
-        var excha = exchas.FirstOrDefault(e => e.ID == Exchange);
+        var excha = Exchanges.FirstOrDefault(e => e.ID == Exchange);
         if(excha != null)
             klines = excha.GetKlines(Symbol, Interval);
     }
@@ -66,7 +77,7 @@ public class Charty
 
         AnExchange.OnKline += OnKline;
     }
-    void OnKline(string s, Kline k)
+    void OnKline(int id, string s, Kline k)
     {
         OnLastKline?.Invoke(k);
         UpdateKline(k);

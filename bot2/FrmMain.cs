@@ -17,6 +17,9 @@ public partial class FrmMain : Form
 
     private void Form1_Load(object sender, EventArgs e)
     {
+        cbExchange.Items.Clear();
+        foreach (var ex in Charty.Exchanges) cbExchange.Items.Add(ex.Name);
+
         cbInterval.SelectedIndex = 3;
         cbExchange.SelectedIndex = 0;
 
@@ -29,13 +32,14 @@ public partial class FrmMain : Form
     }
     void OnLastKline(Kline k)
     {
-        Invoke(new Action(() => { 
+        Invoke(new Action(() =>
+        {
             lblSymbol.Text = $"{Charty.Symbol}({k.ClosePrice})";
         }));
     }
     private void button1_Click(object sender, EventArgs e)
     {
-        if(IsLoadingProducts ||
+        if (IsLoadingProducts ||
             Charty.Symbol == "") return;
 
         Charty.GetKlines();

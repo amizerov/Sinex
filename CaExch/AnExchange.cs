@@ -13,52 +13,52 @@ public abstract class AnExchange
     
     public abstract List<Kline> GetKlines(string symbol, string inter);
     public abstract void SocketSubscribe(string symbol, string inter);
-    protected TimeSpan GetIntervalFromString(string inter)
+    public abstract void Unsub();
+    protected int IntervalInSeconds(string inter)
     {
-        TimeSpan ts = new(0, 1, 0);
-
+        int seconds = 0;
         switch (inter)
         {
             case "1m":
-                ts = new(0, 1, 0);
+                seconds = 60;
                 break;
             case "3m":
-                ts = new(0, 3, 0);
+                seconds = 3 * 60;
                 break;
             case "5m":
-                ts = new(0, 5, 0);
+                seconds = 5 * 60;
                 break;
             case "15m":
-                ts = new(0, 15, 0);
+                seconds = 15 * 60;
                 break;
             case "30m":
-                ts = new(0, 30, 0);
+                seconds = 30 * 60;
                 break;
             case "1h":
-                ts = new(1, 0, 0);
+                seconds = 60 * 60;
                 break;
             case "2h":
-                ts = new(2, 0, 0);
+                seconds = 2 * 60 * 60;
                 break;
             case "4h":
-                ts = new(4, 0, 0);
+                seconds = 4 * 60 * 60;
                 break;
             case "6h":
-                ts = new(6, 0, 0);
+                seconds = 6 * 60 * 60;
                 break;
             case "8h":
-                ts = new(8, 0, 0);
+                seconds = 8 * 60 * 60;
                 break;
             case "12h":
-                ts = new(12, 0, 0);
+                seconds = 12 * 60 * 60;
                 break;
             case "1d":
-                ts = new(1, 0, 0, 0);
+                seconds = 24 * 60 * 60;
                 break;
             default:
                 break;
         }
 
-        return ts;
+        return seconds;
     }
 }

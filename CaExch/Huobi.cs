@@ -10,16 +10,15 @@ public class Huobi : AnExchange
     public override int ID => 3;
     public override string Name => "Huobi";
 
-    HuobiClient client = new();
+    HuobiClient restClient = new();
     HuobiSocketClient socketClient = new();
 
     public override List<Kline> GetKlines(string symbol, string inter)
     {
         List<Kline> klines = new();
-        TimeSpan klInterval = GetIntervalFromString(inter);
 
-        var r = client.SpotApi.CommonSpotClient
-            .GetKlinesAsync(symbol, klInterval).Result;
+        var r = restClient.SpotApi.CommonSpotClient
+            .GetKlinesAsync(symbol, TimeSpan.FromSeconds(IntervalInSeconds(inter))).Result;
 
         if (r.Success)
         {
@@ -37,10 +36,12 @@ public class Huobi : AnExchange
 
     async public override void SocketSubscribe(string symbol, string inter)
     {
+        int c1 = socketClient.CurrentSubscriptions;
         await socketClient.UnsubscribeAllAsync();
-        KlineInterval interval = (KlineInterval)GetIntervalFromString(inter).Seconds;
+        int c2 = socketClient.CurrentSubscriptions;
+
         var r = await socketClient.SpotStreams.
-            SubscribeToKlineUpdatesAsync(symbol, interval,
+            SubscribeToKlineUpdatesAsync(symbol, (KlineInterval)IntervalInSeconds(inter),
                 msg =>
                 {
                     HuobiKline k = msg.Data;
@@ -59,11 +60,19 @@ public class Huobi : AnExchange
 
         if (r.Success)
         {
-            Log.Info(ID, "SocketSubscribe", $"subscribed to {symbol}, {inter}");
+            int c3 = socketClient.CurrentSubscriptions;
+            Log.Info(ID, "SocketSubscribe", $"subscribed to {symbol}, {inter}, {c1}, {c2}, {c3}");
         }
         else
         {
             Log.Error(ID, $"SocketSubscribe({symbol})", "" + r.Error?.Message);
         }
+    }
+    public override async void Unsub()
+    {
+        int c1 = socketClient.CurrentSubscriptions;
+        await socketClient.UnsubscribeAllAsync();
+        int c2 = socketClient.CurrentSubscriptions;
+        Log.Info(ID, "UnsubscribeAllAsync", $"{c1} unsubed, left {c2}");
     }
 }

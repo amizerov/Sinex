@@ -24,9 +24,12 @@ public partial class FrmLog : Form
 
         Invoke(new Action(() =>
         {
-            textBox1.Text = DateTime.Now.ToString("G") + " - " +
-                            log.msg + "\r\n" +
-                            textBox1.Text;
+            textBox1.Text = 
+                DateTime.Now.ToString("G") + " - " +
+                log.id + " - " +
+                log.src + " - " +
+                log.msg + "\r\n" +
+                textBox1.Text;
         }));
     }
 

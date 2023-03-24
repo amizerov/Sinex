@@ -53,7 +53,6 @@
             textBox1.Name = "textBox1";
             textBox1.Size = new Size(768, 379);
             textBox1.TabIndex = 1;
-            textBox1.TextChanged += textBox1_TextChanged;
             // 
             // button2
             // 
@@ -86,6 +85,7 @@
             Controls.Add(button1);
             Name = "Form1";
             Text = "Form1";
+            FormClosing += Form1_FormClosing;
             Load += Form1_Load;
             ResumeLayout(false);
             PerformLayout();

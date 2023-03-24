@@ -1,17 +1,17 @@
 ﻿using amLogger;
-using Kucoin.Net.Clients;
+using Bittrex.Net.Clients;
+using Bittrex.Net.Enums;
+using Bittrex.Net.Objects.Models;
 using CryptoExchange.Net.CommonObjects;
-using Kucoin.Net.Enums;
-using Kucoin.Net.Objects.Models.Spot;
 
 namespace CaExch;
-public class Kucoin : AnExchange
+public class Bittrex : AnExchange
 {
-    public override int ID => 2;
-    public override string Name => "Kucoin";
+    public override int ID => 4;
+    public override string Name => "Bittrex";
 
-    KucoinClient restClient = new();
-    KucoinSocketClient socketClient = new();
+    BittrexClient restClient = new();
+    BittrexSocketClient socketClient = new();
 
     public override List<Kline> GetKlines(string symbol, string inter)
     {
@@ -22,7 +22,7 @@ public class Kucoin : AnExchange
 
         if (r.Success)
         {
-            klines = r.Data.ToList(); klines.Reverse();
+            klines = r.Data.ToList();
             Log.Info(ID, $"GetKlines({symbol})", $"{klines.Count} klines loaded");
 
             SocketSubscribe(symbol, inter);
@@ -42,21 +42,21 @@ public class Kucoin : AnExchange
 
         var r = await socketClient.SpotStreams.
             SubscribeToKlineUpdatesAsync(symbol, (KlineInterval)IntervalInSeconds(inter),
-                msg =>
-                {
-                    KucoinKline k = msg.Data.Candles;
+            msg =>
+            {
+                BittrexKline k = msg.Data.Delta;
 
-                    Kline kline = new Kline();
-                    kline.HighPrice = k.HighPrice;
-                    kline.LowPrice = k.LowPrice;
-                    kline.OpenPrice = k.OpenPrice;
-                    kline.ClosePrice = k.ClosePrice;
-                    kline.Volume = k.Volume;
-                    kline.OpenTime = k.OpenTime;
+                Kline kline = new Kline();
+                kline.HighPrice = k.HighPrice;
+                kline.LowPrice = k.LowPrice;
+                kline.OpenPrice = k.OpenPrice;
+                kline.ClosePrice = k.ClosePrice;
+                kline.Volume = k.Volume;
+                kline.OpenTime = k.OpenTime;
 
-                    SendKline(ID, symbol, kline);
-                    Log.Info(ID, "qqq", $"{symbol} {k.OpenTime} {k.ClosePrice}");
-                });
+                SendKline(ID, symbol, kline);
+                Log.Info(ID, "qqq", $"{symbol} {k.OpenTime} {k.ClosePrice}");
+            });
 
         if (r.Success)
         {
