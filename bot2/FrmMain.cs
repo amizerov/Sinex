@@ -37,7 +37,7 @@ public partial class FrmMain : Form
             lblSymbol.Text = $"{Charty.Symbol}({k.ClosePrice})";
         }));
     }
-    private void button1_Click(object sender, EventArgs e)
+    private void button1_Click(object sender, EventArgs? e)
     {
         if (IsLoadingProducts ||
             Charty.Symbol == "") return;

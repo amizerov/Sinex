@@ -43,6 +43,7 @@
             cbExchange = new ComboBox();
             label2 = new Label();
             lblSymbol = new Label();
+            textBox1 = new TextBox();
             ((System.ComponentModel.ISupportInitialize)chart).BeginInit();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
@@ -53,12 +54,11 @@
             // button1
             // 
             button1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            button1.Location = new Point(1564, 14);
+            button1.Location = new Point(1460, 14);
             button1.Margin = new Padding(4, 5, 4, 5);
             button1.Name = "button1";
-            button1.Size = new Size(129, 58);
+            button1.Size = new Size(50, 50);
             button1.TabIndex = 0;
-            button1.Text = "button1";
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
             // 
@@ -79,16 +79,16 @@
             series1.YValuesPerPoint = 4;
             series1.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
             chart.Series.Add(series1);
-            chart.Size = new Size(1528, 916);
+            chart.Size = new Size(1307, 862);
             chart.TabIndex = 1;
             chart.Text = "chart";
             // 
             // btnZoomOut
             // 
             btnZoomOut.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnZoomOut.Location = new Point(1327, 16);
+            btnZoomOut.Location = new Point(1223, 16);
             btnZoomOut.Name = "btnZoomOut";
-            btnZoomOut.Size = new Size(112, 58);
+            btnZoomOut.Size = new Size(50, 50);
             btnZoomOut.TabIndex = 2;
             btnZoomOut.Text = "+";
             btnZoomOut.UseVisualStyleBackColor = true;
@@ -97,9 +97,9 @@
             // btnZoomIn
             // 
             btnZoomIn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnZoomIn.Location = new Point(1445, 14);
+            btnZoomIn.Location = new Point(1384, 14);
             btnZoomIn.Name = "btnZoomIn";
-            btnZoomIn.Size = new Size(112, 58);
+            btnZoomIn.Size = new Size(50, 50);
             btnZoomIn.TabIndex = 2;
             btnZoomIn.Text = "-";
             btnZoomIn.UseVisualStyleBackColor = true;
@@ -107,12 +107,12 @@
             // 
             // lbProducts
             // 
-            lbProducts.Dock = DockStyle.Fill;
+            lbProducts.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             lbProducts.FormattingEnabled = true;
             lbProducts.ItemHeight = 25;
-            lbProducts.Location = new Point(0, 0);
+            lbProducts.Location = new Point(6, 46);
             lbProducts.Name = "lbProducts";
-            lbProducts.Size = new Size(150, 916);
+            lbProducts.Size = new Size(178, 779);
             lbProducts.TabIndex = 3;
             lbProducts.SelectedIndexChanged += lbProducts_SelectedIndexChanged;
             // 
@@ -124,14 +124,15 @@
             // 
             // splitContainer1.Panel1
             // 
+            splitContainer1.Panel1.Controls.Add(textBox1);
             splitContainer1.Panel1.Controls.Add(lbProducts);
             splitContainer1.Panel1MinSize = 150;
             // 
             // splitContainer1.Panel2
             // 
             splitContainer1.Panel2.Controls.Add(chart);
-            splitContainer1.Size = new Size(1682, 916);
-            splitContainer1.SplitterDistance = 150;
+            splitContainer1.Size = new Size(1500, 862);
+            splitContainer1.SplitterDistance = 189;
             splitContainer1.TabIndex = 4;
             // 
             // cbInterval
@@ -156,8 +157,9 @@
             // 
             // lblZoom
             // 
+            lblZoom.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             lblZoom.AutoSize = true;
-            lblZoom.Location = new Point(496, 28);
+            lblZoom.Location = new Point(1286, 31);
             lblZoom.Name = "lblZoom";
             lblZoom.Size = new Size(89, 25);
             lblZoom.TabIndex = 7;
@@ -187,18 +189,26 @@
             // 
             lblSymbol.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             lblSymbol.Font = new Font("Segoe UI Black", 14F, FontStyle.Bold, GraphicsUnit.Point);
-            lblSymbol.Location = new Point(628, 28);
+            lblSymbol.Location = new Point(492, 28);
             lblSymbol.Name = "lblSymbol";
-            lblSymbol.Size = new Size(656, 38);
+            lblSymbol.Size = new Size(610, 38);
             lblSymbol.TabIndex = 9;
             lblSymbol.Text = "label3";
             lblSymbol.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // Form1
+            // textBox1
+            // 
+            textBox1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            textBox1.Location = new Point(8, 8);
+            textBox1.Name = "textBox1";
+            textBox1.Size = new Size(175, 31);
+            textBox1.TabIndex = 4;
+            // 
+            // FrmMain
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1706, 1008);
+            ClientSize = new Size(1524, 954);
             Controls.Add(lblSymbol);
             Controls.Add(cbExchange);
             Controls.Add(lblZoom);
@@ -210,11 +220,12 @@
             Controls.Add(btnZoomOut);
             Controls.Add(button1);
             Margin = new Padding(4, 5, 4, 5);
-            Name = "Form1";
+            Name = "FrmMain";
             Text = "Sinex - Algo Tading Crypto bot v.1";
             Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)chart).EndInit();
             splitContainer1.Panel1.ResumeLayout(false);
+            splitContainer1.Panel1.PerformLayout();
             splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
@@ -236,5 +247,6 @@
         private ComboBox cbExchange;
         private Label label2;
         private Label lblSymbol;
+        private TextBox textBox1;
     }
 }
