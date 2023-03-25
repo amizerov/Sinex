@@ -3,6 +3,7 @@ using Bybit.Net.Enums;
 using Bybit.Net.Objects.Models;
 using CryptoExchange.Net.CommonObjects;
 using amLogger;
+using Bybit.Net.Objects.Models.Spot.v3;
 
 namespace caLibProdStat;
 
@@ -15,15 +16,15 @@ public class Bybit : AnExchange
 
     protected override Product ToProduct(object p)
     {
-        BybitSymbol bittProd = (BybitSymbol)p;
+        BybitSpotSymbolV3 bittProd = (BybitSpotSymbolV3)p;
 
         Product product = new();
         product.symbol = bittProd.Name;
         product.exchange = ID;
-        product.baseasset = bittProd.BaseCurrency;
-        product.quoteasset = bittProd.QuoteCurrency;
+        product.baseasset = bittProd.BaseAsset;
+        product.quoteasset = bittProd.QuoteAsset;
 
-        product.IsTradingEnabled = bittProd.Status == SymbolStatus.Trading;
+        product.IsTradingEnabled = bittProd.ShowStatus == "1";
 
         return product;
     }

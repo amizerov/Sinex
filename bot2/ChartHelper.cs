@@ -33,6 +33,7 @@ public class Charty
         new CaExch.Kucoin(),
         new CaExch.Huobi(),
         new CaExch.Bittrex(),
+        new CaExch.Bybit()
     };
 
     int zoom = 50;

@@ -36,13 +36,13 @@ public abstract class AnExchange
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"GetKlines({Name}/{product.symbol})", e.Message);
+                    Log.Error(ID, $"GetKlines({product.symbol})", "Error: " + e.Message);
                 }
             }
         }
         catch(Exception e)
         {
-            Log.Error($"ProcessProducts({Name})", e.Message);
+            Log.Error(ID, "ProcessProducts", "Error: " + e.Message);
         }
     }
 
