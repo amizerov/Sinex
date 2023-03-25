@@ -105,16 +105,22 @@ public partial class FrmMain : Form
     void LoadProducts(int exha)
     {
         IsLoadingProducts = true;
-        lbProducts.DataSource = null;
 
+        txtSeach_TextChanged(this, null);
+
+        IsLoadingProducts = false;
+        button1_Click(this, null);
+    }
+
+    private void txtSeach_TextChanged(object sender, EventArgs? e)
+    {
         using (CaDbContext dbContext = new CaDbContext())
         {
             var prods = dbContext.Products?.FromSql($"Get_Products2 {Charty.Exchange}");
 
             lbProducts.DisplayMember = "symbol";
-            lbProducts.DataSource = prods?.ToList();
+            lbProducts.DataSource = prods?.ToList()
+                .Where(p => p.symbol.ToLower().Contains(txtSeach.Text.ToLower())).ToList();
         }
-        IsLoadingProducts = false;
-        button1_Click(this, null);
     }
 }

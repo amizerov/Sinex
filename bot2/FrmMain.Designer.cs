@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             button1 = new Button();
             chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             btnZoomOut = new Button();
@@ -43,7 +43,7 @@
             cbExchange = new ComboBox();
             label2 = new Label();
             lblSymbol = new Label();
-            textBox1 = new TextBox();
+            txtSeach = new TextBox();
             ((System.ComponentModel.ISupportInitialize)chart).BeginInit();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
@@ -64,21 +64,21 @@
             // 
             // chart
             // 
-            chartArea1.Name = "ChartArea1";
-            chart.ChartAreas.Add(chartArea1);
+            chartArea2.Name = "ChartArea1";
+            chart.ChartAreas.Add(chartArea2);
             chart.Dock = DockStyle.Fill;
-            legend1.Name = "Legend1";
-            chart.Legends.Add(legend1);
+            legend2.Name = "Legend1";
+            chart.Legends.Add(legend2);
             chart.Location = new Point(0, 0);
             chart.Name = "chart";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
-            series1.CustomProperties = "PriceDownColor=Red, PriceUpColor=Green";
-            series1.Legend = "Legend1";
-            series1.Name = "Klines";
-            series1.YValuesPerPoint = 4;
-            series1.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
-            chart.Series.Add(series1);
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
+            series2.CustomProperties = "PriceDownColor=Red, PriceUpColor=Green";
+            series2.Legend = "Legend1";
+            series2.Name = "Klines";
+            series2.YValuesPerPoint = 4;
+            series2.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
+            chart.Series.Add(series2);
             chart.Size = new Size(1307, 862);
             chart.TabIndex = 1;
             chart.Text = "chart";
@@ -124,7 +124,7 @@
             // 
             // splitContainer1.Panel1
             // 
-            splitContainer1.Panel1.Controls.Add(textBox1);
+            splitContainer1.Panel1.Controls.Add(txtSeach);
             splitContainer1.Panel1.Controls.Add(lbProducts);
             splitContainer1.Panel1MinSize = 150;
             // 
@@ -196,13 +196,14 @@
             lblSymbol.Text = "label3";
             lblSymbol.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // textBox1
+            // txtSeach
             // 
-            textBox1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            textBox1.Location = new Point(8, 8);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(175, 31);
-            textBox1.TabIndex = 4;
+            txtSeach.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtSeach.Location = new Point(8, 8);
+            txtSeach.Name = "txtSeach";
+            txtSeach.Size = new Size(175, 31);
+            txtSeach.TabIndex = 4;
+            txtSeach.TextChanged += txtSeach_TextChanged;
             // 
             // FrmMain
             // 
@@ -247,6 +248,6 @@
         private ComboBox cbExchange;
         private Label label2;
         private Label lblSymbol;
-        private TextBox textBox1;
+        private TextBox txtSeach;
     }
 }

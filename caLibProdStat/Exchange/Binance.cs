@@ -17,10 +17,10 @@ public class Binance : AnExchange
         BinanceProduct binaProd = (BinanceProduct)p;
 
         Product product = new();
-        product.symbol = binaProd.Symbol;
         product.exchange = ID;
-        product.baseasset = binaProd.BaseAsset;
-        product.quoteasset = binaProd.QuoteAsset;
+        product.symbol = binaProd.Symbol.ToUpper().Replace("-", "");
+        product.baseasset = binaProd.BaseAsset.ToUpper();
+        product.quoteasset = binaProd.QuoteAsset.ToUpper();
 
         product.IsTradingEnabled = binaProd.Status == "TRADING";
 
