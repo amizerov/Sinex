@@ -5,7 +5,7 @@ using Huobi.Net.Enums;
 using Huobi.Net.Objects.Models;
 
 namespace CaExch;
-public class Huobi : AnExchange
+public class CaHuobi : AnExchange
 {
     public override int ID => 3;
     public override string Name => "Huobi";

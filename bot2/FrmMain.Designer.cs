@@ -28,22 +28,22 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             button1 = new Button();
             chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             btnZoomOut = new Button();
             btnZoomIn = new Button();
             lbProducts = new ListBox();
             splitContainer1 = new SplitContainer();
+            txtSeach = new TextBox();
             cbInterval = new ComboBox();
             label1 = new Label();
             lblZoom = new Label();
             cbExchange = new ComboBox();
             label2 = new Label();
             lblSymbol = new Label();
-            txtSeach = new TextBox();
             ((System.ComponentModel.ISupportInitialize)chart).BeginInit();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
@@ -54,7 +54,7 @@
             // button1
             // 
             button1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            button1.Location = new Point(1460, 14);
+            button1.Location = new Point(1623, 14);
             button1.Margin = new Padding(4, 5, 4, 5);
             button1.Name = "button1";
             button1.Size = new Size(50, 50);
@@ -64,29 +64,29 @@
             // 
             // chart
             // 
-            chartArea2.Name = "ChartArea1";
-            chart.ChartAreas.Add(chartArea2);
+            chartArea1.Name = "ChartArea1";
+            chart.ChartAreas.Add(chartArea1);
             chart.Dock = DockStyle.Fill;
-            legend2.Name = "Legend1";
-            chart.Legends.Add(legend2);
+            legend1.Name = "Legend1";
+            chart.Legends.Add(legend1);
             chart.Location = new Point(0, 0);
             chart.Name = "chart";
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
-            series2.CustomProperties = "PriceDownColor=Red, PriceUpColor=Green";
-            series2.Legend = "Legend1";
-            series2.Name = "Klines";
-            series2.YValuesPerPoint = 4;
-            series2.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
-            chart.Series.Add(series2);
-            chart.Size = new Size(1307, 862);
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
+            series1.CustomProperties = "PriceDownColor=Red, PriceUpColor=Green";
+            series1.Legend = "Legend1";
+            series1.Name = "Klines";
+            series1.YValuesPerPoint = 4;
+            series1.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
+            chart.Series.Add(series1);
+            chart.Size = new Size(1450, 895);
             chart.TabIndex = 1;
             chart.Text = "chart";
             // 
             // btnZoomOut
             // 
             btnZoomOut.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnZoomOut.Location = new Point(1223, 16);
+            btnZoomOut.Location = new Point(1407, 16);
             btnZoomOut.Name = "btnZoomOut";
             btnZoomOut.Size = new Size(50, 50);
             btnZoomOut.TabIndex = 2;
@@ -97,7 +97,7 @@
             // btnZoomIn
             // 
             btnZoomIn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnZoomIn.Location = new Point(1384, 14);
+            btnZoomIn.Location = new Point(1560, 14);
             btnZoomIn.Name = "btnZoomIn";
             btnZoomIn.Size = new Size(50, 50);
             btnZoomIn.TabIndex = 2;
@@ -112,7 +112,7 @@
             lbProducts.ItemHeight = 25;
             lbProducts.Location = new Point(6, 46);
             lbProducts.Name = "lbProducts";
-            lbProducts.Size = new Size(178, 779);
+            lbProducts.Size = new Size(198, 829);
             lbProducts.TabIndex = 3;
             lbProducts.SelectedIndexChanged += lbProducts_SelectedIndexChanged;
             // 
@@ -131,9 +131,18 @@
             // splitContainer1.Panel2
             // 
             splitContainer1.Panel2.Controls.Add(chart);
-            splitContainer1.Size = new Size(1500, 862);
-            splitContainer1.SplitterDistance = 189;
+            splitContainer1.Size = new Size(1663, 895);
+            splitContainer1.SplitterDistance = 209;
             splitContainer1.TabIndex = 4;
+            // 
+            // txtSeach
+            // 
+            txtSeach.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtSeach.Location = new Point(8, 8);
+            txtSeach.Name = "txtSeach";
+            txtSeach.Size = new Size(195, 31);
+            txtSeach.TabIndex = 4;
+            txtSeach.TextChanged += txtSeach_TextChanged;
             // 
             // cbInterval
             // 
@@ -159,7 +168,7 @@
             // 
             lblZoom.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             lblZoom.AutoSize = true;
-            lblZoom.Location = new Point(1286, 31);
+            lblZoom.Location = new Point(1465, 31);
             lblZoom.Name = "lblZoom";
             lblZoom.Size = new Size(89, 25);
             lblZoom.TabIndex = 7;
@@ -189,27 +198,18 @@
             // 
             lblSymbol.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             lblSymbol.Font = new Font("Segoe UI Black", 14F, FontStyle.Bold, GraphicsUnit.Point);
-            lblSymbol.Location = new Point(492, 28);
+            lblSymbol.Location = new Point(471, 28);
             lblSymbol.Name = "lblSymbol";
-            lblSymbol.Size = new Size(610, 38);
+            lblSymbol.Size = new Size(909, 38);
             lblSymbol.TabIndex = 9;
             lblSymbol.Text = "label3";
             lblSymbol.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // txtSeach
-            // 
-            txtSeach.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            txtSeach.Location = new Point(8, 8);
-            txtSeach.Name = "txtSeach";
-            txtSeach.Size = new Size(175, 31);
-            txtSeach.TabIndex = 4;
-            txtSeach.TextChanged += txtSeach_TextChanged;
             // 
             // FrmMain
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1524, 954);
+            ClientSize = new Size(1687, 987);
             Controls.Add(lblSymbol);
             Controls.Add(cbExchange);
             Controls.Add(lblZoom);

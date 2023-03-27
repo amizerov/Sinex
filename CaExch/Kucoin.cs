@@ -5,7 +5,7 @@ using Kucoin.Net.Enums;
 using Kucoin.Net.Objects.Models.Spot;
 
 namespace CaExch;
-public class Kucoin : AnExchange
+public class CaKucoin : AnExchange
 {
     public override int ID => 2;
     public override string Name => "Kucoin";

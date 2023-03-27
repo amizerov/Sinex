@@ -6,7 +6,6 @@ namespace bot2;
 public partial class FrmMain : Form
 {
     Charty Charty;
-    bool IsLoadingProducts = false;
 
     public FrmMain()
     {
@@ -32,15 +31,18 @@ public partial class FrmMain : Form
     }
     void OnLastKline(Kline k)
     {
-        Invoke(new Action(() =>
+        try
         {
-            lblSymbol.Text = $"{Charty.Symbol}({k.ClosePrice})";
-        }));
+            Invoke(new Action(() =>
+            {
+                lblSymbol.Text = $"{Charty.Symbol}({k.ClosePrice} / {k.Volume})";
+            }));
+        }
+        catch { }
     }
     private void button1_Click(object sender, EventArgs? e)
     {
-        if (IsLoadingProducts ||
-            Charty.Symbol == "") return;
+        if (Charty.Symbol == "") return;
 
         Charty.GetKlines();
         Charty.populate();
@@ -104,11 +106,7 @@ public partial class FrmMain : Form
 
     void LoadProducts(int exha)
     {
-        IsLoadingProducts = true;
-
         txtSeach_TextChanged(this, null);
-
-        IsLoadingProducts = false;
         button1_Click(this, null);
     }
 

@@ -2,12 +2,10 @@
 using Bybit.Net.Clients;
 using CryptoExchange.Net.CommonObjects;
 using Bybit.Net.Enums;
-using Bybit.Net.Objects.Models;
-using Bybit.Net.Objects.Models.Spot.v3;
 using Bybit.Net.Objects.Models.Socket.Spot;
 
 namespace CaExch;
-public class Bybit : AnExchange
+public class CaBybit : AnExchange
 {
     public override int ID => 5;
     public override string Name => "Bybit";

@@ -5,7 +5,7 @@ using Bittrex.Net.Objects.Models;
 using CryptoExchange.Net.CommonObjects;
 
 namespace CaExch;
-public class Bittrex : AnExchange
+public class CaBittrex : AnExchange
 {
     public override int ID => 4;
     public override string Name => "Bittrex";
@@ -17,20 +17,28 @@ public class Bittrex : AnExchange
     {
         List<Kline> klines = new();
 
-        var r = restClient.SpotApi.CommonSpotClient
-            .GetKlinesAsync(symbol, TimeSpan.FromSeconds(IntervalInSeconds(inter))).Result;
-
-        if (r.Success)
+        try
         {
-            klines = r.Data.ToList();
-            Log.Info(ID, $"GetKlines({symbol})", $"{klines.Count} klines loaded");
+            var r = restClient.SpotApi.CommonSpotClient
+                .GetKlinesAsync(symbol, TimeSpan.FromSeconds(IntervalInSeconds(inter))).Result;
 
-            SocketSubscribe(symbol, inter);
+            if (r.Success)
+            {
+                klines = r.Data.ToList();
+                Log.Info(ID, $"GetKlines({symbol})", $"{klines.Count} klines loaded");
+
+                SocketSubscribe(symbol, inter);
+            }
+            else
+            {
+                Log.Error(ID, $"GetKlines({symbol})", "Error: " + r.Error?.Message);
+            }
         }
-        else
+        catch(Exception ex)
         {
-            Log.Error(ID, $"GetKlines({symbol})", "" + r.Error?.Message);
+            Log.Error(ID, $"GetKlines({symbol})", "Exception: " + ex.Message);
         }
+
         return klines;
     }
 

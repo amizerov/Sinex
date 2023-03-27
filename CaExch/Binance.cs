@@ -5,7 +5,7 @@ using Binance.Net.Interfaces;
 using CryptoExchange.Net.CommonObjects;
 
 namespace CaExch;
-public class Binance : AnExchange
+public class CaBinance : AnExchange
 {
     public override int ID => 1;
     public override string Name => "Binance";
