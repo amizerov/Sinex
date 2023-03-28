@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\amLogger\amLogger.csproj" />
-    <ProjectReference Include="..\CaIndex\CaIndex.csproj" />
+    <ProjectReference Include="..\CaIndex\CaIndy.csproj" />
   </ItemGroup>
 
 </Project>

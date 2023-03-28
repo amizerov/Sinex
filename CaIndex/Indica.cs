@@ -3,25 +3,33 @@ using Skender.Stock.Indicators;
 
 public class Indica
 {
-    List<Kline> klines;
-
-    public Indica(List<Kline> klines)
+    public static List<SmaResult> GetSma(List<Kline> klines, int lookbackPeriods)
     {
-        this.klines = klines;
+        IEnumerable<Quote> quotes = GetQuotesFromKlines(klines);
+        IEnumerable<SmaResult> sma = quotes.GetSma(lookbackPeriods);
+
+        return sma.ToList();
     }
 
-    public IEnumerable<SmaResult> GetSma()
+    public static List<RsiResult> GetRsi(List<Kline> klines)
     {
-        IEnumerable<Quote> quotes = GetQuotesFromKlines();
-        IEnumerable<SmaResult> sma = quotes.GetSma(50);
+        IEnumerable<Quote> quotes = GetQuotesFromKlines(klines);
+        IEnumerable<RsiResult> rsi = quotes.GetRsi();
 
-        return sma;
+        return rsi.ToList();
     }
-
-    IEnumerable<Quote> GetQuotesFromKlines()
+    public static List<MfiResult> GetMfi(List<Kline> klines)
     {
+        IEnumerable<Quote> quotes = GetQuotesFromKlines(klines);
+        IEnumerable<MfiResult> mfi = quotes.GetMfi();
+
+        return mfi.ToList();
+    }
+    static IEnumerable<Quote> GetQuotesFromKlines(List<Kline> klines)
+    {
+        List<Kline> ks = new(klines);
         List<Quote> res = new List<Quote>();
-        foreach (var k in klines)
+        foreach (var k in ks)
         {
             Quote q = new Quote();
             q.Date = k.OpenTime;

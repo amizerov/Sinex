@@ -1,5 +1,6 @@
 using CryptoExchange.Net.CommonObjects;
 using Microsoft.EntityFrameworkCore;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace bot2;
 
@@ -120,5 +121,10 @@ public partial class FrmMain : Form
             lbProducts.DataSource = prods?.ToList()
                 .Where(p => p.symbol.ToLower().Contains(txtSeach.Text.ToLower())).ToList();
         }
+    }
+
+    private void mnuSma_Click(object sender, EventArgs e)
+    {
+        Charty.DrawIndicator("sma");
     }
 }

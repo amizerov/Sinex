@@ -24,8 +24,6 @@ public class CaBybit : AnExchange
         {
             klines = r.Data.ToList(); //klines.Reverse();
             Log.Info(ID, $"GetKlines({symbol})", $"{klines.Count} klines loaded");
-
-            SocketSubscribe(symbol, inter);
         }
         else
         {
@@ -34,11 +32,9 @@ public class CaBybit : AnExchange
         return klines;
     }
 
-    async public override void SocketSubscribe(string symbol, string inter)
+    async public override void SubscribeToSocket(string symbol, string inter)
     {
-        int c1 = socketClient.CurrentSubscriptions;
-        await socketClient.UnsubscribeAllAsync();
-        int c2 = socketClient.CurrentSubscriptions;
+        Log.Info(ID, "SubscribeToSocket", $"Begin subscribe {symbol}, Interval = {inter}");
 
         var r = await socketClient.SpotStreamsV3.
             SubscribeToKlineUpdatesAsync(symbol, (KlineInterval)IntervalInSeconds(inter),
@@ -61,7 +57,7 @@ public class CaBybit : AnExchange
         if (r.Success)
         {
             int c3 = socketClient.CurrentSubscriptions;
-            Log.Info(ID, "SocketSubscribe", $"subscribed to {symbol}, {inter}, {c1}, {c2}, {c3}");
+            Log.Info(ID, "SocketSubscribe", $"subscribed to {symbol}, {inter}, {c3}");
         }
         else
         {

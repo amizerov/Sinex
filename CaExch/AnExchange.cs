@@ -12,7 +12,7 @@ public abstract class AnExchange
     public abstract string Name { get; }
     
     public abstract List<Kline> GetKlines(string symbol, string inter);
-    public abstract void SocketSubscribe(string symbol, string inter);
+    public abstract void SubscribeToSocket(string symbol, string inter);
     public abstract void Unsub();
     protected int IntervalInSeconds(string inter)
     {

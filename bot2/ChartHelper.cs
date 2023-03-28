@@ -2,31 +2,79 @@
 using CryptoExchange.Net.CommonObjects;
 using amLogger;
 using CaExch;
+using Skender.Stock.Indicators;
 
 namespace bot2;
 
 public class Charty
 {
-    public event Action<Kline>? OnLastKline;
+    Chart       _ch;
+    ChartArea   _cha;
+    List<Kline> klines = new();
+    int         _excha = 0;
+    int         _zoom = 50;
+    double      _volumeRate = 0;
+    double      _yMax = 0;
+    double      _yMin = 0;
+    string      _indy = "";
+    string      _symbol = "";
+    string      _interval = "";
 
-    int _excha = 0;
+    public int Zoom
+    {
+        get { return _zoom; }
+        set
+        {
+            _zoom = value;
+            if (_zoom < 10) _zoom = 10;
+            if (_zoom > klines.Count) _zoom = klines.Count;
+        }
+    }
     public int Exchange { get { return _excha; } 
         set {
             if (_excha != value)
             {
                 var excha = Exchanges.FirstOrDefault(e => e.ID == _excha);
                 excha?.Unsub();
+                _symbol = "";
             }
             _excha = value; 
         } 
     }
-    public string Symbol = "";
-    public string Interval = "";
+    public string Symbol
+    {
+        get { return _symbol; }
+        set
+        {
+            if (_symbol != value)
+            {
+                _symbol = value;
 
-    Chart _ch;
-    ChartArea _cha;
-    List<Kline> klines = new();
-    
+                var excha = Exchanges.FirstOrDefault(e => e.ID == _excha);
+                excha?.Unsub();
+
+                if(_symbol.Length > 0)
+                    excha?.SubscribeToSocket(_symbol, _interval);
+            }
+        }
+    }
+    public string Interval
+    {
+        get { return _interval; }
+        set
+        {
+            if (_interval != value)
+            {
+                _interval = value;
+                
+                var excha = Exchanges.FirstOrDefault(e => e.ID == _excha);
+                excha?.Unsub();
+                excha?.SubscribeToSocket(_symbol, _interval);
+            }
+        }
+    }
+
+    public event Action<Kline>? OnLastKline;
     public List<AnExchange> Exchanges = new(){
         new CaBinance(),
         new CaKucoin(),
@@ -34,19 +82,6 @@ public class Charty
         new CaBittrex(),
         new CaBybit()
     };
-
-    int _zoom = 50;
-    public int Zoom { get { return _zoom; }
-        set {
-            _zoom = value;
-            if(_zoom < 10) _zoom = 10;
-            if (_zoom > klines.Count) _zoom = klines.Count;
-        }
-    }
-
-    double _volumeRate = 0;
-    double _yMax = 0;
-    double _yMin = 0;
 
     public Charty(Chart chart)
     {
@@ -56,8 +91,10 @@ public class Charty
 
         Series sKlines = new Series("Klines");
         Series sVolume = new Series("Volume");
+        Series sIndica = new Series("Indica");
         _ch.Series.Add(sKlines);
         _ch.Series.Add(sVolume);
+        _ch.Series.Add(sIndica);
 
         sKlines.ChartType = SeriesChartType.Candlestick;
         sKlines["OpenCloseStyle"] = "Triangle";
@@ -81,27 +118,36 @@ public class Charty
     }
     public void populate() 
     {
-        List<Kline> ks = klines.Skip(klines.Count - _zoom).ToList();
-
-        Series sKlines = _ch.Series["Klines"];
-        Series sVolume = _ch.Series["Volume"];
-        sKlines.Points.Clear();
-        sVolume.Points.Clear();
-
-        _yMax = Convert.ToDouble(ks.Max(k => k.HighPrice));
-        _yMin = Convert.ToDouble(ks.Min(k => k.LowPrice));
-        _yMin = _yMin - 0.1 * (_yMax - _yMin);
-
-        _cha.AxisY2.ScaleView.Zoom(_yMin, _yMax);
-
-        double maxVolume = Convert.ToDouble(ks.Max(k => k.Volume));
-        _volumeRate = 0.3 * (_yMax - _yMin) / maxVolume;
-        foreach (var k in ks)
+        try
         {
-            sKlines.Points.AddXY(k.OpenTime, k.HighPrice, k.LowPrice, k.OpenPrice, k.ClosePrice);
+            Series sKlines = _ch.Series["Klines"];
+            Series sVolume = _ch.Series["Volume"];
+            sKlines.Points.Clear();
+            sVolume.Points.Clear();
 
-            decimal? vol = k.Volume * (decimal)_volumeRate + (decimal)_yMin;
-            sVolume.Points.AddXY(k.OpenTime, vol);
+            List<Kline> ks = new(klines.Skip(klines.Count - _zoom));
+
+            _yMax = Convert.ToDouble(ks.Max(k => k.HighPrice));
+            _yMin = Convert.ToDouble(ks.Min(k => k.LowPrice));
+            _yMin = _yMin - 0.1 * (_yMax - _yMin);
+
+            _cha.AxisY2.ScaleView.Zoom(_yMin, _yMax);
+
+            double maxVolume = Convert.ToDouble(ks.Max(k => k.Volume));
+            _volumeRate = 0.3 * (_yMax - _yMin) / maxVolume;
+            foreach (var k in ks)
+            {
+                sKlines.Points.AddXY(k.OpenTime, k.HighPrice, k.LowPrice, k.OpenPrice, k.ClosePrice);
+
+                decimal? vol = k.Volume * (decimal)_volumeRate + (decimal)_yMin;
+                sVolume.Points.AddXY(k.OpenTime, vol);
+            }
+
+            DrawIndicator(_indy);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(_excha, "populate", "Error: " + ex.Message);
         }
     }
     void UpdateKline(Kline k)
@@ -125,6 +171,8 @@ public class Charty
         }
         else
         {
+            Log.Info(_excha, "UpdateKline", "New Kline starts GetKlines");
+
             GetKlines();
             try{
                 populate();
@@ -145,4 +193,29 @@ public class Charty
         UpdateKline(k);
     }
 
+    public void DrawIndicator(string indica)
+    {
+        _indy = indica;
+        if (_indy == "sma") DrawSma();
+    }
+    void DrawSma()
+    {
+        Series k = _ch.Series["Klines"];
+        Series s = _ch.Series["Indica"];
+        s.ChartType = SeriesChartType.FastLine;
+        s.YAxisType = AxisType.Secondary;
+        s.Color = Color.Red;
+
+        int lookbackPeriods = _zoom < 50 ? 5 : _zoom / 10;
+        List<SmaResult> sma = Indica.GetSma(klines, lookbackPeriods);
+
+        List<Kline> ks = klines.Skip(klines.Count - _zoom).ToList();
+
+        List<SmaResult> smas = new(sma.Where(p => p.Date >= ks.First().OpenTime)); 
+        s.Points.Clear();
+        foreach (var v in smas)
+        {
+            s.Points.AddXY(v.Date, v.Sma);
+        }
+    }
 }

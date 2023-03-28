@@ -26,8 +26,6 @@ public class CaBittrex : AnExchange
             {
                 klines = r.Data.ToList();
                 Log.Info(ID, $"GetKlines({symbol})", $"{klines.Count} klines loaded");
-
-                SocketSubscribe(symbol, inter);
             }
             else
             {
@@ -42,11 +40,9 @@ public class CaBittrex : AnExchange
         return klines;
     }
 
-    async public override void SocketSubscribe(string symbol, string inter)
+    async public override void SubscribeToSocket(string symbol, string inter)
     {
-        int c1 = socketClient.CurrentSubscriptions;
-        await socketClient.UnsubscribeAllAsync();
-        int c2 = socketClient.CurrentSubscriptions;
+        Log.Info(ID, "SubscribeToSocket", $"Begin subscribe {symbol}, Interval = {inter}");
 
         var r = await socketClient.SpotStreams.
             SubscribeToKlineUpdatesAsync(symbol, (KlineInterval)IntervalInSeconds(inter),
@@ -69,7 +65,7 @@ public class CaBittrex : AnExchange
         if (r.Success)
         {
             int c3 = socketClient.CurrentSubscriptions;
-            Log.Info(ID, "SocketSubscribe", $"subscribed to {symbol}, {inter}, {c1}, {c2}, {c3}");
+            Log.Info(ID, "SocketSubscribe", $"subscribed to {symbol}, {inter}, {c3}");
         }
         else
         {
