@@ -1,12 +1,14 @@
 using CryptoExchange.Net.CommonObjects;
 using Microsoft.EntityFrameworkCore;
-using System.Windows.Forms.DataVisualization.Charting;
+using System.Reflection;
 
 namespace bot2;
 
 public partial class FrmMain : Form
 {
     Charty Charty;
+    FrmOrderBook frmOrders = new();
+    FrmLogger frmLogger = new();
 
     public FrmMain()
     {
@@ -17,6 +19,8 @@ public partial class FrmMain : Form
 
     private void Form1_Load(object sender, EventArgs e)
     {
+        LoadFormPosition();
+
         cbExchange.Items.Clear();
         foreach (var ex in Charty.Exchanges) cbExchange.Items.Add(ex.Name);
 
@@ -28,7 +32,8 @@ public partial class FrmMain : Form
         Charty.Exchange = 1;
         LoadProducts(Charty.Exchange);
 
-        new FrmLog().Show(this);
+        new FrmLogger().Show(this);
+        frmOrders.Show(this);
     }
     void OnLastKline(Kline k)
     {
@@ -127,4 +132,48 @@ public partial class FrmMain : Form
     {
         Charty.DrawIndicator("sma");
     }
+
+    private void mnuOrderBook_Click(object sender, EventArgs e)
+    {
+        if (frmOrders.IsDisposed)
+            frmOrders = new();
+
+        frmOrders.Visible = false;
+        frmOrders.Show(this);
+    }
+
+    private void mnuLogger_Click(object sender, EventArgs e)
+    {
+        if (frmLogger.IsDisposed)
+            frmLogger = new();
+
+        frmLogger.Visible = false;
+        frmLogger.Show(this);
+    }
+}
+
+public partial class FrmMain : Form
+{
+    #region Form position
+
+    string FileFormPosition =
+        Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\FrmMainPosition.txt";
+
+    private void FrmMain_FormClosing(object sender, FormClosingEventArgs e)
+    {
+        string pos = Top + ";" + Left + ";" + Width + ";" + Height;
+        File.WriteAllText(FileFormPosition, pos);
+    }
+    void LoadFormPosition()
+    {
+        if (File.Exists(FileFormPosition))
+        {
+            string[] pos = File.ReadAllText(FileFormPosition).Split(';');
+            Top = int.Parse(pos[0]);
+            Left = int.Parse(pos[1]);
+            Width = int.Parse(pos[2]);
+            Height = int.Parse(pos[3]); ;
+        }
+    }
+    #endregion
 }

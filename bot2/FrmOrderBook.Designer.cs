@@ -1,6 +1,6 @@
 ﻿namespace bot2
 {
-    partial class FrmLog
+    partial class FrmOrderBook
     {
         /// <summary>
         /// Required designer variable.
@@ -37,19 +37,19 @@
             textBox1.Location = new Point(0, 0);
             textBox1.Multiline = true;
             textBox1.Name = "textBox1";
-            textBox1.Size = new Size(800, 450);
+            textBox1.Size = new Size(553, 555);
             textBox1.TabIndex = 0;
             // 
-            // FrmLog
+            // FrmOrderBook
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(553, 555);
             Controls.Add(textBox1);
-            Name = "FrmLog";
-            Text = "Logger";
-            FormClosing += FrmLog_FormClosing;
-            Load += FrmLog_Load;
+            Name = "FrmOrderBook";
+            Text = "Order book";
+            FormClosing += FrmOrderBook_FormClosing;
+            Load += FrmOrders_Load;
             ResumeLayout(false);
             PerformLayout();
         }

@@ -158,7 +158,7 @@ public class Charty
         if (lk.OpenTime == k.OpenTime)
         {
             Series sKlines = _ch.Series["Klines"];
-            sKlines.Points.RemoveAt(sKlines.Points.Count - 1);
+            sKlines.Points.Remove(sKlines.Points.Last());
             sKlines.Points.AddXY(k.OpenTime, k.HighPrice, k.LowPrice, k.OpenPrice, k.ClosePrice);
 
             Series sVolume = _ch.Series["Volume"];
@@ -211,11 +211,18 @@ public class Charty
 
         List<Kline> ks = klines.Skip(klines.Count - _zoom).ToList();
 
-        List<SmaResult> smas = new(sma.Where(p => p.Date >= ks.First().OpenTime)); 
-        s.Points.Clear();
-        foreach (var v in smas)
+        try
         {
-            s.Points.AddXY(v.Date, v.Sma);
+            List<SmaResult> smas = new(sma.Where(p => p.Date >= ks.First().OpenTime));
+            s.Points.Clear();
+            foreach (var v in smas)
+            {
+                s.Points.AddXY(v.Date, v.Sma);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(_excha, "DrawSma", "Error: " + ex.Message);
         }
     }
 }

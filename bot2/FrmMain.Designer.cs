@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             button1 = new Button();
             chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             btnZoomOut = new Button();
@@ -46,11 +46,14 @@
             lblSymbol = new Label();
             menuStrip1 = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
-            exitToolStripMenuItem = new ToolStripMenuItem();
+            mnuExit = new ToolStripMenuItem();
             indicatorsToolStripMenuItem = new ToolStripMenuItem();
             mnuSma = new ToolStripMenuItem();
             rSIToolStripMenuItem = new ToolStripMenuItem();
             mFIToolStripMenuItem = new ToolStripMenuItem();
+            windowsToolStripMenuItem = new ToolStripMenuItem();
+            mnuLogger = new ToolStripMenuItem();
+            mnuOrderBook = new ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)chart).BeginInit();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
@@ -72,21 +75,21 @@
             // 
             // chart
             // 
-            chartArea2.Name = "ChartArea1";
-            chart.ChartAreas.Add(chartArea2);
+            chartArea1.Name = "ChartArea1";
+            chart.ChartAreas.Add(chartArea1);
             chart.Dock = DockStyle.Fill;
-            legend2.Name = "Legend1";
-            chart.Legends.Add(legend2);
+            legend1.Name = "Legend1";
+            chart.Legends.Add(legend1);
             chart.Location = new Point(0, 0);
             chart.Name = "chart";
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
-            series2.CustomProperties = "PriceUpColor=Green, PriceDownColor=Red";
-            series2.Legend = "Legend1";
-            series2.Name = "Klines";
-            series2.YValuesPerPoint = 4;
-            series2.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
-            chart.Series.Add(series2);
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
+            series1.CustomProperties = "PriceUpColor=Green, PriceDownColor=Red";
+            series1.Legend = "Legend1";
+            series1.Name = "Klines";
+            series1.YValuesPerPoint = 4;
+            series1.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
+            chart.Series.Add(series1);
             chart.Size = new Size(1450, 921);
             chart.TabIndex = 1;
             chart.Text = "chart";
@@ -216,7 +219,7 @@
             // menuStrip1
             // 
             menuStrip1.ImageScalingSize = new Size(24, 24);
-            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, indicatorsToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, indicatorsToolStripMenuItem, windowsToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(1687, 33);
@@ -225,16 +228,16 @@
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { exitToolStripMenuItem });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { mnuExit });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(54, 29);
             fileToolStripMenuItem.Text = "File";
             // 
-            // exitToolStripMenuItem
+            // mnuExit
             // 
-            exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            exitToolStripMenuItem.Size = new Size(270, 34);
-            exitToolStripMenuItem.Text = "Exit";
+            mnuExit.Name = "mnuExit";
+            mnuExit.Size = new Size(141, 34);
+            mnuExit.Text = "Exit";
             // 
             // indicatorsToolStripMenuItem
             // 
@@ -246,21 +249,42 @@
             // mnuSma
             // 
             mnuSma.Name = "mnuSma";
-            mnuSma.Size = new Size(270, 34);
+            mnuSma.Size = new Size(152, 34);
             mnuSma.Text = "SMA";
             mnuSma.Click += mnuSma_Click;
             // 
             // rSIToolStripMenuItem
             // 
             rSIToolStripMenuItem.Name = "rSIToolStripMenuItem";
-            rSIToolStripMenuItem.Size = new Size(270, 34);
+            rSIToolStripMenuItem.Size = new Size(152, 34);
             rSIToolStripMenuItem.Text = "RSI";
             // 
             // mFIToolStripMenuItem
             // 
             mFIToolStripMenuItem.Name = "mFIToolStripMenuItem";
-            mFIToolStripMenuItem.Size = new Size(270, 34);
+            mFIToolStripMenuItem.Size = new Size(152, 34);
             mFIToolStripMenuItem.Text = "MFI";
+            // 
+            // windowsToolStripMenuItem
+            // 
+            windowsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { mnuLogger, mnuOrderBook });
+            windowsToolStripMenuItem.Name = "windowsToolStripMenuItem";
+            windowsToolStripMenuItem.Size = new Size(102, 29);
+            windowsToolStripMenuItem.Text = "Windows";
+            // 
+            // mnuLogger
+            // 
+            mnuLogger.Name = "mnuLogger";
+            mnuLogger.Size = new Size(270, 34);
+            mnuLogger.Text = "Logger";
+            mnuLogger.Click += mnuLogger_Click;
+            // 
+            // mnuOrderBook
+            // 
+            mnuOrderBook.Name = "mnuOrderBook";
+            mnuOrderBook.Size = new Size(270, 34);
+            mnuOrderBook.Text = "Order book";
+            mnuOrderBook.Click += mnuOrderBook_Click;
             // 
             // FrmMain
             // 
@@ -282,6 +306,7 @@
             Margin = new Padding(4, 5, 4, 5);
             Name = "FrmMain";
             Text = "Sinex - Algo Tading Crypto bot v.1";
+            FormClosing += FrmMain_FormClosing;
             Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)chart).EndInit();
             splitContainer1.Panel1.ResumeLayout(false);
@@ -312,10 +337,13 @@
         private TextBox txtSeach;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem fileToolStripMenuItem;
-        private ToolStripMenuItem exitToolStripMenuItem;
+        private ToolStripMenuItem mnuExit;
         private ToolStripMenuItem indicatorsToolStripMenuItem;
         private ToolStripMenuItem mnuSma;
         private ToolStripMenuItem rSIToolStripMenuItem;
         private ToolStripMenuItem mFIToolStripMenuItem;
+        private ToolStripMenuItem windowsToolStripMenuItem;
+        private ToolStripMenuItem mnuLogger;
+        private ToolStripMenuItem mnuOrderBook;
     }
 }
