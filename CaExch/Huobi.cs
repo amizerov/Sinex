@@ -4,7 +4,7 @@ using CryptoExchange.Net.CommonObjects;
 using Huobi.Net.Enums;
 using Huobi.Net.Objects.Models;
 using Huobi.Net.SymbolOrderBooks;
-using CryptoExchange.Net.OrderBook;
+using CryptoExchange.Net.Interfaces;
 
 namespace CaExch;
 public class CaHuobi : AnExchange
@@ -12,7 +12,7 @@ public class CaHuobi : AnExchange
     public override int ID => 3;
     public override string Name => "Huobi";
 
-    public override SymbolOrderBook OrderBook => new HuobiSpotSymbolOrderBook(_symbol);
+    public override ISymbolOrderBook OrderBook => new HuobiSpotSymbolOrderBook(_symbol);
     string _symbol = "";
 
     HuobiClient restClient = new();

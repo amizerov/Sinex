@@ -1,14 +1,14 @@
 ﻿using amLogger;
 using CryptoExchange.Net.Interfaces;
-using CryptoExchange.Net.OrderBook;
 using System.Reflection;
 
 namespace bot2;
 
 public partial class FrmOrderBook : Form
 {
-    SymbolOrderBook book;
-    public FrmOrderBook(SymbolOrderBook somebook)
+    ISymbolOrderBook book;
+
+    public FrmOrderBook(ISymbolOrderBook somebook)
     {
         InitializeComponent();
         book = somebook;
@@ -19,7 +19,6 @@ public partial class FrmOrderBook : Form
     {
         LoadFormPosition();
 
-        book.OnOrderBookUpdate += Book_OnOrderBookUpdate;
         book.OnStatusChange += (oldState, newState) =>
             Log.Trace("book.OnStatusChange", $"State changed from {oldState} to {newState}");
 
@@ -28,36 +27,62 @@ public partial class FrmOrderBook : Form
         {
             Log.Error("BinanceSpotSymbolOrderBook", "Failed to start order book: " + startResult.Error);
         }
+
+        while (true)
+        {
+            SetBook(book);
+            await Task.Delay(500);
+        }
     }
 
-    private void Book_OnOrderBookUpdate((IEnumerable<ISymbolOrderBookEntry> Bids, IEnumerable<ISymbolOrderBookEntry> Asks) obj)
+    void SetBook(ISymbolOrderBook book)
     {
-        if (Tag?.ToString() == "111") return;
-
-        string asks = "";
-        foreach (var a in obj.Asks.Reverse().Skip(obj.Asks.Count() - 15))
+        if (dgBook.Columns.Count != 3)
         {
-            asks += a.Price + " | " + a.Quantity + "\r\n";
+            dgBook.Columns.Clear();
+            dgBook.Columns.Add("Column1", "Buy");
+            dgBook.Columns.Add("Column2", "Price");
+            dgBook.Columns.Add("Column3", "Sell");
         }
-        string bids = "";
-        foreach (var b in obj.Bids.Reverse().Skip(obj.Bids.Count() - 15).Reverse())
+        int c = 0;
+        List<ISymbolOrderBookEntry> ba = new();
+        foreach(var a in book.Asks)
         {
-            bids += b.Price + " | " + b.Quantity + "\r\n";
+            ba.Add(a); if(++c == 15) break;
+        }
+        
+        dgBook.Rows.Clear(); ba.Reverse();
+        foreach (var a in ba)
+        {
+            int n = dgBook.Rows.Add();
+            dgBook.Rows[n].Cells[0].Value = "";
+            dgBook.Rows[n].Cells[1].Value = a.Price.ToString();
+            dgBook.Rows[n].Cells[2].Value = a.Quantity.ToString();
+            dgBook.Rows[n].Cells[1].Style.BackColor = Color.Red;
+            dgBook.Rows[n].Cells[2].Style.BackColor = Color.Red;
+        }
+        c = 0;
+        List<ISymbolOrderBookEntry> bb = new();
+        foreach (var b in book.Bids)
+        {
+            bb.Add(b); if (++c == 15) break;
+        }
+        foreach (var b in bb)
+        {
+            int n = dgBook.Rows.Add();
+            dgBook.Rows[n].Cells[0].Value = b.Quantity.ToString();
+            dgBook.Rows[n].Cells[1].Value = b.Price.ToString();
+            dgBook.Rows[n].Cells[2].Value = "";
+            dgBook.Rows[n].Cells[0].Style.BackColor = Color.Green;
+            dgBook.Rows[n].Cells[1].Style.BackColor = Color.Green;
         }
 
-        try
-        {
-            Invoke(new Action(() =>
-                textBox1.Text = asks + "-----------\r\n" + bids
-            ));
-        }catch (Exception ex) { Log.Error("Book_OnOrderBookUpdate", ex.Message); }
     }
 
     #region Form position
-    private void FrmOrderBook_FormClosing(object sender, FormClosingEventArgs e)
+    private async void FrmOrderBook_FormClosing(object sender, FormClosingEventArgs e)
     {
-        Tag = "111";
-        book.StopAsync();
+        await book.StopAsync();
 
         string pos = Top + ";" + Left + ";" + Width + ";" + Height;
         File.WriteAllText(FileFormPosition, pos);
@@ -77,3 +102,4 @@ public partial class FrmOrderBook : Form
         Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\FrmOrderBookPosition.txt";
     #endregion
 }
+

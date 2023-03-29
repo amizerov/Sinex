@@ -1,4 +1,5 @@
 ﻿using CryptoExchange.Net.CommonObjects;
+using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.OrderBook;
 
 namespace CaExch;
@@ -10,7 +11,7 @@ public abstract class AnExchange
 
     public abstract int ID { get; }
     public abstract string Name { get; }
-    public abstract SymbolOrderBook OrderBook { get; }
+    public abstract ISymbolOrderBook OrderBook { get; }
     public abstract List<Kline> GetKlines(string symbol, string inter);
     public abstract void SubscribeToSocket(string symbol, string inter);
     public abstract void Unsub();

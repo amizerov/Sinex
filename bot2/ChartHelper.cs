@@ -251,11 +251,16 @@ public class Charty
 
         try
         {
-            List<RsiResult> smas = new(rsi.Where(p => p.Date >= ks.First().OpenTime));
+            List<RsiResult> rsis = new(rsi.Where(p => p.Date >= ks.First().OpenTime));
+            
+            double rsiMax = Convert.ToDouble(rsis.Max(r => r.Rsi));
+            double rsiMin = Convert.ToDouble(rsis.Min(r => r.Rsi));
+            double rsiRate = 0.3 * (_yMax - _yMin) / (rsiMax - rsiMin);
+
             s.Points.Clear();
-            foreach (var v in smas)
+            foreach (var r in rsis)
             {
-                s.Points.AddXY(v.Date, v.Rsi);
+                s.Points.AddXY(r.Date, (r.Rsi - rsiMin) * rsiRate + _yMin);
             }
         }
         catch (Exception ex)

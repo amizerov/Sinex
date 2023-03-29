@@ -4,7 +4,7 @@ using Bittrex.Net.Clients;
 using Bittrex.Net.Enums;
 using Bittrex.Net.Objects.Models;
 using CryptoExchange.Net.CommonObjects;
-using CryptoExchange.Net.OrderBook;
+using CryptoExchange.Net.Interfaces;
 
 namespace CaExch;
 public class CaBittrex : AnExchange
@@ -12,7 +12,7 @@ public class CaBittrex : AnExchange
     public override int ID => 4;
     public override string Name => "Bittrex";
 
-    public override SymbolOrderBook OrderBook => new BittrexSymbolOrderBook(_symbol);
+    public override ISymbolOrderBook OrderBook => new BittrexSymbolOrderBook(_symbol);
     string _symbol = "";
 
     BittrexClient restClient = new();

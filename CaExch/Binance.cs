@@ -4,7 +4,7 @@ using Binance.Net.Enums;
 using Binance.Net.Interfaces;
 using Binance.Net.SymbolOrderBooks;
 using CryptoExchange.Net.CommonObjects;
-using CryptoExchange.Net.OrderBook;
+using CryptoExchange.Net.Interfaces;
 
 namespace CaExch;
 public class CaBinance : AnExchange
@@ -12,7 +12,7 @@ public class CaBinance : AnExchange
     public override int ID => 1;
     public override string Name => "Binance";
 
-    public override SymbolOrderBook OrderBook => new BinanceSpotSymbolOrderBook(_symbol);
+    public override ISymbolOrderBook OrderBook => new BinanceSpotSymbolOrderBook(_symbol);
     string _symbol = "";
 
     BinanceClient restClient = new();

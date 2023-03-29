@@ -109,6 +109,18 @@ public partial class FrmMain : Form
     {
         lblSymbol.Text = Charty.Symbol = lbProducts.Text;
         button1_Click(this, e);
+
+        if(frmOrderBook != null)
+        {
+            if(!frmOrderBook.IsDisposed || frmOrderBook.Visible)
+            {
+                frmOrderBook.Close();
+                frmOrderBook.Dispose();
+                frmOrderBook = null;
+            }
+        }
+        frmOrderBook = new(Charty.CurrentExchange.OrderBook);
+        frmOrderBook.Show();
     }
 
     void LoadProducts(int exha)

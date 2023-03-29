@@ -3,8 +3,8 @@ using Kucoin.Net.Clients;
 using CryptoExchange.Net.CommonObjects;
 using Kucoin.Net.Enums;
 using Kucoin.Net.Objects.Models.Spot;
-using CryptoExchange.Net.OrderBook;
 using Kucoin.Net.SymbolOrderBooks;
+using CryptoExchange.Net.Interfaces;
 
 namespace CaExch;
 public class CaKucoin : AnExchange
@@ -12,7 +12,7 @@ public class CaKucoin : AnExchange
     public override int ID => 2;
     public override string Name => "Kucoin";
 
-    public override SymbolOrderBook OrderBook => new KucoinSpotSymbolOrderBook(_symbol);
+    public override ISymbolOrderBook OrderBook => new KucoinSpotSymbolOrderBook(_symbol);
     string _symbol = "";
 
     KucoinClient restClient = new();

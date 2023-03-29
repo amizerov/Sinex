@@ -28,24 +28,42 @@
         /// </summary>
         private void InitializeComponent()
         {
-            textBox1 = new TextBox();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            dgBook = new DataGridView();
+            ((System.ComponentModel.ISupportInitialize)dgBook).BeginInit();
             SuspendLayout();
             // 
-            // textBox1
+            // dgBook
             // 
-            textBox1.Dock = DockStyle.Fill;
-            textBox1.Location = new Point(0, 0);
-            textBox1.Multiline = true;
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(553, 555);
-            textBox1.TabIndex = 0;
+            dgBook.AllowUserToAddRows = false;
+            dgBook.AllowUserToDeleteRows = false;
+            dgBook.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = SystemColors.Control;
+            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            dataGridViewCellStyle1.ForeColor = SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
+            dgBook.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dgBook.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgBook.Location = new Point(-63, -2);
+            dgBook.MultiSelect = false;
+            dgBook.Name = "dgBook";
+            dgBook.ReadOnly = true;
+            dgBook.RowHeadersWidth = 62;
+            dgBook.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            dgBook.RowTemplate.Height = 33;
+            dgBook.ScrollBars = ScrollBars.None;
+            dgBook.Size = new Size(522, 982);
+            dgBook.TabIndex = 0;
             // 
             // FrmOrderBook
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(553, 555);
-            Controls.Add(textBox1);
+            ClientSize = new Size(448, 979);
+            Controls.Add(dgBook);
             FormBorderStyle = FormBorderStyle.SizableToolWindow;
             MaximizeBox = false;
             Name = "FrmOrderBook";
@@ -54,12 +72,12 @@
             Text = "Order book";
             FormClosing += FrmOrderBook_FormClosing;
             Load += FrmOrders_Load;
+            ((System.ComponentModel.ISupportInitialize)dgBook).EndInit();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
 
-        private TextBox textBox1;
+        private DataGridView dgBook;
     }
 }

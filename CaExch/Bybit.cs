@@ -4,7 +4,7 @@ using CryptoExchange.Net.CommonObjects;
 using Bybit.Net.Enums;
 using Bybit.Net.Objects.Models.Socket.Spot;
 using Bybit.Net.SymbolOrderBooks;
-using CryptoExchange.Net.OrderBook;
+using CryptoExchange.Net.Interfaces;
 
 namespace CaExch;
 public class CaBybit : AnExchange
@@ -12,7 +12,7 @@ public class CaBybit : AnExchange
     public override int ID => 5;
     public override string Name => "Bybit";
 
-    public override SymbolOrderBook OrderBook => new BybitSpotSymbolOrderBook(_symbol);
+    public override ISymbolOrderBook OrderBook => new BybitSpotSymbolOrderBook(_symbol);
     string _symbol = "";
 
     BybitClient restClient = new();
