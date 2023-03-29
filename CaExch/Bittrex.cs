@@ -1,8 +1,10 @@
 ﻿using amLogger;
+using Bittrex.Net.SymbolOrderBooks;
 using Bittrex.Net.Clients;
 using Bittrex.Net.Enums;
 using Bittrex.Net.Objects.Models;
 using CryptoExchange.Net.CommonObjects;
+using CryptoExchange.Net.OrderBook;
 
 namespace CaExch;
 public class CaBittrex : AnExchange
@@ -10,11 +12,15 @@ public class CaBittrex : AnExchange
     public override int ID => 4;
     public override string Name => "Bittrex";
 
+    public override SymbolOrderBook OrderBook => new BittrexSymbolOrderBook(_symbol);
+    string _symbol = "";
+
     BittrexClient restClient = new();
     BittrexSocketClient socketClient = new();
 
     public override List<Kline> GetKlines(string symbol, string inter)
     {
+        _symbol = symbol;
         List<Kline> klines = new();
 
         try

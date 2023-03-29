@@ -46,7 +46,11 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(553, 555);
             Controls.Add(textBox1);
+            FormBorderStyle = FormBorderStyle.SizableToolWindow;
+            MaximizeBox = false;
             Name = "FrmOrderBook";
+            ShowIcon = false;
+            ShowInTaskbar = false;
             Text = "Order book";
             FormClosing += FrmOrderBook_FormClosing;
             Load += FrmOrders_Load;

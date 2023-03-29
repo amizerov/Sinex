@@ -82,6 +82,7 @@ public class Charty
         new CaBittrex(),
         new CaBybit()
     };
+    public AnExchange CurrentExchange { get { return Exchanges.FirstOrDefault(e => e.ID == _excha)!; } }
 
     public Charty(Chart chart)
     {
@@ -157,15 +158,23 @@ public class Charty
         var lk = klines.Last();
         if (lk.OpenTime == k.OpenTime)
         {
-            Series sKlines = _ch.Series["Klines"];
-            sKlines.Points.Remove(sKlines.Points.Last());
-            sKlines.Points.AddXY(k.OpenTime, k.HighPrice, k.LowPrice, k.OpenPrice, k.ClosePrice);
+            try
+            {
+                Series sKlines = _ch.Series["Klines"];
+                if (sKlines.Points.Count == 0) return;
+                sKlines.Points.Remove(sKlines.Points.Last());
+                sKlines.Points.AddXY(k.OpenTime, k.HighPrice, k.LowPrice, k.OpenPrice, k.ClosePrice);
 
-            Series sVolume = _ch.Series["Volume"];
-            sVolume.Points.RemoveAt(sVolume.Points.Count - 1);
+                Series sVolume = _ch.Series["Volume"];
+                if (sVolume.Points.Count == 0) return;
+                sVolume.Points.Remove(sVolume.Points.Last());
 
-            decimal? vol = k.Volume * (decimal)_volumeRate + (decimal)_yMin;
-            sVolume.Points.AddXY(k.OpenTime, vol);
+                decimal? vol = k.Volume * (decimal)_volumeRate + (decimal)_yMin;
+                sVolume.Points.AddXY(k.OpenTime, vol);
+            }
+            catch {
+                return;
+            }
 
             Log.Info(_excha, "UpdateKline", $"deal -> {k.ClosePrice} / {k.Volume}");
         }
@@ -197,6 +206,8 @@ public class Charty
     {
         _indy = indica;
         if (_indy == "sma") DrawSma();
+        if (_indy == "rsi") DrawRsi();
+        if (_indy == "vfi") DrawSma();
     }
     void DrawSma()
     {
@@ -218,6 +229,33 @@ public class Charty
             foreach (var v in smas)
             {
                 s.Points.AddXY(v.Date, v.Sma);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(_excha, "DrawSma", "Error: " + ex.Message);
+        }
+    }
+    void DrawRsi()
+    {
+        Series k = _ch.Series["Klines"];
+        Series s = _ch.Series["Indica"];
+        s.ChartType = SeriesChartType.FastLine;
+        s.YAxisType = AxisType.Secondary;
+        s.Color = Color.Red;
+
+        int lookbackPeriods = _zoom < 50 ? 5 : _zoom / 10;
+        List<RsiResult> rsi = Indica.GetRsi(klines, lookbackPeriods);
+
+        List<Kline> ks = klines.Skip(klines.Count - _zoom).ToList();
+
+        try
+        {
+            List<RsiResult> smas = new(rsi.Where(p => p.Date >= ks.First().OpenTime));
+            s.Points.Clear();
+            foreach (var v in smas)
+            {
+                s.Points.AddXY(v.Date, v.Rsi);
             }
         }
         catch (Exception ex)

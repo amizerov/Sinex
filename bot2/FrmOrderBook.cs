@@ -1,50 +1,64 @@
 ﻿using amLogger;
-using Binance.Net.SymbolOrderBooks;
-using System.Linq;
+using CryptoExchange.Net.Interfaces;
+using CryptoExchange.Net.OrderBook;
 using System.Reflection;
 
 namespace bot2;
 
 public partial class FrmOrderBook : Form
 {
-    public FrmOrderBook()
+    SymbolOrderBook book;
+    public FrmOrderBook(SymbolOrderBook somebook)
     {
         InitializeComponent();
+        book = somebook;
+        Text = book.Id + " - " + book.Symbol + " - Order book";
     }
 
     private async void FrmOrders_Load(object sender, EventArgs e)
     {
         LoadFormPosition();
 
-        var book = new BinanceSpotSymbolOrderBook("BTCUSDT");
-        book.OnStatusChange += (oldState, newState) => Log.Trace("book.OnStatusChange", $"State changed from {oldState} to {newState}");
+        book.OnOrderBookUpdate += Book_OnOrderBookUpdate;
+        book.OnStatusChange += (oldState, newState) =>
+            Log.Trace("book.OnStatusChange", $"State changed from {oldState} to {newState}");
+
         var startResult = await book.StartAsync();
         if (!startResult.Success)
         {
-            Console.WriteLine("Failed to start order book: " + startResult.Error);
-            return;
+            Log.Error("BinanceSpotSymbolOrderBook", "Failed to start order book: " + startResult.Error);
+        }
+    }
+
+    private void Book_OnOrderBookUpdate((IEnumerable<ISymbolOrderBookEntry> Bids, IEnumerable<ISymbolOrderBookEntry> Asks) obj)
+    {
+        if (Tag?.ToString() == "111") return;
+
+        string asks = "";
+        foreach (var a in obj.Asks.Reverse().Skip(obj.Asks.Count() - 15))
+        {
+            asks += a.Price + " | " + a.Quantity + "\r\n";
+        }
+        string bids = "";
+        foreach (var b in obj.Bids.Reverse().Skip(obj.Bids.Count() - 15).Reverse())
+        {
+            bids += b.Price + " | " + b.Quantity + "\r\n";
         }
 
-        while (true)
+        try
         {
-            string asks = "";
-            foreach (var a in book.Asks.Reverse().Skip(book.Asks.Count() - 10))
-            {
-                asks += a.Price + " | " + a.Quantity + "\r\n";
-            }
-            string bids = "";
-            foreach (var b in book.Bids.Reverse().Skip(book.Bids.Count() - 10).Reverse())
-            {
-                bids += b.Price + " | " + b.Quantity + "\r\n";
-            }
-            textBox1.Text = asks + "-----------\r\n" + bids;
-            await Task.Delay(5000);
-        }
+            Invoke(new Action(() =>
+                textBox1.Text = asks + "-----------\r\n" + bids
+            ));
+        }catch (Exception ex) { Log.Error("Book_OnOrderBookUpdate", ex.Message); }
     }
 
     #region Form position
     private void FrmOrderBook_FormClosing(object sender, FormClosingEventArgs e)
     {
+        Tag = "111";
+        book.StopAsync();
+
         string pos = Top + ";" + Left + ";" + Width + ";" + Height;
         File.WriteAllText(FileFormPosition, pos);
     }

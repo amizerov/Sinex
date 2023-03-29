@@ -57,7 +57,7 @@ public partial class FrmLogger : Form
     private void FrmLog_FormClosing(object sender, FormClosingEventArgs e)
     {
         Tag = "111";
-          
+
         string pos = Top + ";" + Left + ";" + Width + ";" + Height;
         File.WriteAllText(FileFormPosition, pos);
     }

@@ -3,6 +3,8 @@ using Bybit.Net.Clients;
 using CryptoExchange.Net.CommonObjects;
 using Bybit.Net.Enums;
 using Bybit.Net.Objects.Models.Socket.Spot;
+using Bybit.Net.SymbolOrderBooks;
+using CryptoExchange.Net.OrderBook;
 
 namespace CaExch;
 public class CaBybit : AnExchange
@@ -10,11 +12,15 @@ public class CaBybit : AnExchange
     public override int ID => 5;
     public override string Name => "Bybit";
 
+    public override SymbolOrderBook OrderBook => new BybitSpotSymbolOrderBook(_symbol);
+    string _symbol = "";
+
     BybitClient restClient = new();
     BybitSocketClient socketClient = new();
 
     public override List<Kline> GetKlines(string symbol, string inter)
     {
+        _symbol = symbol;
         List<Kline> klines = new();
 
         var r = restClient.SpotApiV3.CommonSpotClient

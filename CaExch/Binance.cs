@@ -2,19 +2,25 @@
 using Binance.Net.Clients;
 using Binance.Net.Enums;
 using Binance.Net.Interfaces;
+using Binance.Net.SymbolOrderBooks;
 using CryptoExchange.Net.CommonObjects;
+using CryptoExchange.Net.OrderBook;
 
 namespace CaExch;
 public class CaBinance : AnExchange
 {
     public override int ID => 1;
     public override string Name => "Binance";
-    
+
+    public override SymbolOrderBook OrderBook => new BinanceSpotSymbolOrderBook(_symbol);
+    string _symbol = "";
+
     BinanceClient restClient = new();
     BinanceSocketClient socketClient = new();
 
     public override List<Kline> GetKlines(string symbol, string inter)
     {
+        _symbol = symbol;
         List<Kline> klines = new();
 
         var r = restClient.SpotApi.CommonSpotClient

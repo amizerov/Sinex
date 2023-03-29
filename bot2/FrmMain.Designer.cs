@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             button1 = new Button();
             chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             btnZoomOut = new Button();
@@ -49,8 +49,8 @@
             mnuExit = new ToolStripMenuItem();
             indicatorsToolStripMenuItem = new ToolStripMenuItem();
             mnuSma = new ToolStripMenuItem();
-            rSIToolStripMenuItem = new ToolStripMenuItem();
-            mFIToolStripMenuItem = new ToolStripMenuItem();
+            mnuRsi = new ToolStripMenuItem();
+            mnuVfi = new ToolStripMenuItem();
             windowsToolStripMenuItem = new ToolStripMenuItem();
             mnuLogger = new ToolStripMenuItem();
             mnuOrderBook = new ToolStripMenuItem();
@@ -75,21 +75,21 @@
             // 
             // chart
             // 
-            chartArea1.Name = "ChartArea1";
-            chart.ChartAreas.Add(chartArea1);
+            chartArea2.Name = "ChartArea1";
+            chart.ChartAreas.Add(chartArea2);
             chart.Dock = DockStyle.Fill;
-            legend1.Name = "Legend1";
-            chart.Legends.Add(legend1);
+            legend2.Name = "Legend1";
+            chart.Legends.Add(legend2);
             chart.Location = new Point(0, 0);
             chart.Name = "chart";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
-            series1.CustomProperties = "PriceUpColor=Green, PriceDownColor=Red";
-            series1.Legend = "Legend1";
-            series1.Name = "Klines";
-            series1.YValuesPerPoint = 4;
-            series1.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
-            chart.Series.Add(series1);
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
+            series2.CustomProperties = "PriceUpColor=Green, PriceDownColor=Red";
+            series2.Legend = "Legend1";
+            series2.Name = "Klines";
+            series2.YValuesPerPoint = 4;
+            series2.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
+            chart.Series.Add(series2);
             chart.Size = new Size(1450, 921);
             chart.TabIndex = 1;
             chart.Text = "chart";
@@ -241,7 +241,7 @@
             // 
             // indicatorsToolStripMenuItem
             // 
-            indicatorsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { mnuSma, rSIToolStripMenuItem, mFIToolStripMenuItem });
+            indicatorsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { mnuSma, mnuRsi, mnuVfi });
             indicatorsToolStripMenuItem.Name = "indicatorsToolStripMenuItem";
             indicatorsToolStripMenuItem.Size = new Size(106, 29);
             indicatorsToolStripMenuItem.Text = "Indicators";
@@ -249,21 +249,23 @@
             // mnuSma
             // 
             mnuSma.Name = "mnuSma";
-            mnuSma.Size = new Size(152, 34);
+            mnuSma.Size = new Size(270, 34);
             mnuSma.Text = "SMA";
             mnuSma.Click += mnuSma_Click;
             // 
-            // rSIToolStripMenuItem
+            // mnuRsi
             // 
-            rSIToolStripMenuItem.Name = "rSIToolStripMenuItem";
-            rSIToolStripMenuItem.Size = new Size(152, 34);
-            rSIToolStripMenuItem.Text = "RSI";
+            mnuRsi.Name = "mnuRsi";
+            mnuRsi.Size = new Size(270, 34);
+            mnuRsi.Text = "RSI";
+            mnuRsi.Click += mnuRsi_Click;
             // 
-            // mFIToolStripMenuItem
+            // mnuVfi
             // 
-            mFIToolStripMenuItem.Name = "mFIToolStripMenuItem";
-            mFIToolStripMenuItem.Size = new Size(152, 34);
-            mFIToolStripMenuItem.Text = "MFI";
+            mnuVfi.Name = "mnuVfi";
+            mnuVfi.Size = new Size(270, 34);
+            mnuVfi.Text = "MFI";
+            mnuVfi.Click += mnuVfi_Click;
             // 
             // windowsToolStripMenuItem
             // 
@@ -275,14 +277,14 @@
             // mnuLogger
             // 
             mnuLogger.Name = "mnuLogger";
-            mnuLogger.Size = new Size(270, 34);
+            mnuLogger.Size = new Size(207, 34);
             mnuLogger.Text = "Logger";
             mnuLogger.Click += mnuLogger_Click;
             // 
             // mnuOrderBook
             // 
             mnuOrderBook.Name = "mnuOrderBook";
-            mnuOrderBook.Size = new Size(270, 34);
+            mnuOrderBook.Size = new Size(207, 34);
             mnuOrderBook.Text = "Order book";
             mnuOrderBook.Click += mnuOrderBook_Click;
             // 
@@ -340,8 +342,8 @@
         private ToolStripMenuItem mnuExit;
         private ToolStripMenuItem indicatorsToolStripMenuItem;
         private ToolStripMenuItem mnuSma;
-        private ToolStripMenuItem rSIToolStripMenuItem;
-        private ToolStripMenuItem mFIToolStripMenuItem;
+        private ToolStripMenuItem mnuRsi;
+        private ToolStripMenuItem mnuVfi;
         private ToolStripMenuItem windowsToolStripMenuItem;
         private ToolStripMenuItem mnuLogger;
         private ToolStripMenuItem mnuOrderBook;

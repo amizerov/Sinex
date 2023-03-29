@@ -30,18 +30,18 @@
         {
             txtTrace = new TextBox();
             tabControl1 = new TabControl();
-            tabPage1 = new TabPage();
-            tabPage2 = new TabPage();
-            tabPage3 = new TabPage();
             tabPage4 = new TabPage();
             txtAll = new TextBox();
+            tabPage1 = new TabPage();
+            tabPage2 = new TabPage();
             txtInfo = new TextBox();
+            tabPage3 = new TabPage();
             txtError = new TextBox();
             tabControl1.SuspendLayout();
+            tabPage4.SuspendLayout();
             tabPage1.SuspendLayout();
             tabPage2.SuspendLayout();
             tabPage3.SuspendLayout();
-            tabPage4.SuspendLayout();
             SuspendLayout();
             // 
             // txtTrace
@@ -66,6 +66,25 @@
             tabControl1.Size = new Size(800, 679);
             tabControl1.TabIndex = 1;
             // 
+            // tabPage4
+            // 
+            tabPage4.Controls.Add(txtAll);
+            tabPage4.Location = new Point(4, 34);
+            tabPage4.Name = "tabPage4";
+            tabPage4.Size = new Size(792, 641);
+            tabPage4.TabIndex = 3;
+            tabPage4.Text = "All";
+            tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // txtAll
+            // 
+            txtAll.Dock = DockStyle.Fill;
+            txtAll.Location = new Point(0, 0);
+            txtAll.Multiline = true;
+            txtAll.Name = "txtAll";
+            txtAll.Size = new Size(792, 641);
+            txtAll.TabIndex = 1;
+            // 
             // tabPage1
             // 
             tabPage1.Controls.Add(txtTrace);
@@ -88,6 +107,15 @@
             tabPage2.Text = "Info";
             tabPage2.UseVisualStyleBackColor = true;
             // 
+            // txtInfo
+            // 
+            txtInfo.Dock = DockStyle.Fill;
+            txtInfo.Location = new Point(3, 3);
+            txtInfo.Multiline = true;
+            txtInfo.Name = "txtInfo";
+            txtInfo.Size = new Size(786, 635);
+            txtInfo.TabIndex = 1;
+            // 
             // tabPage3
             // 
             tabPage3.Controls.Add(txtError);
@@ -98,34 +126,6 @@
             tabPage3.Text = "Error";
             tabPage3.UseVisualStyleBackColor = true;
             // 
-            // tabPage4
-            // 
-            tabPage4.Controls.Add(txtAll);
-            tabPage4.Location = new Point(4, 34);
-            tabPage4.Name = "tabPage4";
-            tabPage4.Size = new Size(792, 641);
-            tabPage4.TabIndex = 3;
-            tabPage4.Text = "All";
-            tabPage4.UseVisualStyleBackColor = true;
-            // 
-            // txtAll
-            // 
-            txtAll.Dock = DockStyle.Fill;
-            txtAll.Location = new Point(0, 0);
-            txtAll.Multiline = true;
-            txtAll.Name = "txtAll";
-            txtAll.Size = new Size(792, 641);
-            txtAll.TabIndex = 1;
-            // 
-            // txtInfo
-            // 
-            txtInfo.Dock = DockStyle.Fill;
-            txtInfo.Location = new Point(3, 3);
-            txtInfo.Multiline = true;
-            txtInfo.Name = "txtInfo";
-            txtInfo.Size = new Size(786, 635);
-            txtInfo.TabIndex = 1;
-            // 
             // txtError
             // 
             txtError.Dock = DockStyle.Fill;
@@ -135,25 +135,27 @@
             txtError.Size = new Size(792, 641);
             txtError.TabIndex = 1;
             // 
-            // FrmLog
+            // FrmLogger
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 679);
             Controls.Add(tabControl1);
-            Name = "FrmLog";
+            MinimizeBox = false;
+            Name = "FrmLogger";
+            ShowInTaskbar = false;
             Text = "Logger";
             FormClosing += FrmLog_FormClosing;
             Load += FrmLog_Load;
             tabControl1.ResumeLayout(false);
+            tabPage4.ResumeLayout(false);
+            tabPage4.PerformLayout();
             tabPage1.ResumeLayout(false);
             tabPage1.PerformLayout();
             tabPage2.ResumeLayout(false);
             tabPage2.PerformLayout();
             tabPage3.ResumeLayout(false);
             tabPage3.PerformLayout();
-            tabPage4.ResumeLayout(false);
-            tabPage4.PerformLayout();
             ResumeLayout(false);
         }
 

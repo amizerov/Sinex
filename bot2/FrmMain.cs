@@ -1,3 +1,4 @@
+using Binance.Net.SymbolOrderBooks;
 using CryptoExchange.Net.CommonObjects;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -7,7 +8,7 @@ namespace bot2;
 public partial class FrmMain : Form
 {
     Charty Charty;
-    FrmOrderBook frmOrders = new();
+    FrmOrderBook? frmOrderBook;
     FrmLogger frmLogger = new();
 
     public FrmMain()
@@ -33,7 +34,7 @@ public partial class FrmMain : Form
         LoadProducts(Charty.Exchange);
 
         new FrmLogger().Show(this);
-        frmOrders.Show(this);
+        //frmOrderBook.Show(this);
     }
     void OnLastKline(Kline k)
     {
@@ -133,13 +134,23 @@ public partial class FrmMain : Form
         Charty.DrawIndicator("sma");
     }
 
+    private void mnuRsi_Click(object sender, EventArgs e)
+    {
+        Charty.DrawIndicator("rsi");
+    }
+
+    private void mnuVfi_Click(object sender, EventArgs e)
+    {
+        Charty.DrawIndicator("vfi");
+    }
+
     private void mnuOrderBook_Click(object sender, EventArgs e)
     {
-        if (frmOrders.IsDisposed)
-            frmOrders = new();
+        if (frmOrderBook == null || frmOrderBook.IsDisposed)
+            frmOrderBook = new(Charty.CurrentExchange.OrderBook);
 
-        frmOrders.Visible = false;
-        frmOrders.Show(this);
+        frmOrderBook.Visible = false;
+        frmOrderBook.Show(this);
     }
 
     private void mnuLogger_Click(object sender, EventArgs e)
@@ -150,10 +161,7 @@ public partial class FrmMain : Form
         frmLogger.Visible = false;
         frmLogger.Show(this);
     }
-}
 
-public partial class FrmMain : Form
-{
     #region Form position
 
     string FileFormPosition =
