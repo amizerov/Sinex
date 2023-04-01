@@ -1,5 +1,6 @@
 ﻿using amLogger;
 using CryptoExchange.Net.Interfaces;
+using System.Drawing;
 using System.Reflection;
 
 namespace bot2;
@@ -50,16 +51,20 @@ public partial class FrmOrderBook : Form
         {
             ba.Add(a); if(++c == 15) break;
         }
-        
+        if (ba.Count == 0) return;
         dgBook.Rows.Clear(); ba.Reverse();
+        double qMax = (double)ba.Max(a => a.Quantity);
+        double qMin = (double)ba.Min(a => a.Quantity);
+        double qq = 55/(qMax - qMin);
         foreach (var a in ba)
         {
+            int q = (int)(qq * ((double)a.Quantity - qMin));
             int n = dgBook.Rows.Add();
             dgBook.Rows[n].Cells[0].Value = "";
             dgBook.Rows[n].Cells[1].Value = a.Price.ToString();
             dgBook.Rows[n].Cells[2].Value = a.Quantity.ToString();
-            dgBook.Rows[n].Cells[1].Style.BackColor = Color.Red;
-            dgBook.Rows[n].Cells[2].Style.BackColor = Color.Red;
+            dgBook.Rows[n].Cells[1].Style.BackColor = Color.FromArgb(240, 128, 128);
+            dgBook.Rows[n].Cells[2].Style.BackColor = Color.FromArgb(255 - q, 128 - q, 128 - q);
         }
         c = 0;
         List<ISymbolOrderBookEntry> bb = new();
@@ -67,14 +72,18 @@ public partial class FrmOrderBook : Form
         {
             bb.Add(b); if (++c == 15) break;
         }
+        qMax = (double)bb.Max(a => a.Quantity);
+        qMin = (double)bb.Min(a => a.Quantity);
+        qq = 55 / (qMax - qMin);
         foreach (var b in bb)
         {
+            int q = (int)(qq * ((double)b.Quantity - qMin));
             int n = dgBook.Rows.Add();
             dgBook.Rows[n].Cells[0].Value = b.Quantity.ToString();
             dgBook.Rows[n].Cells[1].Value = b.Price.ToString();
             dgBook.Rows[n].Cells[2].Value = "";
-            dgBook.Rows[n].Cells[0].Style.BackColor = Color.Green;
-            dgBook.Rows[n].Cells[1].Style.BackColor = Color.Green;
+            dgBook.Rows[n].Cells[0].Style.BackColor = Color.FromArgb(128 - q, 240 - q, 128 - q);
+            dgBook.Rows[n].Cells[1].Style.BackColor = Color.FromArgb(128, 240, 128);
         }
 
     }

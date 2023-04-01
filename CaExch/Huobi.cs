@@ -14,6 +14,8 @@ public class CaHuobi : AnExchange
 
     public override ISymbolOrderBook OrderBook => new HuobiSpotSymbolOrderBook(_symbol);
     string _symbol = "";
+    public override List<string> Intervals => new List<string>()
+        { "1m", "5m", "15m", "30m", "1h", "2h", "4h", "1w", "1M", "1y" };
 
     HuobiClient restClient = new();
     HuobiSocketClient socketClient = new();

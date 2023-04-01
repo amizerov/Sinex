@@ -14,16 +14,16 @@ public class Indica
     public static List<RsiResult> GetRsi(List<Kline> klines, int lookbackPeriods)
     {
         IEnumerable<Quote> quotes = GetQuotesFromKlines(klines);
-        IEnumerable<RsiResult> rsi = quotes.GetRsi();
+        IEnumerable<RsiResult> rsi = quotes.GetRsi(lookbackPeriods);
 
         return rsi.ToList();
     }
-    public static List<MfiResult> GetMfi(List<Kline> klines)
+    public static List<BollingerBandsResult> GetMfi(List<Kline> klines, int lookbackPeriods, double standardDeviations)
     {
         IEnumerable<Quote> quotes = GetQuotesFromKlines(klines);
-        IEnumerable<MfiResult> mfi = quotes.GetMfi();
+        IEnumerable<BollingerBandsResult> bol = quotes.GetBollingerBands(lookbackPeriods, standardDeviations);
 
-        return mfi.ToList();
+        return bol.ToList();
     }
     static IEnumerable<Quote> GetQuotesFromKlines(List<Kline> klines)
     {

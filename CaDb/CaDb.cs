@@ -7,7 +7,9 @@ public class CaDbContext : DbContext
     {
         string path = "D:\\Projects\\Common\\Secrets\\SqlConnectionStringForCaProgerX.txt";
         if (File.Exists(path))
+        {
             SqlConnectionString = File.ReadAllText(path);
+        }
         else
             throw new Exception("File with Sql Connection is not found");
     }

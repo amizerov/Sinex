@@ -12,7 +12,7 @@ public class Charty
     ChartArea   _cha;
     List<Kline> klines = new();
     int         _excha = 0;
-    int         _zoom = 50;
+    int         _zoom = 100;
     double      _volumeRate = 0;
     double      _yMax = 0;
     double      _yMin = 0;
@@ -113,7 +113,7 @@ public class Charty
         _cha.AxisY2.ScrollBar.Enabled = false;
         _cha.AxisY2.Enabled = AxisEnabled.True;
         _cha.AxisY2.IsStartedFromZero = _ch.ChartAreas[0].AxisY.IsStartedFromZero;
-        _cha.AxisX.LabelStyle.Format = "yy-MM-dd hh:mm";
+        _cha.AxisX.LabelStyle.Format = "dd-MM-yy hh:mm";
 
         AnExchange.OnKline += OnKline;
     }
@@ -141,7 +141,13 @@ public class Charty
                 sKlines.Points.AddXY(k.OpenTime, k.HighPrice, k.LowPrice, k.OpenPrice, k.ClosePrice);
 
                 decimal? vol = k.Volume * (decimal)_volumeRate + (decimal)_yMin;
-                sVolume.Points.AddXY(k.OpenTime, vol);
+                int n = sVolume.Points.AddXY(k.OpenTime, vol);
+                if (n > 0) {
+                    if((double)vol! < sVolume.Points[n - 1].YValues[0])
+                    {
+                        sVolume.Points[n].Color = Color.Red;
+                    }
+                }
             }
 
             DrawIndicator(_indy);

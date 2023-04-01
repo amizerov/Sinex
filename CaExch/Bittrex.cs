@@ -15,6 +15,9 @@ public class CaBittrex : AnExchange
     public override ISymbolOrderBook OrderBook => new BittrexSymbolOrderBook(_symbol);
     string _symbol = "";
 
+    public override List<string> Intervals => new List<string>() 
+        { "1m", "5m", "1h", "1d" };
+
     BittrexClient restClient = new();
     BittrexSocketClient socketClient = new();
 

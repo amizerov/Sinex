@@ -15,6 +15,7 @@ public abstract class AnExchange
     public abstract List<Kline> GetKlines(string symbol, string inter);
     public abstract void SubscribeToSocket(string symbol, string inter);
     public abstract void Unsub();
+    public abstract List<string> Intervals { get; }
     protected int IntervalInSeconds(string inter)
     {
         int seconds = 0;

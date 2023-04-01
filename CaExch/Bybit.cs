@@ -14,6 +14,8 @@ public class CaBybit : AnExchange
 
     public override ISymbolOrderBook OrderBook => new BybitSpotSymbolOrderBook(_symbol);
     string _symbol = "";
+    public override List<string> Intervals => new List<string>()
+        { "1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "12h", "1d", "1w", "1M" };
 
     BybitClient restClient = new();
     BybitSocketClient socketClient = new();
