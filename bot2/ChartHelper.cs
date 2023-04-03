@@ -92,6 +92,12 @@ public class Charty
         sVolume.Color = Color.FromArgb(80, Color.Blue);
         sVolume.YAxisType = AxisType.Secondary;
 
+        _cha = _ch.ChartAreas[0];
+        _cha.AxisY2.ScrollBar.Enabled = false;
+        _cha.AxisY2.Enabled = AxisEnabled.True;
+        _cha.AxisY2.IsStartedFromZero = _ch.ChartAreas[0].AxisY.IsStartedFromZero;
+        _cha.AxisX.LabelStyle.Format = "dd.MM.yy hh:mm";
+
         AnExchange.OnKline += OnKline;
     }
     public void populate() 
@@ -102,12 +108,6 @@ public class Charty
             Series sVolume = _ch.Series["Volume"];
             sKlines.Points.Clear();
             sVolume.Points.Clear();
-
-            _cha = _ch.ChartAreas[0];
-            _cha.AxisY2.ScrollBar.Enabled = false;
-            _cha.AxisY2.Enabled = AxisEnabled.True;
-            _cha.AxisY2.IsStartedFromZero = _ch.ChartAreas[0].AxisY.IsStartedFromZero;
-            _cha.AxisX.LabelStyle.Format = "dd.MM.yy hh:mm";
 
             List<Kline> ks = new(_klines.Skip(_klines.Count - _zoom));
 
