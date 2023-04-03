@@ -1,4 +1,5 @@
-﻿using CryptoExchange.Net.CommonObjects;
+﻿using CaExch;
+using CryptoExchange.Net.CommonObjects;
 
 namespace bot2;
 
@@ -6,37 +7,32 @@ public partial class FrmChart : Form
 {
     Charty Charty;
 
-    public FrmChart(int exch_id, string symbo)
+    public FrmChart(AnExchange exch, string symbo)
     {
         InitializeComponent();
-        Charty = new(chart);
+
+        Charty = new(chart, exch, symbo);
         Charty.OnLastKline += OnLastKline;
-        Charty.Exchange = exch_id;
+
+        foreach (var interval in Charty.Exchange.Intervals)
+            cbInterval.Items.Add(interval);
+
+        cbInterval.SelectedIndex = 3;
         Charty.Symbol = symbo;
+
     }
 
     private void FrmChart_Load(object sender, EventArgs e)
     {
-        cbInterval.SelectedIndex = 3;
         chart.MouseWheel += chart_MouseWheel;
         InitChart();
     }
-    private void InitChart()
+    private async void InitChart()
     {
         if (Charty.Symbol == "") return;
 
-        Charty.GetKlines();
+        await Charty.GetKlines();
         Charty.populate();
-
-        Task.Run(() =>
-        {
-            Thread.Sleep(100);
-            Invoke(new Action(() =>
-            {
-                ZoomIn();
-                ZoomOut();
-            }));
-        });
     }
     void OnLastKline(Kline k)
     {
@@ -76,5 +72,16 @@ public partial class FrmChart : Form
 
         lblZoom.Text = "Zoom: " + Charty.Zoom;
         Charty.populate();
+    }
+
+    private void cbInterval_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        Charty.SetInterval(cbInterval.Text);
+        InitChart();
+    }
+
+    private void FrmChart_FormClosing(object sender, FormClosingEventArgs e)
+    {
+        Charty.UnsubKlineSocket();
     }
 }

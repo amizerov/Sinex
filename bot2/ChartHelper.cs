@@ -10,8 +10,8 @@ public class Charty
 {
     Chart       _ch;
     ChartArea   _cha;
-    List<Kline> klines = new();
-    int         _excha = 0;
+    List<Kline> _klines = new();
+
     int         _zoom = 100;
     double      _volumeRate = 0;
     double      _yMax = 0;
@@ -20,6 +20,8 @@ public class Charty
     string      _symbol = "";
     string      _interval = "";
 
+    int         _klineSubscriptionId = 0;
+
     public int Zoom
     {
         get { return _zoom; }
@@ -27,19 +29,8 @@ public class Charty
         {
             _zoom = value;
             if (_zoom < 10) _zoom = 10;
-            if (_zoom > klines.Count) _zoom = klines.Count;
+            if (_zoom > _klines.Count) _zoom = _klines.Count;
         }
-    }
-    public int Exchange { get { return _excha; } 
-        set {
-            if (_excha != value)
-            {
-                var excha = Exchanges.FirstOrDefault(e => e.ID == _excha);
-                excha?.Unsub();
-                _symbol = "";
-            }
-            _excha = value; 
-        } 
     }
     public string Symbol
     {
@@ -49,43 +40,35 @@ public class Charty
             if (_symbol != value)
             {
                 _symbol = value;
-
-                var excha = Exchanges.FirstOrDefault(e => e.ID == _excha);
-                excha?.Unsub();
-
-                if(_symbol.Length > 0)
-                    excha?.SubscribeToSocket(_symbol, _interval);
             }
         }
     }
-    public string Interval
+    public async void SetInterval(string value)
     {
-        get { return _interval; }
-        set
         {
             if (_interval != value)
             {
                 _interval = value;
-                
-                var excha = Exchanges.FirstOrDefault(e => e.ID == _excha);
-                excha?.Unsub();
-                excha?.SubscribeToSocket(_symbol, _interval);
+
+                if(_klineSubscriptionId > 0)
+                    Exchange.UnsubKlineSocket(_klineSubscriptionId);
+
+                if (_symbol.Length > 0 && _interval.Length > 0)
+                {
+                    _klineSubscriptionId = await Exchange.SubscribeToSocket(_symbol, _interval);
+                }
             }
         }
     }
 
     public event Action<Kline>? OnLastKline;
-    public List<AnExchange> Exchanges = new(){
-        new CaBinance(),
-        new CaKucoin(),
-        new CaHuobi(),
-        new CaBittrex(),
-        new CaBybit()
-    };
-    public AnExchange CurrentExchange { get { return Exchanges.FirstOrDefault(e => e.ID == _excha)!; } }
+    public AnExchange Exchange; 
 
-    public Charty(Chart chart)
+    public Charty(Chart chart, AnExchange ech, string symbo)
     {
+        Exchange = ech;
+        _symbol = symbo;
+
         _ch = chart;
         _ch.Series.Clear();
         _ch.Legends.Clear();
@@ -109,12 +92,6 @@ public class Charty
         sVolume.Color = Color.FromArgb(80, Color.Blue);
         sVolume.YAxisType = AxisType.Secondary;
 
-        _cha = _ch.ChartAreas[0];
-        _cha.AxisY2.ScrollBar.Enabled = false;
-        _cha.AxisY2.Enabled = AxisEnabled.True;
-        _cha.AxisY2.IsStartedFromZero = _ch.ChartAreas[0].AxisY.IsStartedFromZero;
-        _cha.AxisX.LabelStyle.Format = "dd-MM-yy hh:mm";
-
         AnExchange.OnKline += OnKline;
     }
     public void populate() 
@@ -126,24 +103,34 @@ public class Charty
             sKlines.Points.Clear();
             sVolume.Points.Clear();
 
-            List<Kline> ks = new(klines.Skip(klines.Count - _zoom));
+            _cha = _ch.ChartAreas[0];
+            _cha.AxisY2.ScrollBar.Enabled = false;
+            _cha.AxisY2.Enabled = AxisEnabled.True;
+            _cha.AxisY2.IsStartedFromZero = _ch.ChartAreas[0].AxisY.IsStartedFromZero;
+            _cha.AxisX.LabelStyle.Format = "dd.MM.yy hh:mm";
+
+            List<Kline> ks = new(_klines.Skip(_klines.Count - _zoom));
 
             _yMax = Convert.ToDouble(ks.Max(k => k.HighPrice));
             _yMin = Convert.ToDouble(ks.Min(k => k.LowPrice));
             _yMin = _yMin - 0.1 * (_yMax - _yMin);
 
             _cha.AxisY2.ScaleView.Zoom(_yMin, _yMax);
-
+            
             double maxVolume = Convert.ToDouble(ks.Max(k => k.Volume));
             _volumeRate = 0.3 * (_yMax - _yMin) / maxVolume;
+
+            Log.Trace(Exchange.ID, "Charty.populate statred", $"symbol {_symbol} zoom {_zoom}");
+
             foreach (var k in ks)
             {
                 sKlines.Points.AddXY(k.OpenTime, k.HighPrice, k.LowPrice, k.OpenPrice, k.ClosePrice);
 
                 decimal? vol = k.Volume * (decimal)_volumeRate + (decimal)_yMin;
                 int n = sVolume.Points.AddXY(k.OpenTime, vol);
-                if (n > 0) {
-                    if((double)vol! < sVolume.Points[n - 1].YValues[0])
+                if (n > 0)
+                {
+                    if ((double)vol! < sVolume.Points[n - 1].YValues[0])
                     {
                         sVolume.Points[n].Color = Color.Red;
                     }
@@ -151,63 +138,61 @@ public class Charty
             }
 
             DrawIndicator(_indy);
+
+            Log.Trace(Exchange.ID, "Charty.populated", $"symbol {_symbol} zoom {_zoom}");
         }
         catch (Exception ex)
         {
-            Log.Error(_excha, "populate", "Error: " + ex.Message);
+            Log.Error(Exchange.ID, "Charty.populate", "Error: " + ex.Message);
         }
     }
     void UpdateKline(Kline k)
     {
-        if(klines.Count == 0) return;
+        Series sKlines, sVolume;
+        try { 
+            if(_klines.Count == 0) return;         if(_ch.Series.Count < 2) return;
+            sKlines = _ch.Series["Klines"]; if (sKlines.Points.Count == 0) return;
+            sVolume = _ch.Series["Volume"]; if (sVolume.Points.Count == 0) return;
+        }
+        catch { return; }
 
-        var lk = klines.Last();
-        if (lk.OpenTime == k.OpenTime)
+        var lk = _klines.Last();
+        if (lk.OpenTime < k.OpenTime)
         {
-            try
-            {
-                Series sKlines = _ch.Series["Klines"];
-                if (sKlines.Points.Count == 0) return;
-                sKlines.Points.Remove(sKlines.Points.Last());
-                sKlines.Points.AddXY(k.OpenTime, k.HighPrice, k.LowPrice, k.OpenPrice, k.ClosePrice);
-
-                Series sVolume = _ch.Series["Volume"];
-                if (sVolume.Points.Count == 0) return;
-                sVolume.Points.Remove(sVolume.Points.Last());
-
-                decimal? vol = k.Volume * (decimal)_volumeRate + (decimal)_yMin;
-                sVolume.Points.AddXY(k.OpenTime, vol);
-            }
-            catch {
-                return;
-            }
-
-            Log.Info(_excha, "UpdateKline", $"deal -> {k.ClosePrice} / {k.Volume}");
+            _klines.Add(k);
+            _klines.Remove(_klines.First());
+            populate();
         }
         else
         {
-            Log.Info(_excha, "UpdateKline", "New Kline starts GetKlines");
-
-            GetKlines();
-            try{
-                populate();
-            }catch (Exception ex) { Log.Error(_excha, "populate chart", ex.Message); }
+            sKlines.Points.Remove(sKlines.Points.Last());
+            sVolume.Points.Remove(sVolume.Points.Last());
+            sKlines.Points.AddXY(k.OpenTime, k.HighPrice, k.LowPrice, k.OpenPrice, k.ClosePrice);
+            decimal? vol = k.Volume * (decimal)_volumeRate + (decimal)_yMin;
+            sVolume.Points.AddXY(k.OpenTime, vol);
         }
+
+        Log.Info(Exchange.ID, "Charty.UpdateKline", $"deal -> {k.ClosePrice} / {k.Volume}");
     }
 
-    public void GetKlines()
+    public async Task GetKlines()
     {
-        var excha = Exchanges.FirstOrDefault(e => e.ID == Exchange);
-        if (excha != null)
-            klines = excha.GetKlines(Symbol, Interval);
+        _klines = await Exchange.GetKlines(_symbol, _interval);
     }
 
     void OnKline(int id, string s, Kline k)
     {
-        OnLastKline?.Invoke(k);
-        UpdateKline(k);
+        if (Exchange.ID == id && _symbol == s)
+        {
+            OnLastKline?.Invoke(k);
+            UpdateKline(k);
+        }
     }
-
+    public void UnsubKlineSocket()
+    {
+        if (_klineSubscriptionId > 0)
+            Exchange.UnsubKlineSocket(_klineSubscriptionId);
+    }
     public void DrawIndicator(string indica)
     {
         _indy = indica;
@@ -224,9 +209,9 @@ public class Charty
         s.Color = Color.Red;
 
         int lookbackPeriods = _zoom < 50 ? 5 : _zoom / 10;
-        List<SmaResult> sma = Indica.GetSma(klines, lookbackPeriods);
+        List<SmaResult> sma = Indica.GetSma(_klines, lookbackPeriods);
 
-        List<Kline> ks = klines.Skip(klines.Count - _zoom).ToList();
+        List<Kline> ks = _klines.Skip(_klines.Count - _zoom).ToList();
 
         try
         {
@@ -239,7 +224,7 @@ public class Charty
         }
         catch (Exception ex)
         {
-            Log.Error(_excha, "DrawSma", "Error: " + ex.Message);
+            Log.Error(Exchange.ID, "DrawSma", "Error: " + ex.Message);
         }
     }
     void DrawRsi()
@@ -251,9 +236,9 @@ public class Charty
         s.Color = Color.Red;
 
         int lookbackPeriods = _zoom < 50 ? 5 : _zoom / 10;
-        List<RsiResult> rsi = Indica.GetRsi(klines, lookbackPeriods);
+        List<RsiResult> rsi = Indica.GetRsi(_klines, lookbackPeriods);
 
-        List<Kline> ks = klines.Skip(klines.Count - _zoom).ToList();
+        List<Kline> ks = _klines.Skip(_klines.Count - _zoom).ToList();
 
         try
         {
@@ -271,7 +256,7 @@ public class Charty
         }
         catch (Exception ex)
         {
-            Log.Error(_excha, "DrawSma", "Error: " + ex.Message);
+            Log.Error(Exchange.ID, "DrawSma", "Error: " + ex.Message);
         }
     }
 }

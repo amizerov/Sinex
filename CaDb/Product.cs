@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace CaDb;
 public class Product
 {
     public int Id { get; set; }
@@ -20,5 +19,4 @@ public class Product
     public Product() { symbol = baseasset = quoteasset = ""; }
 
     public bool IsTradingEnabled;
-
 }

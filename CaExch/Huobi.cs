@@ -5,6 +5,8 @@ using Huobi.Net.Enums;
 using Huobi.Net.Objects.Models;
 using Huobi.Net.SymbolOrderBooks;
 using CryptoExchange.Net.Interfaces;
+using CryptoExchange.Net.Sockets;
+using CryptoExchange.Net.Objects;
 
 namespace CaExch;
 public class CaHuobi : AnExchange
@@ -20,13 +22,13 @@ public class CaHuobi : AnExchange
     HuobiClient restClient = new();
     HuobiSocketClient socketClient = new();
 
-    public override List<Kline> GetKlines(string symbol, string inter)
+    public async override Task<List<Kline>> GetKlines(string symbol, string inter)
     {
         _symbol = symbol;
         List<Kline> klines = new();
 
-        var r = restClient.SpotApi.CommonSpotClient
-            .GetKlinesAsync(symbol, TimeSpan.FromSeconds(IntervalInSeconds(inter))).Result;
+        var r = await restClient.SpotApi.CommonSpotClient
+            .GetKlinesAsync(symbol, TimeSpan.FromSeconds(IntervalInSeconds(inter)));
 
         if (r.Success)
         {
@@ -40,10 +42,8 @@ public class CaHuobi : AnExchange
         return klines;
     }
 
-    async public override void SubscribeToSocket(string symbol, string inter)
+    protected async override Task<CallResult<UpdateSubscription>> SubsToSock(string symbol, string inter)
     {
-        Log.Info(ID, "SubscribeToSocket", $"Begin subscribe {symbol}, Interval = {inter}");
-
         var r = await socketClient.SpotStreams.
             SubscribeToKlineUpdatesAsync(symbol, (KlineInterval)IntervalInSeconds(inter),
                 msg =>
@@ -61,22 +61,13 @@ public class CaHuobi : AnExchange
                     SendKline(ID, symbol, kline);
                     Log.Info(ID, "qqq", $"{symbol} {k.OpenTime} {k.ClosePrice}");
                 });
-
-        if (r.Success)
-        {
-            int c3 = socketClient.CurrentSubscriptions;
-            Log.Info(ID, "SocketSubscribe", $"subscribed to {symbol}, {inter}, {c3}");
-        }
-        else
-        {
-            Log.Error(ID, $"SocketSubscribe({symbol})", "" + r.Error?.Message);
-        }
+        return r;
     }
-    public override async void Unsub()
+    public async override void UnsubKlineSocket(int subscriptionId)
     {
         int c1 = socketClient.CurrentSubscriptions;
-        await socketClient.UnsubscribeAllAsync();
+        await socketClient.UnsubscribeAsync(subscriptionId);
         int c2 = socketClient.CurrentSubscriptions;
-        Log.Info(ID, "UnsubscribeAllAsync", $"{c1} unsubed, left {c2}");
+        Log.Info(ID, $"Unsubscribe({_symbol}, {subscriptionId})", $"before unsubed {c1}, left after {c2}");
     }
 }

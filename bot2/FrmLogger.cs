@@ -1,5 +1,5 @@
-﻿
-using amLogger;
+﻿using amLogger;
+using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace bot2;
@@ -49,6 +49,11 @@ public partial class FrmLogger : Form
                     log.msg + "\r\n" +
                     txtAll.Text;
             }));
+
+            using(CaDb.CaDbContext ca = new())
+            {
+                ca.Database.ExecuteSql($"CaLogger.dbo.DoSinexLogging {log.id}, {log.type}, {log.lvl}, {log.src}, {log.msg}");
+            }
         }
         catch { }
     }

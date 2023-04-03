@@ -1,4 +1,3 @@
-using Binance.Net.SymbolOrderBooks;
 using CryptoExchange.Net.CommonObjects;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -7,15 +6,15 @@ namespace bot2;
 
 public partial class FrmMain : Form
 {
-    Charty Charty;
+    Charty? Charty;
     FrmOrderBook? frmOrderBook;
     FrmLogger frmLogger = new();
 
     public FrmMain()
     {
         InitializeComponent();
-        Charty = new(chart);
-        Charty.OnLastKline += OnLastKline;
+        //Charty = new(chart);
+        //Charty.OnLastKline += OnLastKline;
     }
 
     private void Form1_Load(object sender, EventArgs e)
@@ -23,15 +22,15 @@ public partial class FrmMain : Form
         LoadFormPosition();
 
         cbExchange.Items.Clear();
-        foreach (var ex in Charty.Exchanges) cbExchange.Items.Add(ex.Name);
+        //foreach (var ex in Charty.Exchanges) cbExchange.Items.Add(ex.Name);
 
         cbInterval.SelectedIndex = 3;
         cbExchange.SelectedIndex = 0;
 
         chart.MouseWheel += chart_MouseWheel;
 
-        Charty.Exchange = 1;
-        LoadProducts(Charty.Exchange);
+        //Charty.ExchangeId = 1;
+        //LoadProducts(Charty.ExchangeId);
 
         new FrmLogger().Show(this);
         //frmOrderBook.Show(this);
@@ -65,7 +64,7 @@ public partial class FrmMain : Form
         });
     }
 
-    private void btnZoomOut_Click(object sender, EventArgs e)
+    private void btnZoomOut_Click(object sender, EventArgs? e)
     {
         if (Control.ModifierKeys == Keys.Control)
             Charty.Zoom -= 10;
@@ -76,7 +75,7 @@ public partial class FrmMain : Form
         Charty.populate();
     }
 
-    private void btnZoomIn_Click(object sender, EventArgs e)
+    private void btnZoomIn_Click(object sender, EventArgs? e)
     {
         if (Control.ModifierKeys == Keys.Control)
             Charty.Zoom += 10;
@@ -96,13 +95,13 @@ public partial class FrmMain : Form
 
     private void cbInterval_SelectedIndexChanged(object sender, EventArgs e)
     {
-        Charty.Interval = cbInterval.Text;
+        //Charty.Interval = cbInterval.Text;
         button1_Click(sender, e);
     }
     private void cbExchange_SelectedIndexChanged(object sender, EventArgs e)
     {
-        Charty.Exchange = cbExchange.SelectedIndex + 1;
-        LoadProducts(Charty.Exchange);
+        //Charty.ExchangeId = cbExchange.SelectedIndex + 1;
+        //LoadProducts(Charty.ExchangeId);
     }
 
     private void lbProducts_SelectedIndexChanged(object sender, EventArgs e)
@@ -119,8 +118,8 @@ public partial class FrmMain : Form
                 frmOrderBook = null;
             }
         }
-        frmOrderBook = new(Charty.CurrentExchange.OrderBook);
-        frmOrderBook.Show();
+        //frmOrderBook = new(Charty.Exchange.OrderBook);
+        //frmOrderBook.Show();
     }
 
     void LoadProducts(int exha)
@@ -131,13 +130,13 @@ public partial class FrmMain : Form
 
     private void txtSeach_TextChanged(object sender, EventArgs? e)
     {
-        using (CaDbContext dbContext = new CaDbContext())
+        using (CaDb.CaDbContext dbContext = new())
         {
-            var prods = dbContext.Products?.FromSql($"Get_Products2 {Charty.Exchange}");
+            //var prods = dbContext.Products?.FromSql($"Get_Products2 {Charty.ExchangeId}");
 
-            lbProducts.DisplayMember = "symbol";
-            lbProducts.DataSource = prods?.ToList()
-                .Where(p => p.symbol.ToLower().Contains(txtSeach.Text.ToLower())).ToList();
+            //lbProducts.DisplayMember = "symbol";
+            //lbProducts.DataSource = prods?.ToList()
+            //    .Where(p => p.symbol.ToLower().Contains(txtSeach.Text.ToLower())).ToList();
         }
     }
 
@@ -158,10 +157,10 @@ public partial class FrmMain : Form
 
     private void mnuOrderBook_Click(object sender, EventArgs e)
     {
-        if (frmOrderBook == null || frmOrderBook.IsDisposed)
-            frmOrderBook = new(Charty.CurrentExchange.OrderBook);
+        //if (frmOrderBook == null || frmOrderBook.IsDisposed)
+        //    frmOrderBook = new(Charty.Exchange.OrderBook);
 
-        frmOrderBook.Visible = false;
+        //frmOrderBook.Visible = false;
         frmOrderBook.Show(this);
     }
 

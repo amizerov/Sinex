@@ -41,6 +41,7 @@
             // 
             // chart
             // 
+            chart.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             chartArea1.Name = "ChartArea1";
             chart.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
@@ -51,17 +52,19 @@
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             chart.Series.Add(series1);
-            chart.Size = new Size(1339, 835);
+            chart.Size = new Size(1226, 704);
             chart.TabIndex = 0;
             chart.Text = "chart1";
             // 
             // cbInterval
             // 
+            cbInterval.DropDownStyle = ComboBoxStyle.DropDownList;
             cbInterval.FormattingEnabled = true;
             cbInterval.Location = new Point(125, 26);
             cbInterval.Name = "cbInterval";
             cbInterval.Size = new Size(182, 33);
             cbInterval.TabIndex = 1;
+            cbInterval.SelectedIndexChanged += cbInterval_SelectedIndexChanged;
             // 
             // label1
             // 
@@ -85,7 +88,7 @@
             // 
             lblZoom.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             lblZoom.AutoSize = true;
-            lblZoom.Location = new Point(1265, 26);
+            lblZoom.Location = new Point(1152, 26);
             lblZoom.Name = "lblZoom";
             lblZoom.Size = new Size(60, 25);
             lblZoom.TabIndex = 3;
@@ -95,7 +98,7 @@
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1363, 921);
+            ClientSize = new Size(1250, 790);
             Controls.Add(lblZoom);
             Controls.Add(lblSymbol);
             Controls.Add(label1);
@@ -103,6 +106,7 @@
             Controls.Add(chart);
             Name = "FrmChart";
             Text = "Chart";
+            FormClosing += FrmChart_FormClosing;
             Load += FrmChart_Load;
             ((System.ComponentModel.ISupportInitialize)chart).EndInit();
             ResumeLayout(false);

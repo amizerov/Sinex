@@ -59,6 +59,7 @@
             // 
             dgProducts.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             dgProducts.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgProducts.EditMode = DataGridViewEditMode.EditProgrammatically;
             dgProducts.Location = new Point(12, 124);
             dgProducts.MultiSelect = false;
             dgProducts.Name = "dgProducts";
@@ -101,6 +102,7 @@
             Controls.Add(cbExchange);
             Name = "FrmMarket";
             Text = "Market watch";
+            FormClosing += FrmMarket_FormClosing;
             Load += FrmMarket_Load;
             ((System.ComponentModel.ISupportInitialize)dgProducts).EndInit();
             ResumeLayout(false);

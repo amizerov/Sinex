@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+namespace CaDb;
 public class CaDbContext : DbContext
 {
     private String SqlConnectionString;

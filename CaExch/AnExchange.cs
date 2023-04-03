@@ -1,6 +1,8 @@
-﻿using CryptoExchange.Net.CommonObjects;
+﻿using amLogger;
+using CryptoExchange.Net.CommonObjects;
 using CryptoExchange.Net.Interfaces;
-using CryptoExchange.Net.OrderBook;
+using CryptoExchange.Net.Objects;
+using CryptoExchange.Net.Sockets;
 
 namespace CaExch;
 
@@ -11,16 +13,38 @@ public abstract class AnExchange
 
     public abstract int ID { get; }
     public abstract string Name { get; }
+
     public abstract ISymbolOrderBook OrderBook { get; }
-    public abstract List<Kline> GetKlines(string symbol, string inter);
-    public abstract void SubscribeToSocket(string symbol, string inter);
-    public abstract void Unsub();
+    public abstract Task<List<Kline>> GetKlines(string symbol, string inter);
+    public abstract void UnsubKlineSocket(int subscriptionId);
     public abstract List<string> Intervals { get; }
+
+    protected abstract Task<CallResult<UpdateSubscription>> SubsToSock(string symbol, string inter);
+    public async Task<int> SubscribeToSocket(string symbol, string inter)
+    {
+        Log.Trace(ID, "SubscribeToSocket", $"Begin subscribe {symbol}, Interval = {inter}");
+
+        var r = await SubsToSock(symbol, inter);
+        int subscriptionId = r.Data.Id;
+        if (r.Success)
+        {
+            Log.Trace(ID, $"SocketSubscribe({symbol}, {subscriptionId})", $"interval {inter}");
+        }
+        else
+        {
+            Log.Error(ID, $"SocketSubscribe({symbol})", "Error: " + r.Error?.Message);
+        }
+        return subscriptionId;
+    }
+
     protected int IntervalInSeconds(string inter)
     {
         int seconds = 0;
         switch (inter)
         {
+            case "1s":
+                seconds = 1;
+                break;
             case "1m":
                 seconds = 60;
                 break;
@@ -56,6 +80,15 @@ public abstract class AnExchange
                 break;
             case "1d":
                 seconds = 24 * 60 * 60;
+                break;
+            case "3d":
+                seconds = 3 * 24 * 60 * 60;
+                break;
+            case "1w":
+                seconds = 7 * 24 * 60 * 60;
+                break;
+            case "1M":
+                seconds = 30 * 24 * 60 * 60;
                 break;
             default:
                 break;
