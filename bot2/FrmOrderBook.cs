@@ -1,4 +1,5 @@
 ﻿using amLogger;
+using bot2.Tools;
 using CryptoExchange.Net.Interfaces;
 using System.Drawing;
 using System.Reflection;
@@ -18,7 +19,7 @@ public partial class FrmOrderBook : Form
 
     private async void FrmOrders_Load(object sender, EventArgs e)
     {
-        LoadFormPosition();
+        Utils.LoadFormPosition(this);
 
         book.OnStatusChange += (oldState, newState) =>
             Log.Trace("book.OnStatusChange", $"State changed from {oldState} to {newState}");
@@ -47,15 +48,15 @@ public partial class FrmOrderBook : Form
         }
         int c = 0;
         List<ISymbolOrderBookEntry> ba = new();
-        foreach(var a in book.Asks)
+        foreach (var a in book.Asks)
         {
-            ba.Add(a); if(++c == 15) break;
+            ba.Add(a); if (++c == 15) break;
         }
         if (ba.Count == 0) return;
         dgBook.Rows.Clear(); ba.Reverse();
         double qMax = (double)ba.Max(a => a.Quantity);
         double qMin = (double)ba.Min(a => a.Quantity);
-        double qq = 55/(qMax - qMin);
+        double qq = 55 / (qMax - qMin);
         foreach (var a in ba)
         {
             int q = (int)(qq * ((double)a.Quantity - qMin));
@@ -88,27 +89,10 @@ public partial class FrmOrderBook : Form
 
     }
 
-    #region Form position
     private async void FrmOrderBook_FormClosing(object sender, FormClosingEventArgs e)
     {
         await book.StopAsync();
-
-        string pos = Top + ";" + Left + ";" + Width + ";" + Height;
-        File.WriteAllText(FileFormPosition, pos);
+        Utils.SaveFormPosition(this);
     }
-    void LoadFormPosition()
-    {
-        if (File.Exists(FileFormPosition))
-        {
-            string[] pos = File.ReadAllText(FileFormPosition).Split(';');
-            Top = int.Parse(pos[0]);
-            Left = int.Parse(pos[1]);
-            Width = int.Parse(pos[2]);
-            Height = int.Parse(pos[3]); ;
-        }
-    }
-    string FileFormPosition =
-        Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\FrmOrderBookPosition.txt";
-    #endregion
 }
 

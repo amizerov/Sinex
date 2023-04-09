@@ -61,6 +61,7 @@ public class Charty
         }
     }
 
+    public event Action? NeedToRepopulate;
     public event Action<Kline>? OnLastKline;
     public AnExchange Exchange; 
 
@@ -96,9 +97,27 @@ public class Charty
         _cha.AxisY2.ScrollBar.Enabled = false;
         _cha.AxisY2.Enabled = AxisEnabled.True;
         _cha.AxisY2.IsStartedFromZero = _ch.ChartAreas[0].AxisY.IsStartedFromZero;
-        _cha.AxisX.LabelStyle.Format = "dd.MM.yy hh:mm";
+        //_cha.AxisX.LabelStyle.Format = "hh:mm";
 
         AnExchange.OnKline += OnKline;
+        _ch.PostPaint += chart_PostPaint;
+    }
+    string DL(DateTime d)
+    {
+        List<Kline> ks = new(_klines.Skip(_klines.Count - _zoom));
+        DateTime xMin = ks.Min(k => k.OpenTime);
+        DateTime xMax = ks.Max(k => k.OpenTime);
+        if(_interval == "1s")
+            if(xMax.Hour == xMin.Hour)
+                return d.ToString("mm:ss");
+            else
+                return d.ToString("hh:mm:ss");
+        else if (xMax.Day == xMin.Day)
+            return d.ToString("hh:mm");
+        else if(xMax.Year == xMin.Year)
+            return d.ToString("dd.MM hh:mm");
+        else
+            return d.ToString("dd.MM.yy hh:mm");
     }
     public void populate() 
     {
@@ -120,14 +139,12 @@ public class Charty
             double maxVolume = Convert.ToDouble(ks.Max(k => k.Volume));
             _volumeRate = 0.3 * (_yMax - _yMin) / maxVolume;
 
-            Log.Trace(Exchange.ID, "Charty.populate statred", $"symbol {_symbol} zoom {_zoom}");
-
             foreach (var k in ks)
             {
-                sKlines.Points.AddXY(k.OpenTime, k.HighPrice, k.LowPrice, k.OpenPrice, k.ClosePrice);
+                sKlines.Points.AddXY(DL(k.OpenTime), k.HighPrice, k.LowPrice, k.OpenPrice, k.ClosePrice);
 
                 decimal? vol = k.Volume * (decimal)_volumeRate + (decimal)_yMin;
-                int n = sVolume.Points.AddXY(k.OpenTime, vol);
+                int n = sVolume.Points.AddXY(DL(k.OpenTime), vol);
                 if (n > 0)
                 {
                     if ((double)vol! < sVolume.Points[n - 1].YValues[0])
@@ -138,41 +155,62 @@ public class Charty
             }
 
             DrawIndicator(_indy);
-
-            Log.Trace(Exchange.ID, "Charty.populated", $"symbol {_symbol} zoom {_zoom}");
         }
         catch (Exception ex)
         {
             Log.Error(Exchange.ID, "Charty.populate", "Error: " + ex.Message);
         }
     }
-    void UpdateKline(Kline k)
+
+    void chart_PostPaint(object? sender, ChartPaintEventArgs e)
+    {
+        if(_klines.Count == 0) return;
+        Series sKlines = _ch.Series["Klines"];
+        DataPoint p = sKlines.Points.Last();
+
+        Axis ay = _cha.AxisY2;
+        Axis ax = _cha.AxisX;
+
+        double vx = ax.Maximum;
+        double vy = (double)p.YValues[3];
+
+        int x = (int)ax.ValueToPixelPosition(vx);
+        int y = (int)ay.ValueToPixelPosition(vy);
+
+        Font f = new Font(FontFamily.GenericSansSerif, 18);
+        e.ChartGraphics.Graphics.DrawString(vy + "", f, Brushes.DarkRed, x+25, y-20);
+
+        Image mark = Image.FromFile("Content\\mark.png");
+        e.ChartGraphics.Graphics.DrawImage(mark, new Point(x-1, y-6));
+
+    }
+    async void UpdateKline(Kline k)
     {
         Series sKlines, sVolume;
-        try { 
-            if(_klines.Count == 0) return;         if(_ch.Series.Count < 2) return;
+        try 
+        { 
+            if(_klines.Count == 0) return;  if(_ch.Series.Count < 2) return;
             sKlines = _ch.Series["Klines"]; if (sKlines.Points.Count == 0) return;
             sVolume = _ch.Series["Volume"]; if (sVolume.Points.Count == 0) return;
-        }
-        catch { return; }
 
-        var lk = _klines.Last();
-        if (lk.OpenTime < k.OpenTime)
-        {
-            _klines.Add(k);
-            _klines.Remove(_klines.First());
-            populate();
-        }
-        else
-        {
+            var lk = _klines.Last();
+            if (lk.OpenTime < k.OpenTime)
+            {
+                await GetKlines();
+                NeedToRepopulate?.Invoke();
+                return;
+            }
             sKlines.Points.Remove(sKlines.Points.Last());
             sVolume.Points.Remove(sVolume.Points.Last());
-            sKlines.Points.AddXY(k.OpenTime, k.HighPrice, k.LowPrice, k.OpenPrice, k.ClosePrice);
+            sKlines.Points.AddXY(DL(k.OpenTime), k.HighPrice, k.LowPrice, k.OpenPrice, k.ClosePrice);
             decimal? vol = k.Volume * (decimal)_volumeRate + (decimal)_yMin;
-            sVolume.Points.AddXY(k.OpenTime, vol);
-        }
+            sVolume.Points.AddXY(DL(k.OpenTime), vol);
 
-        Log.Info(Exchange.ID, "Charty.UpdateKline", $"deal -> {k.ClosePrice} / {k.Volume}");
+        }
+        catch(Exception ex) 
+        {
+            Log.Error(Exchange.ID, "Charty.UpdateKline", "Error: " + ex.Message);
+        }
     }
 
     public async Task GetKlines()

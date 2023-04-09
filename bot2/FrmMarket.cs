@@ -1,4 +1,5 @@
-﻿using CaExch;
+﻿using bot2.Tools;
+using CaExch;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -22,7 +23,7 @@ public partial class FrmMarket : Form
 
     private void FrmMarket_Load(object sender, EventArgs e)
     {
-        LoadFormPosition();
+        Utils.LoadFormPosition(this);
 
         cbExchange.DisplayMember = "Name";
         foreach (var exchange in Exchanges)
@@ -85,26 +86,8 @@ public partial class FrmMarket : Form
         ch.Show();
     }
 
-    #region Form position
-
-    string FileFormPosition =
-        Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\FrmMarketPosition.txt";
-
     private void FrmMarket_FormClosing(object sender, FormClosingEventArgs e)
     {
-        string pos = Top + ";" + Left + ";" + Width + ";" + Height;
-        File.WriteAllText(FileFormPosition, pos);
+        Utils.SaveFormPosition(this);
     }
-    void LoadFormPosition()
-    {
-        if (File.Exists(FileFormPosition))
-        {
-            string[] pos = File.ReadAllText(FileFormPosition).Split(';');
-            Top = int.Parse(pos[0]);
-            Left = int.Parse(pos[1]);
-            Width = int.Parse(pos[2]);
-            Height = int.Parse(pos[3]); ;
-        }
-    }
-    #endregion
 }

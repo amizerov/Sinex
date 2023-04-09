@@ -22,17 +22,25 @@ public abstract class AnExchange
     protected abstract Task<CallResult<UpdateSubscription>> SubsToSock(string symbol, string inter);
     public async Task<int> SubscribeToSocket(string symbol, string inter)
     {
+        int subscriptionId = 0;
         Log.Trace(ID, "SubscribeToSocket", $"Begin subscribe {symbol}, Interval = {inter}");
-
-        var r = await SubsToSock(symbol, inter);
-        int subscriptionId = r.Data.Id;
-        if (r.Success)
+        try
         {
-            Log.Trace(ID, $"SocketSubscribe({symbol}, {subscriptionId})", $"interval {inter}");
+            var r = await SubsToSock(symbol, inter);
+            subscriptionId = r.Data.Id;
+            if (r.Success)
+            {
+                Log.Trace(ID, $"SocketSubscribe({symbol}, {subscriptionId})", $"interval {inter}");
+            }
+            else
+            {
+                Log.Error(ID, $"SocketSubscribe({symbol})", "Error: " + r.Error?.Message);
+            }
         }
-        else
+        catch (Exception e)
         {
-            Log.Error(ID, $"SocketSubscribe({symbol})", "Error: " + r.Error?.Message);
+            Log.Error(ID, $"SocketSubscribe({symbol})", "Exception: " + e.Message);
+
         }
         return subscriptionId;
     }

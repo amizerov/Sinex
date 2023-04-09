@@ -1,6 +1,6 @@
 ﻿using amLogger;
+using bot2.Tools;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
 
 namespace bot2;
 
@@ -13,13 +13,13 @@ public partial class FrmLogger : Form
 
     private void FrmLog_Load(object sender, EventArgs e)
     {
-        LoadFormPosition();
+        Utils.LoadFormPosition(this);
         Logger.Instance.Init((Log log) => DoLog(log));
     }
     void DoLog(Log log)
     {
         if (Tag?.ToString() == "111") return;
-
+        if(this.IsDisposed) return;
         try
         {
             Invoke(new Action(() =>
@@ -58,26 +58,9 @@ public partial class FrmLogger : Form
         catch { }
     }
 
-    #region Form position
     private void FrmLog_FormClosing(object sender, FormClosingEventArgs e)
     {
+        Utils.SaveFormPosition(this);
         Tag = "111";
-
-        string pos = Top + ";" + Left + ";" + Width + ";" + Height;
-        File.WriteAllText(FileFormPosition, pos);
     }
-    void LoadFormPosition()
-    {
-        if (File.Exists(FileFormPosition))
-        {
-            string[] pos = File.ReadAllText(FileFormPosition).Split(';');
-            Top = int.Parse(pos[0]);
-            Left = int.Parse(pos[1]);
-            Width = int.Parse(pos[2]);
-            Height = int.Parse(pos[3]); ;
-        }
-    }
-    string FileFormPosition =
-        Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\FrmLoggerPosition.txt";
-    #endregion
 }

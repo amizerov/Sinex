@@ -36,6 +36,7 @@
             label1 = new Label();
             lblSymbol = new Label();
             lblZoom = new Label();
+            btnStakan = new Button();
             ((System.ComponentModel.ISupportInitialize)chart).BeginInit();
             SuspendLayout();
             // 
@@ -46,13 +47,13 @@
             chart.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
             chart.Legends.Add(legend1);
-            chart.Location = new Point(12, 74);
+            chart.Location = new Point(12, 52);
             chart.Name = "chart";
             series1.ChartArea = "ChartArea1";
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             chart.Series.Add(series1);
-            chart.Size = new Size(1226, 704);
+            chart.Size = new Size(1226, 726);
             chart.TabIndex = 0;
             chart.Text = "chart1";
             // 
@@ -60,25 +61,25 @@
             // 
             cbInterval.DropDownStyle = ComboBoxStyle.DropDownList;
             cbInterval.FormattingEnabled = true;
-            cbInterval.Location = new Point(125, 26);
+            cbInterval.Location = new Point(125, 8);
             cbInterval.Name = "cbInterval";
-            cbInterval.Size = new Size(182, 33);
+            cbInterval.Size = new Size(85, 33);
             cbInterval.TabIndex = 1;
             cbInterval.SelectedIndexChanged += cbInterval_SelectedIndexChanged;
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(41, 26);
+            label1.Location = new Point(41, 11);
             label1.Name = "label1";
-            label1.Size = new Size(78, 25);
+            label1.Size = new Size(70, 25);
             label1.TabIndex = 2;
-            label1.Text = "Intervals";
+            label1.Text = "Interval";
             // 
             // lblSymbol
             // 
             lblSymbol.AutoSize = true;
-            lblSymbol.Location = new Point(388, 29);
+            lblSymbol.Location = new Point(388, 11);
             lblSymbol.Name = "lblSymbol";
             lblSymbol.Size = new Size(72, 25);
             lblSymbol.TabIndex = 3;
@@ -88,17 +89,29 @@
             // 
             lblZoom.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             lblZoom.AutoSize = true;
-            lblZoom.Location = new Point(1152, 26);
+            lblZoom.Location = new Point(1152, 11);
             lblZoom.Name = "lblZoom";
             lblZoom.Size = new Size(60, 25);
             lblZoom.TabIndex = 3;
             lblZoom.Text = "Zoom";
+            // 
+            // btnStakan
+            // 
+            btnStakan.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnStakan.Location = new Point(1118, 8);
+            btnStakan.Name = "btnStakan";
+            btnStakan.Size = new Size(112, 34);
+            btnStakan.TabIndex = 4;
+            btnStakan.Text = "Stakan";
+            btnStakan.UseVisualStyleBackColor = true;
+            btnStakan.Click += btnStakan_Click;
             // 
             // FrmChart
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1250, 790);
+            Controls.Add(btnStakan);
             Controls.Add(lblZoom);
             Controls.Add(lblSymbol);
             Controls.Add(label1);
@@ -120,5 +133,6 @@
         private Label label1;
         private Label lblSymbol;
         private Label lblZoom;
+        private Button btnStakan;
     }
 }

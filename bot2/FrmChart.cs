@@ -1,4 +1,5 @@
-﻿using CaExch;
+﻿using bot2.Tools;
+using CaExch;
 using CryptoExchange.Net.CommonObjects;
 
 namespace bot2;
@@ -6,13 +7,14 @@ namespace bot2;
 public partial class FrmChart : Form
 {
     Charty Charty;
-
+    FrmOrderBook? frmOrderBook;
     public FrmChart(AnExchange exch, string symbo)
     {
         InitializeComponent();
 
         Charty = new(chart, exch, symbo);
         Charty.OnLastKline += OnLastKline;
+        Charty.NeedToRepopulate += OnNeedToRepopulate;
 
         foreach (var interval in Charty.Exchange.Intervals)
             cbInterval.Items.Add(interval);
@@ -20,10 +22,12 @@ public partial class FrmChart : Form
         cbInterval.SelectedIndex = 3;
         Charty.Symbol = symbo;
 
+        Text = exch.Name + " - " + symbo + " - Chart";
     }
 
     private void FrmChart_Load(object sender, EventArgs e)
     {
+        Utils.LoadFormPosition(this);
         chart.MouseWheel += chart_MouseWheel;
         InitChart();
     }
@@ -45,6 +49,14 @@ public partial class FrmChart : Form
         }
         catch { }
     }
+    void OnNeedToRepopulate()
+    {
+        Invoke(new Action(() =>
+        {
+            lblZoom.Text = "Zoom: " + Charty.Zoom;
+            Charty.populate();
+        }));
+    }
     void chart_MouseWheel(object? sender, MouseEventArgs e)
     {
         if (e.Delta > 0)
@@ -55,9 +67,9 @@ public partial class FrmChart : Form
     private void ZoomOut()
     {
         if (Control.ModifierKeys == Keys.Control)
-            Charty.Zoom -= 10;
+            Charty.Zoom += 10;
         else
-            Charty.Zoom--;
+            Charty.Zoom++;
 
         lblZoom.Text = "Zoom: " + Charty.Zoom;
         Charty.populate();
@@ -66,9 +78,9 @@ public partial class FrmChart : Form
     private void ZoomIn()
     {
         if (Control.ModifierKeys == Keys.Control)
-            Charty.Zoom += 10;
+            Charty.Zoom -= 10;
         else
-            Charty.Zoom++;
+            Charty.Zoom--;
 
         lblZoom.Text = "Zoom: " + Charty.Zoom;
         Charty.populate();
@@ -83,5 +95,21 @@ public partial class FrmChart : Form
     private void FrmChart_FormClosing(object sender, FormClosingEventArgs e)
     {
         Charty.UnsubKlineSocket();
+        Utils.SaveFormPosition(this);
+    }
+
+    private void btnStakan_Click(object sender, EventArgs e)
+    {
+        if (frmOrderBook != null)
+        {
+            if (!frmOrderBook.IsDisposed || frmOrderBook.Visible)
+            {
+                frmOrderBook.Close();
+                frmOrderBook.Dispose();
+                frmOrderBook = null;
+            }
+        }
+        frmOrderBook = new(Charty.Exchange.OrderBook);
+        frmOrderBook.Show(this);
     }
 }
