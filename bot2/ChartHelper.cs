@@ -97,9 +97,8 @@ public class Charty
         _cha.AxisY2.ScrollBar.Enabled = false;
         _cha.AxisY2.Enabled = AxisEnabled.True;
         _cha.AxisY2.IsStartedFromZero = _ch.ChartAreas[0].AxisY.IsStartedFromZero;
-        //_cha.AxisX.LabelStyle.Format = "hh:mm";
 
-        AnExchange.OnKline += OnKline;
+        Exchange.OnKline += OnKline;
         _ch.PostPaint += chart_PostPaint;
     }
     string DL(DateTime d)
@@ -218,9 +217,9 @@ public class Charty
         _klines = await Exchange.GetKlines(_symbol, _interval);
     }
 
-    void OnKline(int id, string s, Kline k)
+    void OnKline(string s, Kline k)
     {
-        if (Exchange.ID == id && _symbol == s)
+        if (_symbol == s)
         {
             OnLastKline?.Invoke(k);
             UpdateKline(k);

@@ -58,7 +58,7 @@ public class CaHuobi : AnExchange
                     kline.Volume = k.Volume;
                     kline.OpenTime = k.OpenTime;
 
-                    SendKline(ID, symbol, kline);
+                    SendKline(symbol, kline);
                     Log.Info(ID, "qqq", $"{symbol} {k.OpenTime} {k.ClosePrice}");
                 });
         return r;
