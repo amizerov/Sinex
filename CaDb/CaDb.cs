@@ -19,4 +19,5 @@ public class CaDbContext : DbContext
         optionsBuilder.UseSqlServer(SqlConnectionString);
     }
     public DbSet<Product>? Products { get; set; }
+    public DbSet<QuoteAsset>? Quotes { get; set; }
 }

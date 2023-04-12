@@ -8,8 +8,8 @@ namespace CaExch;
 
 public abstract class AnExchange
 {
-    public event Action<string, Kline>? OnKline;
-    protected void SendKline(string s, Kline k) => OnKline?.Invoke(s, k);
+    public event Action<string, Kline>? OnKlineUpdate;
+    protected void KlineUpdated(string s, Kline k) => OnKlineUpdate?.Invoke(s, k);
 
     public abstract int ID { get; }
     public abstract string Name { get; }

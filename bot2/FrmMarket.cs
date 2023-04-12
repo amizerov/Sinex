@@ -1,7 +1,8 @@
 ﻿using bot2.Tools;
+using CaDb;
 using CaExch;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
+using System.Data;
 
 namespace bot2;
 
@@ -36,19 +37,33 @@ public partial class FrmMarket : Form
     }
     void LoadProducts()
     {
-        using (CaDb.CaDbContext dbContext = new())
+        using (CaDbContext dbContext = new())
         {
             int ExId = ((AnExchange)cbExchange.SelectedItem).ID;
+
             string search = txtSearch.Text.ToLower();
 
             var prods = dbContext.Products?.FromSql($"Sinex_Get_Products {ExId}, {search}");
 
-            dgProducts.DataSource = prods?.ToList();
+            dgProducts.DataSource = prods?.ToList().Where(p => p.quoteasset == cbQuote.Text).ToList();
         }
     }
 
+    void LoadQuoteAssets()
+    {
+        using (CaDbContext dbContext = new())
+        {
+            int ExId = ((AnExchange)cbExchange.SelectedItem).ID;
+
+            var quotes = dbContext.Quotes?.FromSqlRaw($"Sinex_Get_QuoteAssets {ExId}");
+
+            cbQuote.DisplayMember = "quoteasset";
+            cbQuote.DataSource = quotes?.ToList();
+        }
+    }
     private void cbExchange_SelectedIndexChanged(object sender, EventArgs e)
     {
+        LoadQuoteAssets();
         LoadProducts();
     }
 
@@ -89,5 +104,10 @@ public partial class FrmMarket : Form
     private void FrmMarket_FormClosing(object sender, FormClosingEventArgs e)
     {
         Utils.SaveFormPosition(this);
+    }
+
+    private void cbQuote_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        LoadProducts();
     }
 }

@@ -10,6 +10,8 @@ public class Charty
 {
     Chart       _ch;
     ChartArea   _cha;
+    ChartPoint _chaPoint;
+
     List<Kline> _klines = new();
 
     int         _zoom = 100;
@@ -62,7 +64,7 @@ public class Charty
     }
 
     public event Action? NeedToRepopulate;
-    public event Action<Kline>? OnLastKline;
+    public event Action<Kline>? OnKlineUpdated;
     public AnExchange Exchange; 
 
     public Charty(Chart chart, AnExchange ech, string symbo)
@@ -71,8 +73,17 @@ public class Charty
         _symbol = symbo;
 
         _ch = chart;
+        _chaPoint = new(_ch);
+
         _ch.Series.Clear();
         _ch.Legends.Clear();
+        _ch.BackColor = Color.FromArgb(((int)(((byte)(211)))), ((int)(((byte)(223)))), ((int)(((byte)(240)))));
+        _ch.BackGradientStyle = GradientStyle.TopBottom;
+        _ch.BackSecondaryColor = Color.White;
+        _ch.BorderlineColor = Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(59)))), ((int)(((byte)(105)))));
+        _ch.BorderlineDashStyle = ChartDashStyle.Solid;
+        _ch.BorderlineWidth = 2;
+        _ch.BorderSkin.SkinStyle = BorderSkinStyle.Emboss;
 
         Series sKlines = new Series("Klines");
         Series sVolume = new Series("Volume");
@@ -97,9 +108,28 @@ public class Charty
         _cha.AxisY2.ScrollBar.Enabled = false;
         _cha.AxisY2.Enabled = AxisEnabled.True;
         _cha.AxisY2.IsStartedFromZero = _ch.ChartAreas[0].AxisY.IsStartedFromZero;
+        _cha.BackColor = Color.Gray;
+        _cha.BackGradientStyle = GradientStyle.LeftRight;
+        _cha.BackSecondaryColor = Color.White;
+        _cha.ShadowOffset = 5;
+        _cha.Position.Auto = false;
+        _cha.Position.Width = 92;
+        _cha.Position.Height = 90;
+        _cha.Position.X = 1.5F;
+        _cha.Position.Y = 7;
 
-        Exchange.OnKline += OnKline;
-        _ch.PostPaint += chart_PostPaint;
+        var cx = _cha.CursorX;
+        cx.IsUserEnabled = true;
+        cx.IsUserSelectionEnabled = true;
+        cx.LineDashStyle = ChartDashStyle.Dash;
+
+        var cy = _cha.CursorY;
+        cy.IsUserEnabled = true;
+        cy.IsUserSelectionEnabled = true;
+        cy.LineDashStyle = ChartDashStyle.Dash;
+        cy.AxisType = AxisType.Secondary;
+
+        Exchange.OnKlineUpdate += OnPriceUpdate;
     }
     string DL(DateTime d)
     {
@@ -161,29 +191,7 @@ public class Charty
         }
     }
 
-    void chart_PostPaint(object? sender, ChartPaintEventArgs e)
-    {
-        if(_klines.Count == 0) return;
-        Series sKlines = _ch.Series["Klines"];
-        DataPoint p = sKlines.Points.Last();
-
-        Axis ay = _cha.AxisY2;
-        Axis ax = _cha.AxisX;
-
-        double vx = ax.Maximum;
-        double vy = (double)p.YValues[3];
-
-        int x = (int)ax.ValueToPixelPosition(vx);
-        int y = (int)ay.ValueToPixelPosition(vy);
-
-        Font f = new Font(FontFamily.GenericSansSerif, 18);
-        e.ChartGraphics.Graphics.DrawString(vy + "", f, Brushes.DarkRed, x+25, y-20);
-
-        Image mark = Image.FromFile("Content\\mark.png");
-        e.ChartGraphics.Graphics.DrawImage(mark, new Point(x-1, y-6));
-
-    }
-    async void UpdateKline(Kline k)
+    async void UpdatePrice(Kline k)
     {
         Series sKlines, sVolume;
         try 
@@ -217,14 +225,15 @@ public class Charty
         _klines = await Exchange.GetKlines(_symbol, _interval);
     }
 
-    void OnKline(string s, Kline k)
+    void OnPriceUpdate(string s, Kline k)
     {
         if (_symbol == s)
         {
-            OnLastKline?.Invoke(k);
-            UpdateKline(k);
+            OnKlineUpdated?.Invoke(k);
+            UpdatePrice(k);
         }
     }
+
     public void UnsubKlineSocket()
     {
         if (_klineSubscriptionId > 0)

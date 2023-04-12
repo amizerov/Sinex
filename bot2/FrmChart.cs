@@ -7,13 +7,13 @@ namespace bot2;
 public partial class FrmChart : Form
 {
     Charty Charty;
-    FrmOrderBook? frmOrderBook;
+    FrmStakan? frmOrderBook;
     public FrmChart(AnExchange exch, string symbo)
     {
         InitializeComponent();
 
         Charty = new(chart, exch, symbo);
-        Charty.OnLastKline += OnLastKline;
+        Charty.OnKlineUpdated += OnLastKline;
         Charty.NeedToRepopulate += OnNeedToRepopulate;
 
         foreach (var interval in Charty.Exchange.Intervals)
@@ -29,6 +29,7 @@ public partial class FrmChart : Form
     {
         Utils.LoadFormPosition(this);
         chart.MouseWheel += chart_MouseWheel;
+        SetTitle();
         InitChart();
     }
     private async void InitChart()
@@ -111,5 +112,27 @@ public partial class FrmChart : Form
         }
         frmOrderBook = new(Charty.Exchange.OrderBook);
         frmOrderBook.Show(this);
+    }
+
+    private void btnTrade_Click(object sender, EventArgs e)
+    {
+    }
+
+    void SetTitle()
+    {
+        var title = chart.Titles[0];
+        title.Alignment = ContentAlignment.TopLeft;
+        title.BackColor = Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(120)))), ((int)(((byte)(160)))), ((int)(((byte)(240)))));
+        title.BorderColor = Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(59)))), ((int)(((byte)(105)))));
+        title.Font = new Font("Trebuchet MS", 14.25F, System.Drawing.FontStyle.Bold);
+        title.ForeColor = Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(59)))), ((int)(((byte)(105)))));
+        title.Name = "Title1";
+        title.Position.Auto = false;
+        title.Position.Height = 3.5F;
+        title.Position.Width = 50F;
+        title.Position.X = 2F;
+        title.Position.Y = 2F;
+        title.ShadowColor = Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+        title.Text = "Chart Control for .NET Framework";
     }
 }

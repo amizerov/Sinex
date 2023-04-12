@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="packages\**" />
+    <EmbeddedResource Remove="packages\**" />
+    <None Remove="packages\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="WinForms.DataVisualization" Version="1.8.0" />
   </ItemGroup>
 
@@ -38,6 +44,9 @@
 
   <ItemGroup>
     <None Update="Content\mark.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\markc.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

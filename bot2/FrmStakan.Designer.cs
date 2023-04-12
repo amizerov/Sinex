@@ -1,6 +1,6 @@
 ﻿namespace bot2
 {
-    partial class FrmOrderBook
+    partial class FrmStakan
     {
         /// <summary>
         /// Required designer variable.
@@ -70,7 +70,7 @@
             dgBook.Size = new Size(522, 982);
             dgBook.TabIndex = 0;
             // 
-            // FrmOrderBook
+            // FrmStakan
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -78,7 +78,7 @@
             Controls.Add(dgBook);
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
             MaximizeBox = false;
-            Name = "FrmOrderBook";
+            Name = "FrmStakan";
             ShowIcon = false;
             ShowInTaskbar = false;
             Text = "Order book";

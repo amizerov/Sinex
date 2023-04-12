@@ -33,6 +33,8 @@
             dgProducts = new DataGridView();
             txtSearch = new TextBox();
             label2 = new Label();
+            cbQuote = new ComboBox();
+            label3 = new Label();
             ((System.ComponentModel.ISupportInitialize)dgProducts).BeginInit();
             SuspendLayout();
             // 
@@ -68,7 +70,7 @@
             dgProducts.RowTemplate.Height = 33;
             dgProducts.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgProducts.ShowEditingIcon = false;
-            dgProducts.Size = new Size(1282, 641);
+            dgProducts.Size = new Size(925, 641);
             dgProducts.TabIndex = 2;
             dgProducts.CellDoubleClick += dgProducts_CellDoubleClick;
             dgProducts.RowPrePaint += dgProducts_RowPrePaint;
@@ -90,11 +92,32 @@
             label2.TabIndex = 1;
             label2.Text = "Search symbol";
             // 
+            // cbQuote
+            // 
+            cbQuote.DropDownStyle = ComboBoxStyle.DropDownList;
+            cbQuote.FormattingEnabled = true;
+            cbQuote.Location = new Point(324, 69);
+            cbQuote.Name = "cbQuote";
+            cbQuote.Size = new Size(115, 33);
+            cbQuote.TabIndex = 4;
+            cbQuote.SelectedIndexChanged += cbQuote_SelectedIndexChanged;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(324, 22);
+            label3.Name = "label3";
+            label3.Size = new Size(107, 25);
+            label3.TabIndex = 5;
+            label3.Text = "Quote asset";
+            // 
             // FrmMarket
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1306, 777);
+            ClientSize = new Size(949, 777);
+            Controls.Add(label3);
+            Controls.Add(cbQuote);
             Controls.Add(txtSearch);
             Controls.Add(dgProducts);
             Controls.Add(label2);
@@ -116,5 +139,7 @@
         private DataGridView dgProducts;
         private TextBox txtSearch;
         private Label label2;
+        private ComboBox cbQuote;
+        private Label label3;
     }
 }

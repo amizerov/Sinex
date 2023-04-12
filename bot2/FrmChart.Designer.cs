@@ -31,18 +31,23 @@
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
             chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             cbInterval = new ComboBox();
             label1 = new Label();
             lblSymbol = new Label();
             lblZoom = new Label();
             btnStakan = new Button();
+            btnTrade = new Button();
             ((System.ComponentModel.ISupportInitialize)chart).BeginInit();
             SuspendLayout();
             // 
             // chart
             // 
             chart.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            chart.BackColor = Color.Transparent;
+            chartArea1.CursorX.LineColor = Color.Silver;
+            chartArea1.CursorY.LineColor = Color.Silver;
             chartArea1.Name = "ChartArea1";
             chart.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
@@ -56,6 +61,8 @@
             chart.Size = new Size(1226, 726);
             chart.TabIndex = 0;
             chart.Text = "chart1";
+            title1.Name = "Title1";
+            chart.Titles.Add(title1);
             // 
             // cbInterval
             // 
@@ -106,11 +113,24 @@
             btnStakan.UseVisualStyleBackColor = true;
             btnStakan.Click += btnStakan_Click;
             // 
+            // btnTrade
+            // 
+            btnTrade.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnTrade.Location = new Point(1000, 8);
+            btnTrade.Name = "btnTrade";
+            btnTrade.Size = new Size(112, 34);
+            btnTrade.TabIndex = 5;
+            btnTrade.Text = "Trade";
+            btnTrade.UseVisualStyleBackColor = true;
+            btnTrade.Click += btnTrade_Click;
+            // 
             // FrmChart
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.White;
             ClientSize = new Size(1250, 790);
+            Controls.Add(btnTrade);
             Controls.Add(btnStakan);
             Controls.Add(lblZoom);
             Controls.Add(lblSymbol);
@@ -134,5 +154,6 @@
         private Label lblSymbol;
         private Label lblZoom;
         private Button btnStakan;
+        private Button btnTrade;
     }
 }
