@@ -1,8 +1,8 @@
 ﻿namespace bot2;
 
-public partial class FrmTade : Form
+public partial class FrmTrade : Form
 {
-    public FrmTade()
+    public FrmTrade()
     {
         InitializeComponent();
     }

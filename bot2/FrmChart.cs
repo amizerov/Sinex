@@ -29,7 +29,6 @@ public partial class FrmChart : Form
     {
         Utils.LoadFormPosition(this);
         chart.MouseWheel += chart_MouseWheel;
-        SetTitle();
         InitChart();
     }
     private async void InitChart()
@@ -116,23 +115,14 @@ public partial class FrmChart : Form
 
     private void btnTrade_Click(object sender, EventArgs e)
     {
+        FrmTrade f = new();
+        f.ShowDialog(this);
     }
 
-    void SetTitle()
+    private void btnIndicator_Click(object sender, EventArgs e)
     {
-        var title = chart.Titles[0];
-        title.Alignment = ContentAlignment.TopLeft;
-        title.BackColor = Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(120)))), ((int)(((byte)(160)))), ((int)(((byte)(240)))));
-        title.BorderColor = Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(59)))), ((int)(((byte)(105)))));
-        title.Font = new Font("Trebuchet MS", 14.25F, System.Drawing.FontStyle.Bold);
-        title.ForeColor = Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(59)))), ((int)(((byte)(105)))));
-        title.Name = "Title1";
-        title.Position.Auto = false;
-        title.Position.Height = 3.5F;
-        title.Position.Width = 50F;
-        title.Position.X = 2F;
-        title.Position.Y = 2F;
-        title.ShadowColor = Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-        title.Text = "Chart Control for .NET Framework";
+        FrmIndicator f = new();
+        if (f.ShowDialog(this) == DialogResult.OK)
+            Charty.DrawIndicators(f.IndicatorsSma);
     }
 }

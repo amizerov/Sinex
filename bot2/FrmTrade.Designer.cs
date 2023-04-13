@@ -1,6 +1,6 @@
 ﻿namespace bot2
 {
-    partial class FrmTade
+    partial class FrmTrade
     {
         /// <summary>
         /// Required designer variable.

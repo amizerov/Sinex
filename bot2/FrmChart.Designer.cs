@@ -39,6 +39,7 @@
             lblZoom = new Label();
             btnStakan = new Button();
             btnTrade = new Button();
+            btnIndicator = new Button();
             ((System.ComponentModel.ISupportInitialize)chart).BeginInit();
             SuspendLayout();
             // 
@@ -124,12 +125,24 @@
             btnTrade.UseVisualStyleBackColor = true;
             btnTrade.Click += btnTrade_Click;
             // 
+            // btnIndicator
+            // 
+            btnIndicator.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnIndicator.Location = new Point(882, 8);
+            btnIndicator.Name = "btnIndicator";
+            btnIndicator.Size = new Size(112, 34);
+            btnIndicator.TabIndex = 6;
+            btnIndicator.Text = "Indicator";
+            btnIndicator.UseVisualStyleBackColor = true;
+            btnIndicator.Click += btnIndicator_Click;
+            // 
             // FrmChart
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
             ClientSize = new Size(1250, 790);
+            Controls.Add(btnIndicator);
             Controls.Add(btnTrade);
             Controls.Add(btnStakan);
             Controls.Add(lblZoom);
@@ -155,5 +168,6 @@
         private Label lblZoom;
         private Button btnStakan;
         private Button btnTrade;
+        private Button btnIndicator;
     }
 }

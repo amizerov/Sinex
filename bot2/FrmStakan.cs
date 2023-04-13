@@ -1,6 +1,7 @@
 ﻿using amLogger;
 using bot2.Tools;
 using CryptoExchange.Net.Interfaces;
+using System.Diagnostics;
 
 namespace bot2;
 
@@ -65,8 +66,8 @@ public partial class FrmStakan : Form
             int q = (int)(qq * ((double)a.Quantity - qMin));
             int n = dgBook.Rows.Add();
             dgBook.Rows[n].Cells[0].Value = "";
-            dgBook.Rows[n].Cells[1].Value = a.Price.ToString().TrimEnd('0');
-            dgBook.Rows[n].Cells[2].Value = a.Quantity.ToString().TrimEnd('0');
+            dgBook.Rows[n].Cells[1].Value = PriceFormated(a.Price);
+            dgBook.Rows[n].Cells[2].Value = QuantFormated(a.Quantity);
             dgBook.Rows[n].Cells[1].Style.BackColor = Color.FromArgb(240, 128, 128);
             dgBook.Rows[n].Cells[2].Style.BackColor = Color.FromArgb(255 - q, 128 - q, 128 - q);
         }
@@ -85,8 +86,8 @@ public partial class FrmStakan : Form
             int q = (int)(qq * ((double)b.Quantity - qMin));
             int n = dgBook.Rows.Add();
             dgBook.Rows[n].Cells[2].Value = "";
-            dgBook.Rows[n].Cells[1].Value = b.Price.ToString().TrimEnd('0');
-            dgBook.Rows[n].Cells[0].Value = b.Quantity.ToString().TrimEnd('0');
+            dgBook.Rows[n].Cells[1].Value = PriceFormated(b.Price);
+            dgBook.Rows[n].Cells[0].Value = QuantFormated(b.Quantity);
             dgBook.Rows[n].Cells[1].Style.BackColor = Color.FromArgb(128, 240, 128);
             dgBook.Rows[n].Cells[0].Style.BackColor = Color.FromArgb(128 - q, 240 - q, 128 - q);
         }
@@ -96,6 +97,29 @@ public partial class FrmStakan : Form
     {
         await book.StopAsync();
         Utils.SaveFormPosition(this);
+    }
+    string PriceFormated(decimal price) 
+    {
+        string[] ar = price.ToString().Split(',');
+
+        if (ar.Length == 1) return price.ToString() + ",00";
+
+        ar[1] = ar[1].TrimEnd('0');
+        if (ar[1].Length == 0) ar[1] = "00";
+        if (ar[1].Length == 1) ar[1] += "0";
+
+        return ar[0] + "," + ar[1];
+    }
+    string QuantFormated(decimal quant)
+    {
+        string[] ar = quant.ToString().Split(',');
+        
+        if (ar.Length == 1) return quant.ToString();
+
+        ar[1] = ar[1].TrimEnd('0');
+        if (ar[1].Length == 0) return ar[0];
+
+        return ar[0] + "," + ar[1];
     }
 }
 

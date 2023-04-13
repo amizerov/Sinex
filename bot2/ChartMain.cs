@@ -10,7 +10,8 @@ public class Charty
 {
     Chart       _ch;
     ChartArea   _cha;
-    ChartPoint _chaPoint;
+    ChartInit   _chInit;
+    ChartPoint  _chPoint;
 
     List<Kline> _klines = new();
 
@@ -73,24 +74,17 @@ public class Charty
         _symbol = symbo;
 
         _ch = chart;
-        _chaPoint = new(_ch);
+        _chInit = new(_ch);
+        _chPoint = new(_ch);
+        _chInit.SetTitle(ech.Name, symbo);
 
-        _ch.Series.Clear();
-        _ch.Legends.Clear();
-        _ch.BackColor = Color.FromArgb(((int)(((byte)(211)))), ((int)(((byte)(223)))), ((int)(((byte)(240)))));
-        _ch.BackGradientStyle = GradientStyle.TopBottom;
-        _ch.BackSecondaryColor = Color.White;
-        _ch.BorderlineColor = Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(59)))), ((int)(((byte)(105)))));
-        _ch.BorderlineDashStyle = ChartDashStyle.Solid;
-        _ch.BorderlineWidth = 2;
-        _ch.BorderSkin.SkinStyle = BorderSkinStyle.Emboss;
+        _cha = _ch.ChartAreas[0];
 
         Series sKlines = new Series("Klines");
         Series sVolume = new Series("Volume");
-        Series sIndica = new Series("Indica");
+
         _ch.Series.Add(sKlines);
         _ch.Series.Add(sVolume);
-        _ch.Series.Add(sIndica);
 
         sKlines.ChartType = SeriesChartType.Candlestick;
         sKlines["OpenCloseStyle"] = "Triangle";
@@ -103,31 +97,6 @@ public class Charty
         sVolume.ChartType = SeriesChartType.Column;
         sVolume.Color = Color.FromArgb(80, Color.Blue);
         sVolume.YAxisType = AxisType.Secondary;
-
-        _cha = _ch.ChartAreas[0];
-        _cha.AxisY2.ScrollBar.Enabled = false;
-        _cha.AxisY2.Enabled = AxisEnabled.True;
-        _cha.AxisY2.IsStartedFromZero = _ch.ChartAreas[0].AxisY.IsStartedFromZero;
-        _cha.BackColor = Color.Gray;
-        _cha.BackGradientStyle = GradientStyle.LeftRight;
-        _cha.BackSecondaryColor = Color.White;
-        _cha.ShadowOffset = 5;
-        _cha.Position.Auto = false;
-        _cha.Position.Width = 92;
-        _cha.Position.Height = 90;
-        _cha.Position.X = 1.5F;
-        _cha.Position.Y = 7;
-
-        var cx = _cha.CursorX;
-        cx.IsUserEnabled = true;
-        cx.IsUserSelectionEnabled = true;
-        cx.LineDashStyle = ChartDashStyle.Dash;
-
-        var cy = _cha.CursorY;
-        cy.IsUserEnabled = true;
-        cy.IsUserSelectionEnabled = true;
-        cy.LineDashStyle = ChartDashStyle.Dash;
-        cy.AxisType = AxisType.Secondary;
 
         Exchange.OnKlineUpdate += OnPriceUpdate;
     }
@@ -183,7 +152,7 @@ public class Charty
                 }
             }
 
-            DrawIndicator(_indy);
+            DrawIndicators(_indy);
         }
         catch (Exception ex)
         {
@@ -213,6 +182,7 @@ public class Charty
             decimal? vol = k.Volume * (decimal)_volumeRate + (decimal)_yMin;
             sVolume.Points.AddXY(DL(k.OpenTime), vol);
 
+            DrawIndicators(_indy);
         }
         catch(Exception ex) 
         {
@@ -239,22 +209,36 @@ public class Charty
         if (_klineSubscriptionId > 0)
             Exchange.UnsubKlineSocket(_klineSubscriptionId);
     }
-    public void DrawIndicator(string indica)
-    {
-        _indy = indica;
-        if (_indy == "sma") DrawSma();
-        if (_indy == "rsi") DrawRsi();
-        if (_indy == "vfi") DrawSma();
-    }
-    void DrawSma()
-    {
-        Series k = _ch.Series["Klines"];
-        Series s = _ch.Series["Indica"];
-        s.ChartType = SeriesChartType.FastLine;
-        s.YAxisType = AxisType.Secondary;
-        s.Color = Color.Red;
 
-        int lookbackPeriods = _zoom < 50 ? 5 : _zoom / 10;
+    public void DrawIndicators(string pars)
+    {
+        _indy = pars;
+        if (_indy == "") return;
+
+        var sIn = _ch.Series.Where(s => s.Name.StartsWith("Indica_"));
+        int cnt = sIn.Count();
+        for (int i = 0; i < cnt; i++)
+        {
+            var s = sIn.FirstOrDefault();
+            _ch.Series.Remove(s);
+        }
+
+        string[] ar = _indy.Split('|');
+        foreach (string s in ar)
+        {
+            Series ser = _ch.Series.Add("Indica_" + s.Replace(";", ""));
+
+            string[] a = s.Split(";");
+            int lp = int.Parse(a[1]);
+            DrawSma(lp, ser);
+        }
+    }
+    void DrawSma(int lookbackPeriods, Series sIndica)
+    {
+        sIndica.ChartType = SeriesChartType.FastLine;
+        sIndica.YAxisType = AxisType.Secondary;
+        sIndica.Color = Color.Red;
+
         List<SmaResult> sma = Indica.GetSma(_klines, lookbackPeriods);
 
         List<Kline> ks = _klines.Skip(_klines.Count - _zoom).ToList();
@@ -262,10 +246,11 @@ public class Charty
         try
         {
             List<SmaResult> smas = new(sma.Where(p => p.Date >= ks.First().OpenTime));
-            s.Points.Clear();
+            sIndica.Points.Clear();
             foreach (var v in smas)
             {
-                s.Points.AddXY(v.Date, v.Sma);
+                if(v.Sma > 0)
+                    sIndica.Points.AddXY(DL(v.Date), v.Sma);
             }
         }
         catch (Exception ex)
