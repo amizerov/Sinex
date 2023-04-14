@@ -2,50 +2,14 @@
 using CryptoExchange.Net.CommonObjects;
 using amLogger;
 using CaExch;
-using Skender.Stock.Indicators;
 
 namespace bot2;
 
-public class Charty
+public partial class Charty : ChartyBase
 {
-    Chart       _ch;
-    ChartArea   _cha;
-    ChartInit   _chInit;
-    ChartPoint  _chPoint;
+    public event Action? NeedToRepopulateChart;
+    public event Action<Kline>? OnKlineUpdated;
 
-    List<Kline> _klines = new();
-
-    int         _zoom = 100;
-    double      _volumeRate = 0;
-    double      _yMax = 0;
-    double      _yMin = 0;
-    string      _indy = "";
-    string      _symbol = "";
-    string      _interval = "";
-
-    int         _klineSubscriptionId = 0;
-
-    public int Zoom
-    {
-        get { return _zoom; }
-        set
-        {
-            _zoom = value;
-            if (_zoom < 10) _zoom = 10;
-            if (_zoom > _klines.Count) _zoom = _klines.Count;
-        }
-    }
-    public string Symbol
-    {
-        get { return _symbol; }
-        set
-        {
-            if (_symbol != value)
-            {
-                _symbol = value;
-            }
-        }
-    }
     public async void SetInterval(string value)
     {
         {
@@ -64,42 +28,21 @@ public class Charty
         }
     }
 
-    public event Action? NeedToRepopulate;
-    public event Action<Kline>? OnKlineUpdated;
-    public AnExchange Exchange; 
-
-    public Charty(Chart chart, AnExchange ech, string symbo)
+    public Charty(Chart chart, AnExchange ech, string symbo) : base(chart, ech, symbo)
     {
-        Exchange = ech;
-        _symbol = symbo;
-
-        _ch = chart;
-        _chInit = new(_ch);
-        _chPoint = new(_ch);
-        _chInit.SetTitle(ech.Name, symbo);
-
-        _cha = _ch.ChartAreas[0];
-
-        Series sKlines = new Series("Klines");
-        Series sVolume = new Series("Volume");
-
-        _ch.Series.Add(sKlines);
-        _ch.Series.Add(sVolume);
-
-        sKlines.ChartType = SeriesChartType.Candlestick;
-        sKlines["OpenCloseStyle"] = "Triangle";
-        sKlines["ShowOpenClose"] = "Both";
-        sKlines["PointWidth"] = "1.0";
-        sKlines["PriceUpColor"] = "Green";
-        sKlines["PriceDownColor"] = "Red";
-        sKlines.YAxisType = AxisType.Secondary;
-
-        sVolume.ChartType = SeriesChartType.Column;
-        sVolume.Color = Color.FromArgb(80, Color.Blue);
-        sVolume.YAxisType = AxisType.Secondary;
+        SetCursor();
 
         Exchange.OnKlineUpdate += OnPriceUpdate;
     }
+    void OnPriceUpdate(string s, Kline k)
+    {
+        if (_symbol == s)
+        {
+            OnKlineUpdated?.Invoke(k);
+            UpdatePrice(k);
+        }
+    }
+
     string DL(DateTime d)
     {
         List<Kline> ks = new(_klines.Skip(_klines.Count - _zoom));
@@ -117,7 +60,7 @@ public class Charty
         else
             return d.ToString("dd.MM.yy hh:mm");
     }
-    public void populate() 
+    public async Task populate() 
     {
         try
         {
@@ -152,7 +95,7 @@ public class Charty
                 }
             }
 
-            DrawIndicators(_indy);
+            await DrawIndicators(_indy);
         }
         catch (Exception ex)
         {
@@ -172,17 +115,36 @@ public class Charty
             var lk = _klines.Last();
             if (lk.OpenTime < k.OpenTime)
             {
+                // Если пришла новая свеча, то полностью перерисовываем график
+                // поновой получаем весь массив данных
                 await GetKlines();
-                NeedToRepopulate?.Invoke();
+
+                // а далее посути надо просто нарисовать график,
+                // но если тут вызвать populate(), возникает ошибка,
+                // поэтому отправляем сообщение на форму графика,
+                // и уже от туда делаем Charty.populate()
+                NeedToRepopulateChart?.Invoke();
+
+                // Уходим, больше ничего не надо
                 return;
             }
+
+            // Когда просто поменяется цена, но свеча еще не закрыта,
+            // изменяем только последнюю свечу
+
+            // Удаляем всю последнюю свечу целиком и 
             sKlines.Points.Remove(sKlines.Points.Last());
             sVolume.Points.Remove(sVolume.Points.Last());
+
+            // ... добавляем ее же обновленную, с новой ценой и объемом
             sKlines.Points.AddXY(DL(k.OpenTime), k.HighPrice, k.LowPrice, k.OpenPrice, k.ClosePrice);
             decimal? vol = k.Volume * (decimal)_volumeRate + (decimal)_yMin;
             sVolume.Points.AddXY(DL(k.OpenTime), vol);
 
-            DrawIndicators(_indy);
+            // Индикаторы тоже надо подогнать под новую цену
+            // Но, как выяснилось, индикатор не меняется под изменение текущей свечи,
+            // так как он рассчитывается по предыдущим, а текущая не влияет
+            //NeedToReDrawIndicator?.Invoke();
         }
         catch(Exception ex) 
         {
@@ -195,99 +157,9 @@ public class Charty
         _klines = await Exchange.GetKlines(_symbol, _interval);
     }
 
-    void OnPriceUpdate(string s, Kline k)
-    {
-        if (_symbol == s)
-        {
-            OnKlineUpdated?.Invoke(k);
-            UpdatePrice(k);
-        }
-    }
-
     public void UnsubKlineSocket()
     {
         if (_klineSubscriptionId > 0)
             Exchange.UnsubKlineSocket(_klineSubscriptionId);
-    }
-
-    public void DrawIndicators(string pars)
-    {
-        _indy = pars;
-        if (_indy == "") return;
-
-        var sIn = _ch.Series.Where(s => s.Name.StartsWith("Indica_"));
-        int cnt = sIn.Count();
-        for (int i = 0; i < cnt; i++)
-        {
-            var s = sIn.FirstOrDefault();
-            _ch.Series.Remove(s);
-        }
-
-        string[] ar = _indy.Split('|');
-        foreach (string s in ar)
-        {
-            Series ser = _ch.Series.Add("Indica_" + s.Replace(";", ""));
-
-            string[] a = s.Split(";");
-            int lp = int.Parse(a[1]);
-            DrawSma(lp, ser);
-        }
-    }
-    void DrawSma(int lookbackPeriods, Series sIndica)
-    {
-        sIndica.ChartType = SeriesChartType.FastLine;
-        sIndica.YAxisType = AxisType.Secondary;
-        sIndica.Color = Color.Red;
-
-        List<SmaResult> sma = Indica.GetSma(_klines, lookbackPeriods);
-
-        List<Kline> ks = _klines.Skip(_klines.Count - _zoom).ToList();
-
-        try
-        {
-            List<SmaResult> smas = new(sma.Where(p => p.Date >= ks.First().OpenTime));
-            sIndica.Points.Clear();
-            foreach (var v in smas)
-            {
-                if(v.Sma > 0)
-                    sIndica.Points.AddXY(DL(v.Date), v.Sma);
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Error(Exchange.ID, "DrawSma", "Error: " + ex.Message);
-        }
-    }
-    void DrawRsi()
-    {
-        Series k = _ch.Series["Klines"];
-        Series s = _ch.Series["Indica"];
-        s.ChartType = SeriesChartType.FastLine;
-        s.YAxisType = AxisType.Secondary;
-        s.Color = Color.Red;
-
-        int lookbackPeriods = _zoom < 50 ? 5 : _zoom / 10;
-        List<RsiResult> rsi = Indica.GetRsi(_klines, lookbackPeriods);
-
-        List<Kline> ks = _klines.Skip(_klines.Count - _zoom).ToList();
-
-        try
-        {
-            List<RsiResult> rsis = new(rsi.Where(p => p.Date >= ks.First().OpenTime));
-            
-            double rsiMax = Convert.ToDouble(rsis.Max(r => r.Rsi));
-            double rsiMin = Convert.ToDouble(rsis.Min(r => r.Rsi));
-            double rsiRate = 0.3 * (_yMax - _yMin) / (rsiMax - rsiMin);
-
-            s.Points.Clear();
-            foreach (var r in rsis)
-            {
-                s.Points.AddXY(r.Date, (r.Rsi - rsiMin) * rsiRate + _yMin);
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Error(Exchange.ID, "DrawSma", "Error: " + ex.Message);
-        }
     }
 }

@@ -96,7 +96,7 @@
             lblPrice.TabIndex = 4;
             lblPrice.Text = "28.022365";
             // 
-            // FrmTade
+            // FrmTrade
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -109,8 +109,9 @@
             Controls.Add(btnSell);
             Controls.Add(btnBuy);
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
-            Name = "FrmTade";
+            Name = "FrmTrade";
             ShowInTaskbar = false;
+            StartPosition = FormStartPosition.CenterParent;
             Text = "FrmTade";
             Load += FrmTade_Load;
             ResumeLayout(false);

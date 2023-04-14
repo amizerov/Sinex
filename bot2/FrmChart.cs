@@ -8,13 +8,16 @@ public partial class FrmChart : Form
 {
     Charty Charty;
     FrmStakan? frmOrderBook;
+
+    string _indicators = "";
+
     public FrmChart(AnExchange exch, string symbo)
     {
         InitializeComponent();
 
         Charty = new(chart, exch, symbo);
         Charty.OnKlineUpdated += OnLastKline;
-        Charty.NeedToRepopulate += OnNeedToRepopulate;
+        Charty.NeedToRepopulateChart += OnNeedToRepopulateChart;
 
         foreach (var interval in Charty.Exchange.Intervals)
             cbInterval.Items.Add(interval);
@@ -28,6 +31,8 @@ public partial class FrmChart : Form
     private void FrmChart_Load(object sender, EventArgs e)
     {
         Utils.LoadFormPosition(this);
+        _indicators = Utils.LoadIndicators();
+
         chart.MouseWheel += chart_MouseWheel;
         InitChart();
     }
@@ -36,7 +41,9 @@ public partial class FrmChart : Form
         if (Charty.Symbol == "") return;
 
         await Charty.GetKlines();
-        Charty.populate();
+        await Charty.populate();
+
+        await Charty.DrawIndicators(_indicators);
     }
     void OnLastKline(Kline k)
     {
@@ -49,12 +56,11 @@ public partial class FrmChart : Form
         }
         catch { }
     }
-    void OnNeedToRepopulate()
+    void OnNeedToRepopulateChart()
     {
-        Invoke(new Action(() =>
+        Invoke(new Action(async () =>
         {
-            lblZoom.Text = "Zoom: " + Charty.Zoom;
-            Charty.populate();
+            await Charty.populate();
         }));
     }
     void chart_MouseWheel(object? sender, MouseEventArgs e)
@@ -64,7 +70,7 @@ public partial class FrmChart : Form
         else
             ZoomOut();
     }
-    private void ZoomOut()
+    async void ZoomOut()
     {
         if (Control.ModifierKeys == Keys.Control)
             Charty.Zoom += 10;
@@ -72,10 +78,10 @@ public partial class FrmChart : Form
             Charty.Zoom++;
 
         lblZoom.Text = "Zoom: " + Charty.Zoom;
-        Charty.populate();
+        await Charty.populate();
     }
 
-    private void ZoomIn()
+    async void ZoomIn()
     {
         if (Control.ModifierKeys == Keys.Control)
             Charty.Zoom -= 10;
@@ -83,19 +89,13 @@ public partial class FrmChart : Form
             Charty.Zoom--;
 
         lblZoom.Text = "Zoom: " + Charty.Zoom;
-        Charty.populate();
+        await Charty.populate();
     }
 
     private void cbInterval_SelectedIndexChanged(object sender, EventArgs e)
     {
         Charty.SetInterval(cbInterval.Text);
         InitChart();
-    }
-
-    private void FrmChart_FormClosing(object sender, FormClosingEventArgs e)
-    {
-        Charty.UnsubKlineSocket();
-        Utils.SaveFormPosition(this);
     }
 
     private void btnStakan_Click(object sender, EventArgs e)
@@ -119,10 +119,28 @@ public partial class FrmChart : Form
         f.ShowDialog(this);
     }
 
-    private void btnIndicator_Click(object sender, EventArgs e)
+    private async void btnIndicator_Click(object sender, EventArgs e)
     {
-        FrmIndicator f = new();
+        /**_indicators*******************
+        {
+           "Idicators":[
+              {"SMA": ["12;2;-45698","27;2;-654433","99;3;-324466"]},
+              {"SMMA":["12;2;-45698","27;2;-654433","99;3;-324466"]}
+           ]
+        }
+        **********************************/
+        FrmIndicator f = new(_indicators);
         if (f.ShowDialog(this) == DialogResult.OK)
-            Charty.DrawIndicators(f.IndicatorsSma);
+        {
+            _indicators = f.IndicatorsString; 
+            await Charty.DrawIndicators(_indicators);
+        }
+    }
+
+    private void FrmChart_FormClosing(object sender, FormClosingEventArgs e)
+    {
+        Charty.UnsubKlineSocket();
+        Utils.SaveFormPosition(this);
+        Utils.SaveIndicators(_indicators);
     }
 }

@@ -3,21 +3,51 @@ using System.Windows.Forms.DataVisualization.Charting;
 
 namespace bot2;
 
-public class ChartPoint
+public partial class Charty
 {
-    Chart _ch;
-    ChartArea _cha;
-
-    public ChartPoint(Chart ch)
+    public void SetCursor()
     {
-        _ch = ch;
+        var cx = _cha.CursorX;
+        cx.IsUserEnabled = true;
+        cx.IsUserSelectionEnabled = true;
+        cx.LineDashStyle = ChartDashStyle.Dash;
+
+        var cy = _cha.CursorY;
+        cy.IsUserEnabled = true;
+        cy.IsUserSelectionEnabled = true;
+        cy.LineDashStyle = ChartDashStyle.Dash;
+        cy.AxisType = AxisType.Secondary;
+
         _ch.PostPaint += chart_PostPaint;
-        _cha = _ch.ChartAreas[0];
-
         _ch.MouseMove += chart_MouseMove;
-
     }
     void chart_PostPaint(object? sender, ChartPaintEventArgs e)
+    {
+        Graphics g = e.ChartGraphics.Graphics;
+        SetCurrentPrice(g);
+        SetCursorPrice(g);
+    }
+    private void chart_MouseMove(object? sender, MouseEventArgs e)
+    {
+        SetCursorLines(e.Location);
+    }
+
+    public void SetCursorLines(Point p)
+    {
+        try
+        {
+            double x = _cha.AxisX.PixelPositionToValue(p.X);
+            double y = _cha.AxisY2.PixelPositionToValue(p.Y);
+
+            _cha.CursorX.Position = x;
+            _cha.CursorY.Position = y;
+
+            SetCursorPrice();
+
+        }
+        catch (Exception ex) { Log.Error("cc", "Error: " + ex.Message); }
+    }
+    void SetCurrentPrice(Graphics g)
     {
         Series sKlines = _ch.Series["Klines"];
         if (sKlines.Points.Count == 0) return;
@@ -33,8 +63,6 @@ public class ChartPoint
         int x = (int)ax.ValueToPixelPosition(vx);
         int y = (int)ay.ValueToPixelPosition(vy);
 
-        Graphics g = e.ChartGraphics.Graphics;
-
         //Подложка под текщей ценой
         Pen pen = new Pen(Brushes.FloralWhite, 50);
         Rectangle rec = new Rectangle(x + 32, y - 2, 120, 5);
@@ -45,34 +73,17 @@ public class ChartPoint
         //Стрелка
         Image mark = Image.FromFile("Content\\mark.png");
         g.DrawImage(mark, new Point(x - 1, y - 6));
-
-        CursorPrice(g);
     }
-    public void CursorLines(Point p)
-    {
-        try
-        {
-            double x = _cha.AxisX.PixelPositionToValue(p.X);
-            double y = _cha.AxisY2.PixelPositionToValue(p.Y);
-
-            _cha.CursorX.Position = x;
-            _cha.CursorY.Position = y;
-
-            CursorPrice();
-
-        }
-        catch (Exception ex) { Log.Error("cc", "Error: " + ex.Message); }
-    }
-    void CursorPrice(Graphics? g = null)
+    void SetCursorPrice(Graphics? g = null)
     {
         double yMinValue = _cha.AxisY2.ScaleView.ViewMinimum;
         double yMaxValue = _cha.AxisY2.ScaleView.ViewMaximum;
         double xMinValue = _cha.AxisX.Minimum;
         double xMaxValue = _cha.AxisX.Maximum;
-        
+
         double xValue = _cha.CursorX.Position;
         double yValue = _cha.CursorY.Position;
-        if(xValue.Equals(double.NaN) || yValue.Equals(double.NaN)) return;
+        if (xValue.Equals(double.NaN) || yValue.Equals(double.NaN)) return;
 
         int xMaxPixels = (int)_cha.AxisX.ValueToPixelPosition(xMaxValue);
         int yPixel = (int)_cha.AxisY2.ValueToPixelPosition(yValue);
@@ -97,9 +108,4 @@ public class ChartPoint
             //g.DrawImage(mark, new Point(x - 1, y - 6));
         }
     }
-    private void chart_MouseMove(object? sender, MouseEventArgs e)
-    {
-        CursorLines(e.Location);
-    }
-
 }

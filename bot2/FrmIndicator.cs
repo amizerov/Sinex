@@ -1,46 +1,83 @@
-﻿using bot2.Tools;
+﻿using bot2.Controls;
+using System.Text.Json;
 
-namespace bot2
+namespace bot2;
+
+public class JIndica
 {
-    public partial class FrmIndicator : Form
+    string Name = "";
+    List<string> Settings = new();
+}
+
+public partial class FrmIndicator : Form
+{
+    public string IndicatorsString => JsonSerializer.Serialize(IndicatorsList);
+
+    List<JIndica> IndicatorsList = new();
+    UcIndBase? UcIndicator;
+
+    public FrmIndicator(string indicator)
     {
-        public string IndicatorsSma = "";
-        public FrmIndicator()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
 
-        private void btnSave_Click(object sender, EventArgs e)
+        /**_indicators*******************
         {
-            foreach (var sind in chLbIndSma.CheckedItems)
+           "Idicators":[
+              {"SMA": ["12;2;-45698","27;2;-654433","99;3;-324466"]},
+              {"SMMA":["12;2;-45698","27;2;-654433","99;3;-324466"]}
+           ]
+        }
+        **********************************/
+
+        IndicatorsList = JsonSerializer.Deserialize<List<JIndica>>(indicator)!;
+    }
+
+    private void FrmIndicator_Load(object sender, EventArgs e)
+    {
+        var itms = chLbIndSma.Items;
+        for (int i = 0; i < itms.Count; i++)
+        {
+            if (IndicatorsList.Count > 0 
+             && IndicatorsList.Contains(itms[i].ToString()!))
             {
-                if (sind.ToString() == "SMA")
-                {
-                    if (chbMa1.Checked)
-                        IndicatorsSma = "Sma;" + txtLookbackPeriods1.Text + "|";
-                    if (chbMa2.Checked)
-                        IndicatorsSma += "Sma;" + txtLookbackPeriods2.Text + "|";
-                    if (chbMa3.Checked)
-                        IndicatorsSma += "Sma;" + txtLookbackPeriods3.Text + "|";
-                    if (chbMa4.Checked)
-                        IndicatorsSma += "Sma;" + txtLookbackPeriods4.Text + "|";
-                    if (chbMa5.Checked)
-                        IndicatorsSma += "Sma;" + txtLookbackPeriods5.Text + "|";
-                    if (chbMa6.Checked)
-                        IndicatorsSma += "Sma;" + txtLookbackPeriods6.Text + "|";
-                }
-                if (IndicatorsSma.Length > 0) IndicatorsSma = IndicatorsSma.Trim('|');
+                chLbIndSma.SetItemChecked(i, true);
             }
-            DialogResult = DialogResult.OK;
-            Close();
         }
+    }
 
-        private void FrmIndicator_Load(object sender, EventArgs e)
+    // 12;1;2534|25;2;3546
+    private void btnSave_Click(object sender, EventArgs e)
+    {
+        //IndicatorsSma = "";
+        foreach (var sind in chLbIndSma.CheckedItems)
         {
+            if (sind.ToString() == "SMA")
+            {
+            }
         }
+        DialogResult = DialogResult.OK;
+        Close();
+    }
 
-        private void chbMa_CheckedChanged(object sender, EventArgs e)
+    private void chbMa_CheckedChanged(object sender, EventArgs e)
+    {
+    }
+
+    private void btnColor_Click(object sender, EventArgs e)
+    {
+        if (colorDialog1.ShowDialog() == DialogResult.OK)
         {
+            ((Button)sender).BackColor = colorDialog1.Color;
+        }
+    }
+
+    private void chLbIndSma_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        panel1.Controls.Clear();
+        if (chLbIndSma.SelectedItem?.ToString() == "SMA")
+        {
+            UcIndicator = new UcIndSMA();
+            panel1.Controls.Add(UcIndicator);
         }
     }
 }

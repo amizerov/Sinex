@@ -25,4 +25,17 @@ public static class Utils
             f.Height = int.Parse(pos[3]); ;
         }
     }
+    public static void SaveIndicators(string indics)
+    {
+        string file = Application.StartupPath + "Indicators.txt";
+        File.WriteAllText(file, indics);
+    }
+    public static string LoadIndicators()
+    {
+        string file = Application.StartupPath + "Indicators.txt";
+        if (File.Exists(file))
+            return File.ReadAllText(file);
+        else
+            return "";
+    }
 }

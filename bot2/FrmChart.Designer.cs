@@ -106,7 +106,7 @@
             // btnStakan
             // 
             btnStakan.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnStakan.Location = new Point(1118, 8);
+            btnStakan.Location = new Point(995, 8);
             btnStakan.Name = "btnStakan";
             btnStakan.Size = new Size(112, 34);
             btnStakan.TabIndex = 4;
@@ -117,7 +117,7 @@
             // btnTrade
             // 
             btnTrade.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnTrade.Location = new Point(1000, 8);
+            btnTrade.Location = new Point(877, 8);
             btnTrade.Name = "btnTrade";
             btnTrade.Size = new Size(112, 34);
             btnTrade.TabIndex = 5;
@@ -128,7 +128,7 @@
             // btnIndicator
             // 
             btnIndicator.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnIndicator.Location = new Point(882, 8);
+            btnIndicator.Location = new Point(759, 8);
             btnIndicator.Name = "btnIndicator";
             btnIndicator.Size = new Size(112, 34);
             btnIndicator.TabIndex = 6;
