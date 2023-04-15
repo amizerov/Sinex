@@ -4,29 +4,16 @@ namespace bot2.Controls;
 
 public partial class UcIndSMA : UcIndBase
 {
-    /**_indicators*******************
-    [
-        {
-            "Name": "SMA",
-            "Settings": ["12;2;-45698","27;2;-654433","99;3;-324466"]
-        },
-        {
-            "Name": "SMMA",
-            "Settings": ["12;2;-45698","27;2;-654433","99;3;-324466"]
-        }
-    ]
-    **********************************/
-
     CheckBox[] _chb;
     TextBox[] _txt;
     Button[] _btn;
     NumericUpDown[] _nud;
 
-    public UcIndSMA(List<string> sets)
+    public UcIndSMA(List<string> indicas)
     {
         InitializeComponent();
 
-        _indicas = sets;
+        _indicaList = indicas;
 
         _chb = new CheckBox[6] { chbMa1, chbMa2, chbMa3, chbMa4, chbMa5, chbMa6 };
         _txt = new TextBox[6] { txtLbPer1, txtLbPer2, txtLbPer3, txtLbPer4, txtLbPer5, txtLbPer6 };
@@ -36,10 +23,10 @@ public partial class UcIndSMA : UcIndBase
 
     private void UcIndSMA_Load(object sender, EventArgs e)
     {
-        if (_indicas.Count == 0) return;
+        if (_indicaList.Count == 0) return;
 
         int j = 0;
-        foreach (string s in _indicas)
+        foreach (string s in _indicaList)
         {
             string[] a = s.Split(';');
             _chb[j].Checked = true;
@@ -52,14 +39,14 @@ public partial class UcIndSMA : UcIndBase
 
     public override List<string> GetIndicators()
     {
-        _indicas.Clear();
+        _indicaList.Clear();
         for (int i = 0; i < 6; i++)
         {
             if (_chb[i].Checked)
-                _indicas.Add(_txt[i].Text + ";" + _nud[i].Value + ";" + _btn[i].BackColor.ToArgb());
+                _indicaList.Add(_txt[i].Text + ";" + _nud[i].Value + ";" + _btn[i].BackColor.ToArgb());
         }
 
-        return _indicas;
+        return _indicaList;
     }
 
     private void btnColor_Click(object sender, EventArgs e)

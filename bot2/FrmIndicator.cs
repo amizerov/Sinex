@@ -41,18 +41,6 @@ public partial class FrmIndicator : Form
         }
     }
 
-    /**_indicators*******************
-    [
-	    {
-		    "Name": "SMA",
-		    "Settings": ["12;2;-45698","27;2;-654433","99;3;-324466"]
-	    },
-	    {
-		    "Name": "SMMA",
-		    "Settings": ["12;2;-45698","27;2;-654433","99;3;-324466"]
-	    }
-    ]
-    **********************************/
     private void btnSave_Click(object sender, EventArgs e)
     {
         if (panel1.Controls.Count == 0) return;
@@ -78,14 +66,6 @@ public partial class FrmIndicator : Form
 
     private void chbMa_CheckedChanged(object sender, EventArgs e)
     {
-    }
-
-    private void btnColor_Click(object sender, EventArgs e)
-    {
-        if (colorDialog1.ShowDialog() == DialogResult.OK)
-        {
-            ((Button)sender).BackColor = colorDialog1.Color;
-        }
     }
 
     private void chLbIndSma_SelectedIndexChanged(object sender, EventArgs e)

@@ -1,13 +1,13 @@
 ﻿namespace bot2.Controls;
 
-public partial class UcIndSMMA : UcIndBase
+public partial class UcIndEMA : UcIndBase
 {
     CheckBox[] _chb;
     TextBox[] _txt;
     Button[] _btn;
     NumericUpDown[] _nud;
 
-    public UcIndSMMA(List<string> indicas)
+    public UcIndEMA(List<string> indicas)
     {
         InitializeComponent();
 
@@ -19,7 +19,7 @@ public partial class UcIndSMMA : UcIndBase
         _nud = new NumericUpDown[6] { nudLine1, nudLine2, nudLine3, nudLine4, nudLine5, nudLine6 };
     }
 
-    private void UcIndSMMA_Load(object sender, EventArgs e)
+    private void UcIndEMA_Load(object sender, EventArgs e)
     {
         if (_indicaList.Count == 0) return;
 

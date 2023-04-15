@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Controls\UcIndEMA.cs" />
     <Compile Update="Controls\UcIndSMMA.cs" />
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
