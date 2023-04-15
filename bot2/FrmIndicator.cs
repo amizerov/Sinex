@@ -1,35 +1,30 @@
 ﻿using bot2.Controls;
-using System.Text.Json;
+using Skender.Stock.Indicators;
 
 namespace bot2;
 
-public class JIndica
-{
-    string Name = "";
-    List<string> Settings = new();
-}
-
 public partial class FrmIndicator : Form
 {
-    public string IndicatorsString => JsonSerializer.Serialize(IndicatorsList);
+    public List<JIndica> IndicatorsList = new();
 
-    List<JIndica> IndicatorsList = new();
-    UcIndBase? UcIndicator;
-
-    public FrmIndicator(string indicator)
+    public FrmIndicator(List<JIndica> indicatorsList)
     {
         InitializeComponent();
 
         /**_indicators*******************
-        {
-           "Idicators":[
-              {"SMA": ["12;2;-45698","27;2;-654433","99;3;-324466"]},
-              {"SMMA":["12;2;-45698","27;2;-654433","99;3;-324466"]}
-           ]
-        }
+        [
+	        {
+		        "Name": "SMA",
+		        "Settings": ["12;2;-45698","27;2;-654433","99;3;-324466"]
+	        },
+	        {
+		        "Name": "SMMA",
+		        "Settings": ["12;2;-45698","27;2;-654433","99;3;-324466"]
+	        }
+        ]
         **********************************/
 
-        IndicatorsList = JsonSerializer.Deserialize<List<JIndica>>(indicator)!;
+        IndicatorsList = indicatorsList;
     }
 
     private void FrmIndicator_Load(object sender, EventArgs e)
@@ -38,23 +33,45 @@ public partial class FrmIndicator : Form
         for (int i = 0; i < itms.Count; i++)
         {
             if (IndicatorsList.Count > 0 
-             && IndicatorsList.Contains(itms[i].ToString()!))
+             && IndicatorsList.Exists(ind => ind.Name == itms[i].ToString())
+             )
             {
                 chLbIndSma.SetItemChecked(i, true);
             }
         }
     }
 
-    // 12;1;2534|25;2;3546
+    /**_indicators*******************
+    [
+	    {
+		    "Name": "SMA",
+		    "Settings": ["12;2;-45698","27;2;-654433","99;3;-324466"]
+	    },
+	    {
+		    "Name": "SMMA",
+		    "Settings": ["12;2;-45698","27;2;-654433","99;3;-324466"]
+	    }
+    ]
+    **********************************/
     private void btnSave_Click(object sender, EventArgs e)
     {
-        //IndicatorsSma = "";
-        foreach (var sind in chLbIndSma.CheckedItems)
+        if (panel1.Controls.Count == 0) return;
+        UcIndBase c = (UcIndBase)panel1.Controls[0];
+
+        JIndica jIndica = new JIndica();
+        jIndica.Name = c.Name;
+        jIndica.Settings = c.GetIndicators();
+
+        var curInd = IndicatorsList.FirstOrDefault(i => i.Name == jIndica.Name);
+        if (curInd != null)
         {
-            if (sind.ToString() == "SMA")
-            {
-            }
+            curInd.Settings = jIndica.Settings;
         }
+        else
+        {
+            IndicatorsList.Add(jIndica);
+        }
+
         DialogResult = DialogResult.OK;
         Close();
     }
@@ -74,10 +91,31 @@ public partial class FrmIndicator : Form
     private void chLbIndSma_SelectedIndexChanged(object sender, EventArgs e)
     {
         panel1.Controls.Clear();
-        if (chLbIndSma.SelectedItem?.ToString() == "SMA")
+        string itm = chLbIndSma.SelectedItem?.ToString()!;
+        JIndica inds = IndicatorsList.FirstOrDefault(ind => ind.Name == itm)!;
+        UcIndBase uc = new();
+        if (itm == "SMA")
         {
-            UcIndicator = new UcIndSMA();
-            panel1.Controls.Add(UcIndicator);
+            uc = new UcIndSMA(inds.Settings);
         }
+        if (itm == "SMMA")
+        {
+            uc = new UcIndSMMA(inds.Settings);
+        }
+        uc.Name = inds.Name;
+        panel1.Controls.Add(uc);
     }
 }
+
+public class JIndica
+{
+    public string Name { get; set; }
+    public List<string> Settings { get; set; }
+
+    public JIndica()
+    {
+        Name = "";
+        Settings = new List<string>();
+    }
+}
+

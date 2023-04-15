@@ -1,4 +1,7 @@
-﻿namespace bot2.Tools;
+﻿using System.Text.Json;
+using amLogger;
+
+namespace bot2.Tools;
 
 public static class Utils
 {
@@ -25,17 +28,49 @@ public static class Utils
             f.Height = int.Parse(pos[3]); ;
         }
     }
-    public static void SaveIndicators(string indics)
+
+    /**_indicators*******************
+    [
+        {
+            "Name": "SMA",
+            "Settings": ["12;2;-45698","27;2;-654433","99;3;-324466"]
+        },
+        {
+            "Name": "SMMA",
+            "Settings": ["12;2;-45698","27;2;-654433","99;3;-324466"]
+        }
+    ]
+    **********************************/
+    public static void SaveIndicators(List<JIndica> indiList)
     {
-        string file = Application.StartupPath + "Indicators.txt";
-        File.WriteAllText(file, indics);
+        try
+        {
+            string jsonString = JsonSerializer.Serialize(indiList);
+            string file = Application.StartupPath + "Indicators.json";
+            File.WriteAllText(file, jsonString);
+        }
+        catch (Exception ex)
+        {
+            Log.Error("Utils.SaveIndicators", "Error:" + ex.Message);
+        }
     }
-    public static string LoadIndicators()
+    public static List<JIndica> LoadIndicators()
     {
-        string file = Application.StartupPath + "Indicators.txt";
+        List<JIndica>? res = null;
+        string file = Application.StartupPath + "Indicators.json";
         if (File.Exists(file))
-            return File.ReadAllText(file);
-        else
-            return "";
+        {
+            try
+            {
+                string jsonString = File.ReadAllText(file);
+                res = JsonSerializer.Deserialize<List<JIndica>>(jsonString);
+            }
+            catch(Exception ex)
+            {
+                Log.Error("Utils.LoadIndicators", "Error:" + ex.Message);
+            }
+        }
+        if (res == null) res = new();
+        return res;
     }
 }

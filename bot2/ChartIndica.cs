@@ -7,10 +7,10 @@ namespace bot2;
 
 public partial class Charty
 {
-    public Task DrawIndicators(string pars = "")
+    public Task DrawIndicators(List<JIndica>? indicatorsList = null)
     {
-        if(pars.Length > 0) _indy = pars;
-        if (_indy == "") return Task.CompletedTask;
+        if (indicatorsList != null) IndicatorsList = indicatorsList;
+        if (IndicatorsList.Count == 0) return Task.CompletedTask;
 
         var sIn = _ch.Series.Where(s => s.Name.StartsWith("Indica_"));
         int cnt = sIn.Count();
@@ -20,18 +20,34 @@ public partial class Charty
             _ch.Series.Remove(s);
         }
 
-        string[] ar = _indy.Split('|');
-        foreach (string s in ar)
+        foreach (var ind in IndicatorsList)
         {
-            Series ser = _ch.Series.Add("Indica_" + s.Replace(";", ""));
-
-            string[] a = s.Split(";");
-            if (a.Length == 3)
+            foreach (string s in ind.Settings)
             {
-                int lp = int.Parse(a[0]);
-                int lw = int.Parse(a[1]);
-                int lc = int.Parse(a[2]);
-                DrawSma(lp, lw, lc, ser);
+                Series ser = _ch.Series.Add("Indica_" + ind.Name + s.Replace(";", ""));
+
+                if (ind.Name == "SMA")
+                {
+                    string[] a = s.Split(";");
+                    if (a.Length == 3)
+                    {
+                        int lp = int.Parse(a[0]);
+                        int lw = int.Parse(a[1]);
+                        int lc = int.Parse(a[2]);
+                        DrawSma(lp, lw, lc, ser);
+                    }
+                }
+                if (ind.Name == "SMMA")
+                {
+                    string[] a = s.Split(";");
+                    if (a.Length == 3)
+                    {
+                        int lp = int.Parse(a[0]);
+                        int lw = int.Parse(a[1]);
+                        int lc = int.Parse(a[2]);
+                        DrawSmma(lp, lw, lc, ser);
+                    }
+                }
             }
         }
         return Task.CompletedTask;
@@ -54,6 +70,31 @@ public partial class Charty
             foreach (var v in smas)
             {
                 sIndica.Points.AddXY(DL(v.Date), v.Sma);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(Exchange.ID, "DrawSma", "Error: " + ex.Message);
+        }
+    }
+    void DrawSmma(int lookbackPeriods, int lineWidth, int lineColor, Series sIndica)
+    {
+        sIndica.ChartType = SeriesChartType.FastLine;
+        sIndica.YAxisType = AxisType.Secondary;
+        sIndica.Color = Color.FromArgb(lineColor);
+        sIndica.BorderWidth = lineWidth;
+
+        List<SmmaResult> smma = Indica.GetSmma(_klines, lookbackPeriods);
+
+        List<Kline> ks = _klines.Skip(_klines.Count - _zoom).ToList();
+
+        try
+        {
+            List<SmmaResult> smmas = new(smma.Where(p => p.Date >= ks.First().OpenTime));
+            sIndica.Points.Clear();
+            foreach (var v in smmas)
+            {
+                sIndica.Points.AddXY(DL(v.Date), v.Smma);
             }
         }
         catch (Exception ex)

@@ -95,7 +95,7 @@ public partial class Charty : ChartyBase
                 }
             }
 
-            await DrawIndicators(_indy);
+            await DrawIndicators();
         }
         catch (Exception ex)
         {

@@ -1,6 +1,6 @@
 ﻿namespace bot2.Controls
 {
-    partial class UcIndSMA
+    partial class UcIndSMMA
     {
         /// <summary> 
         /// Обязательная переменная конструктора.
@@ -165,9 +165,9 @@
             label1.AutoSize = true;
             label1.Location = new Point(14, 24);
             label1.Name = "label1";
-            label1.Size = new Size(257, 25);
+            label1.Size = new Size(303, 25);
             label1.TabIndex = 1;
-            label1.Text = "SMA - Simple Moving Average";
+            label1.Text = "SMMA - Smoothed Moving Average";
             // 
             // txtLbPer1
             // 
@@ -333,14 +333,14 @@
             chbMa6.Text = "MA6";
             chbMa6.UseVisualStyleBackColor = true;
             // 
-            // UcIndSMA
+            // UcIndSMMA
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(panelSma);
-            Name = "UcIndSMA";
+            Name = "UcIndSMMA";
             Size = new Size(681, 563);
-            Load += UcIndSMA_Load;
+            Load += UcIndSMMA_Load;
             panelSma.ResumeLayout(false);
             panelSma.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)nudLine6).EndInit();

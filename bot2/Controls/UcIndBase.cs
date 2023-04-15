@@ -1,8 +1,8 @@
 ﻿namespace bot2.Controls;
 
-public abstract class UcIndBase : UserControl
+public partial class UcIndBase : UserControl
 {
-    protected string _indica = "";
-    public abstract string GetIndicatorsString();
+    protected List<string> _indicas = new();
+    public virtual List<string> GetIndicators() { return new(); }
 
 }

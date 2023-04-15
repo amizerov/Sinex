@@ -11,6 +11,14 @@ public class Indica
         return sma.ToList();
     }
 
+    public static List<SmmaResult> GetSmma(List<Kline> klines, int lookbackPeriods)
+    {
+        IEnumerable<Quote> quotes = GetQuotesFromKlines(klines);
+        IEnumerable<SmmaResult> smma = quotes.GetSmma(lookbackPeriods);
+
+        return smma.ToList();
+    }
+
     public static List<RsiResult> GetRsi(List<Kline> klines, int lookbackPeriods)
     {
         IEnumerable<Quote> quotes = GetQuotesFromKlines(klines);

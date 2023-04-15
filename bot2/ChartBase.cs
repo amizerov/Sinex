@@ -12,12 +12,12 @@ public class ChartyBase
     protected Title _title;
 
     protected List<Kline> _klines = new();
+    protected List<JIndica> IndicatorsList = new();
 
     protected int _zoom = 100;
     protected double _volumeRate = 0;
     protected double _yMax = 0;
     protected double _yMin = 0;
-    protected string _indy = "";
     protected string _symbol = "";
     protected string _interval = "";
 

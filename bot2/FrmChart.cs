@@ -8,8 +8,7 @@ public partial class FrmChart : Form
 {
     Charty Charty;
     FrmStakan? frmOrderBook;
-
-    string _indicators = "";
+    List<JIndica> IndicatorsList = new();
 
     public FrmChart(AnExchange exch, string symbo)
     {
@@ -31,7 +30,7 @@ public partial class FrmChart : Form
     private void FrmChart_Load(object sender, EventArgs e)
     {
         Utils.LoadFormPosition(this);
-        _indicators = Utils.LoadIndicators();
+        IndicatorsList = Utils.LoadIndicators();
 
         chart.MouseWheel += chart_MouseWheel;
         InitChart();
@@ -43,7 +42,7 @@ public partial class FrmChart : Form
         await Charty.GetKlines();
         await Charty.populate();
 
-        await Charty.DrawIndicators(_indicators);
+        await Charty.DrawIndicators(IndicatorsList);
     }
     void OnLastKline(Kline k)
     {
@@ -122,18 +121,23 @@ public partial class FrmChart : Form
     private async void btnIndicator_Click(object sender, EventArgs e)
     {
         /**_indicators*******************
-        {
-           "Idicators":[
-              {"SMA": ["12;2;-45698","27;2;-654433","99;3;-324466"]},
-              {"SMMA":["12;2;-45698","27;2;-654433","99;3;-324466"]}
-           ]
-        }
+        [
+            {
+                "Name": "SMA",
+                "Settings": ["12;2;-45698","27;2;-654433","99;3;-324466"]
+            },
+            {
+                "Name": "SMMA",
+                "Settings": ["12;2;-45698","27;2;-654433","99;3;-324466"]
+            }
+        ]
         **********************************/
-        FrmIndicator f = new(_indicators);
+        FrmIndicator f = new(IndicatorsList);
         if (f.ShowDialog(this) == DialogResult.OK)
         {
-            _indicators = f.IndicatorsString; 
-            await Charty.DrawIndicators(_indicators);
+            //IndicatorsList = f.IndicatorsList; 
+            //await Charty.DrawIndicators(IndicatorsList);
+            await Charty.DrawIndicators();
         }
     }
 
@@ -141,6 +145,6 @@ public partial class FrmChart : Form
     {
         Charty.UnsubKlineSocket();
         Utils.SaveFormPosition(this);
-        Utils.SaveIndicators(_indicators);
+        Utils.SaveIndicators(IndicatorsList);
     }
 }
