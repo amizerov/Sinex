@@ -43,6 +43,38 @@ public class Indica
         return epma.ToList();
     }
 
+    public static List<VwmaResult> GetVwma(List<Kline> klines, int lookbackPeriods)
+    {
+        IEnumerable<Quote> quotes = GetQuotesFromKlines(klines);
+        IEnumerable<VwmaResult> vwma = quotes.GetVwma(lookbackPeriods);
+
+        return vwma.ToList();
+    }
+
+    public static List<TemaResult> GetTema(List<Kline> klines, int lookbackPeriods)
+    {
+        IEnumerable<Quote> quotes = GetQuotesFromKlines(klines);
+        IEnumerable<TemaResult> tema = quotes.GetTema(lookbackPeriods);
+
+        return tema.ToList();
+    }
+
+    public static List<HmaResult> GetHma(List<Kline> klines, int lookbackPeriods)
+    {
+        IEnumerable<Quote> quotes = GetQuotesFromKlines(klines);
+        IEnumerable<HmaResult> hma = quotes.GetHma(lookbackPeriods);
+
+        return hma.ToList();
+    }
+
+    public static List<DemaResult> GetDema(List<Kline> klines, int lookbackPeriods)
+    {
+        IEnumerable<Quote> quotes = GetQuotesFromKlines(klines);
+        IEnumerable<DemaResult> dema = quotes.GetDema(lookbackPeriods);
+
+        return dema.ToList();
+    }
+
     public static List<RsiResult> GetRsi(List<Kline> klines, int lookbackPeriods)
     {
         IEnumerable<Quote> quotes = GetQuotesFromKlines(klines);

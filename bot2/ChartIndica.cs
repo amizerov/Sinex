@@ -42,6 +42,10 @@ public partial class Charty
                     if (ind.Name == "EMA") DrawEma(lp, ser);
                     if (ind.Name == "WMA") DrawWma(lp, ser);
                     if (ind.Name == "EPMA") DrawEpma(lp, ser);
+                    if (ind.Name == "VWMA") DrawVwma(lp, ser);
+                    if (ind.Name == "TEMA") DrawTema(lp, ser);
+                    if (ind.Name == "HMA") DrawHma(lp, ser);
+                    if (ind.Name == "DEMA") DrawDema(lp, ser);
                 }
             }
         }
@@ -142,6 +146,82 @@ public partial class Charty
             Log.Error(Exchange.ID, "DrawSma", "Error: " + ex.Message);
         }
     }
+    void DrawVwma(int lookbackPeriods, Series sIndica)
+    {
+        List<VwmaResult> vwma = Indica.GetVwma(_klines, lookbackPeriods);
+        List<Kline> ks = _klines.Skip(_klines.Count - _zoom).ToList();
+
+        try
+        {
+            List<VwmaResult> vwmas = new(vwma.Where(p => p.Date >= ks.First().OpenTime));
+            sIndica.Points.Clear();
+            foreach (var v in vwmas)
+            {
+                sIndica.Points.AddXY(DL(v.Date), v.Vwma);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(Exchange.ID, "DrawSma", "Error: " + ex.Message);
+        }
+    }
+    void DrawTema(int lookbackPeriods, Series sIndica)
+    {
+        List<TemaResult> tema = Indica.GetTema(_klines, lookbackPeriods);
+        List<Kline> ks = _klines.Skip(_klines.Count - _zoom).ToList();
+
+        try
+        {
+            List<TemaResult> temas = new(tema.Where(p => p.Date >= ks.First().OpenTime));
+            sIndica.Points.Clear();
+            foreach (var v in temas)
+            {
+                sIndica.Points.AddXY(DL(v.Date), v.Tema);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(Exchange.ID, "DrawSma", "Error: " + ex.Message);
+        }
+    }
+    void DrawHma(int lookbackPeriods, Series sIndica)
+    {
+        List<HmaResult> hma = Indica.GetHma(_klines, lookbackPeriods);
+        List<Kline> ks = _klines.Skip(_klines.Count - _zoom).ToList();
+
+        try
+        {
+            List<HmaResult> hmas = new(hma.Where(p => p.Date >= ks.First().OpenTime));
+            sIndica.Points.Clear();
+            foreach (var v in hmas)
+            {
+                sIndica.Points.AddXY(DL(v.Date), v.Hma);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(Exchange.ID, "DrawSma", "Error: " + ex.Message);
+        }
+    }
+    void DrawDema(int lookbackPeriods, Series sIndica)
+    {
+        List<DemaResult> dema = Indica.GetDema(_klines, lookbackPeriods);
+        List<Kline> ks = _klines.Skip(_klines.Count - _zoom).ToList();
+
+        try
+        {
+            List<DemaResult> demas = new(dema.Where(p => p.Date >= ks.First().OpenTime));
+            sIndica.Points.Clear();
+            foreach (var v in demas)
+            {
+                sIndica.Points.AddXY(DL(v.Date), v.Dema);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(Exchange.ID, "DrawSma", "Error: " + ex.Message);
+        }
+    }
     void DrawRsi()
     {
         Series k = _ch.Series["Klines"];
@@ -193,6 +273,10 @@ public class JIndica
         res.Add(new() { Name = "EMA", Description = "Exponential Moving Average (EMA)" });
         res.Add(new() { Name = "WMA", Description = "Weighted Moving Average (WMA)" });
         res.Add(new() { Name = "EPMA", Description = "Endpoint Moving Average (EPMA)" });
+        res.Add(new() { Name = "VWMA", Description = "Volume Weighted Moving Average (VWMA)" });
+        res.Add(new() { Name = "TEMA", Description = "Triple Exponential Moving Average (TEMA)" });
+        res.Add(new() { Name = "HMA", Description = "Hull Moving Average (HMA)" });
+        res.Add(new() { Name = "DEMA", Description = "Double Exponential Moving Average (DEMA)" });
 
         return res;
     }

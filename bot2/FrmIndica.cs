@@ -1,4 +1,5 @@
 ﻿using bot2.Controls;
+using bot2.Tools;
 
 namespace bot2;
 
@@ -48,6 +49,7 @@ public partial class FrmIndica : Form
             IndicatorsList.Add(jIndica);
         }
 
+        Utils.SaveIndicators(IndicatorsList.Where(i => i.IsChecked).ToList());
         DialogResult = DialogResult.OK;
         Close();
     }
