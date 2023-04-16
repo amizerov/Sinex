@@ -100,6 +100,7 @@
             // 
             nudLine6.Location = new Point(192, 281);
             nudLine6.Maximum = new decimal(new int[] { 3, 0, 0, 0 });
+            nudLine6.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             nudLine6.Name = "nudLine6";
             nudLine6.Size = new Size(47, 31);
             nudLine6.TabIndex = 5;
@@ -109,6 +110,7 @@
             // 
             nudLine4.Location = new Point(192, 199);
             nudLine4.Maximum = new decimal(new int[] { 3, 0, 0, 0 });
+            nudLine4.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             nudLine4.Name = "nudLine4";
             nudLine4.Size = new Size(47, 31);
             nudLine4.TabIndex = 5;
@@ -118,6 +120,7 @@
             // 
             nudLine2.Location = new Point(192, 117);
             nudLine2.Maximum = new decimal(new int[] { 3, 0, 0, 0 });
+            nudLine2.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             nudLine2.Name = "nudLine2";
             nudLine2.Size = new Size(47, 31);
             nudLine2.TabIndex = 5;
@@ -127,6 +130,7 @@
             // 
             nudLine5.Location = new Point(192, 240);
             nudLine5.Maximum = new decimal(new int[] { 3, 0, 0, 0 });
+            nudLine5.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             nudLine5.Name = "nudLine5";
             nudLine5.Size = new Size(47, 31);
             nudLine5.TabIndex = 5;
@@ -136,6 +140,7 @@
             // 
             nudLine3.Location = new Point(192, 158);
             nudLine3.Maximum = new decimal(new int[] { 3, 0, 0, 0 });
+            nudLine3.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             nudLine3.Name = "nudLine3";
             nudLine3.Size = new Size(47, 31);
             nudLine3.TabIndex = 5;
@@ -145,6 +150,7 @@
             // 
             nudLine1.Location = new Point(192, 77);
             nudLine1.Maximum = new decimal(new int[] { 3, 0, 0, 0 });
+            nudLine1.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             nudLine1.Name = "nudLine1";
             nudLine1.Size = new Size(47, 31);
             nudLine1.TabIndex = 5;

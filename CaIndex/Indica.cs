@@ -3,6 +3,14 @@ using Skender.Stock.Indicators;
 
 public class Indica
 {
+    public static List<EmaResult> GetEma(List<Kline> klines, int lookbackPeriods)
+    {
+        IEnumerable<Quote> quotes = GetQuotesFromKlines(klines);
+        IEnumerable<EmaResult> ema = quotes.GetEma(lookbackPeriods);
+
+        return ema.ToList();
+    }
+
     public static List<SmaResult> GetSma(List<Kline> klines, int lookbackPeriods)
     {
         IEnumerable<Quote> quotes = GetQuotesFromKlines(klines);

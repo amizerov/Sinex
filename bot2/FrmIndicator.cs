@@ -73,6 +73,8 @@ public partial class FrmIndicator : Form
         panel1.Controls.Clear();
         string itm = chLbIndSma.SelectedItem?.ToString()!;
         JIndica inds = IndicatorsList.FirstOrDefault(ind => ind.Name == itm)!;
+        if (inds == null) inds = new();
+
         UcIndBase uc = new();
         if (itm == "SMA")
         {
@@ -82,7 +84,11 @@ public partial class FrmIndicator : Form
         {
             uc = new UcIndSMMA(inds.Settings);
         }
-        uc.Name = inds.Name;
+        if (itm == "EMA")
+        {
+            uc = new UcIndEMA(inds.Settings);
+        }
+        uc.Name = itm;
         panel1.Controls.Add(uc);
     }
 }

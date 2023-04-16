@@ -48,9 +48,45 @@ public partial class Charty
                         DrawSmma(lp, lw, lc, ser);
                     }
                 }
+                if (ind.Name == "EMA")
+                {
+                    string[] a = s.Split(";");
+                    if (a.Length == 3)
+                    {
+                        int lp = int.Parse(a[0]);
+                        int lw = int.Parse(a[1]);
+                        int lc = int.Parse(a[2]);
+                        DrawEma(lp, lw, lc, ser);
+                    }
+                }
             }
         }
         return Task.CompletedTask;
+    }
+    void DrawEma(int lookbackPeriods, int lineWidth, int lineColor, Series sIndica)
+    {
+        sIndica.ChartType = SeriesChartType.FastLine;
+        sIndica.YAxisType = AxisType.Secondary;
+        sIndica.Color = Color.FromArgb(lineColor);
+        sIndica.BorderWidth = lineWidth;
+
+        List<EmaResult> ema = Indica.GetEma(_klines, lookbackPeriods);
+
+        List<Kline> ks = _klines.Skip(_klines.Count - _zoom).ToList();
+
+        try
+        {
+            List<EmaResult> emas = new(ema.Where(p => p.Date >= ks.First().OpenTime));
+            sIndica.Points.Clear();
+            foreach (var v in emas)
+            {
+                sIndica.Points.AddXY(DL(v.Date), v.Ema);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(Exchange.ID, "DrawEma", "Error: " + ex.Message);
+        }
     }
     void DrawSma(int lookbackPeriods, int lineWidth, int lineColor, Series sIndica)
     {

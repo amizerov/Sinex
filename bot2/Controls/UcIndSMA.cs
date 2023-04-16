@@ -1,6 +1,4 @@
-﻿using System.Windows.Forms;
-
-namespace bot2.Controls;
+﻿namespace bot2.Controls;
 
 public partial class UcIndSMA : UcIndBase
 {
