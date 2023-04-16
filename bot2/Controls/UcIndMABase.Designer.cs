@@ -1,6 +1,6 @@
 ﻿namespace bot2.Controls
 {
-    partial class UcIndSMMA
+    partial class UcIndMABase
     {
         /// <summary> 
         /// Обязательная переменная конструктора.
@@ -100,6 +100,7 @@
             // 
             nudLine6.Location = new Point(192, 281);
             nudLine6.Maximum = new decimal(new int[] { 3, 0, 0, 0 });
+            nudLine6.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             nudLine6.Name = "nudLine6";
             nudLine6.Size = new Size(47, 31);
             nudLine6.TabIndex = 5;
@@ -109,6 +110,7 @@
             // 
             nudLine4.Location = new Point(192, 199);
             nudLine4.Maximum = new decimal(new int[] { 3, 0, 0, 0 });
+            nudLine4.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             nudLine4.Name = "nudLine4";
             nudLine4.Size = new Size(47, 31);
             nudLine4.TabIndex = 5;
@@ -118,6 +120,7 @@
             // 
             nudLine2.Location = new Point(192, 117);
             nudLine2.Maximum = new decimal(new int[] { 3, 0, 0, 0 });
+            nudLine2.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             nudLine2.Name = "nudLine2";
             nudLine2.Size = new Size(47, 31);
             nudLine2.TabIndex = 5;
@@ -127,6 +130,7 @@
             // 
             nudLine5.Location = new Point(192, 240);
             nudLine5.Maximum = new decimal(new int[] { 3, 0, 0, 0 });
+            nudLine5.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             nudLine5.Name = "nudLine5";
             nudLine5.Size = new Size(47, 31);
             nudLine5.TabIndex = 5;
@@ -136,6 +140,7 @@
             // 
             nudLine3.Location = new Point(192, 158);
             nudLine3.Maximum = new decimal(new int[] { 3, 0, 0, 0 });
+            nudLine3.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             nudLine3.Name = "nudLine3";
             nudLine3.Size = new Size(47, 31);
             nudLine3.TabIndex = 5;
@@ -145,6 +150,7 @@
             // 
             nudLine1.Location = new Point(192, 77);
             nudLine1.Maximum = new decimal(new int[] { 3, 0, 0, 0 });
+            nudLine1.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             nudLine1.Name = "nudLine1";
             nudLine1.Size = new Size(47, 31);
             nudLine1.TabIndex = 5;
@@ -165,9 +171,9 @@
             label1.AutoSize = true;
             label1.Location = new Point(14, 24);
             label1.Name = "label1";
-            label1.Size = new Size(303, 25);
+            label1.Size = new Size(293, 25);
             label1.TabIndex = 1;
-            label1.Text = "SMMA - Smoothed Moving Average";
+            label1.Text = "EMA - Exponential Moving Average";
             // 
             // txtLbPer1
             // 
@@ -333,14 +339,14 @@
             chbMa6.Text = "MA6";
             chbMa6.UseVisualStyleBackColor = true;
             // 
-            // UcIndSMMA
+            // UcIndMABase
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(panelSma);
-            Name = "UcIndSMMA";
+            Name = "UcIndMABase";
             Size = new Size(681, 563);
-            Load += UcIndSMMA_Load;
+            Load += UcIndMA_Load;
             panelSma.ResumeLayout(false);
             panelSma.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)nudLine6).EndInit();
@@ -362,7 +368,6 @@
         private NumericUpDown nudLine3;
         private NumericUpDown nudLine1;
         private CheckBox chbMa1;
-        private Label label1;
         private TextBox txtLbPer1;
         private Button btnColor6;
         private CheckBox chbMa4;
@@ -381,5 +386,6 @@
         private TextBox txtLbPer3;
         private CheckBox chbMa6;
         private ColorDialog colorDialog1;
+        protected Label label1;
     }
 }

@@ -27,6 +27,22 @@ public class Indica
         return smma.ToList();
     }
 
+    public static List<WmaResult> GetWma(List<Kline> klines, int lookbackPeriods)
+    {
+        IEnumerable<Quote> quotes = GetQuotesFromKlines(klines);
+        IEnumerable<WmaResult> wma = quotes.GetWma(lookbackPeriods);
+
+        return wma.ToList();
+    }
+
+    public static List<EpmaResult> GetEpma(List<Kline> klines, int lookbackPeriods)
+    {
+        IEnumerable<Quote> quotes = GetQuotesFromKlines(klines);
+        IEnumerable<EpmaResult> epma = quotes.GetEpma(lookbackPeriods);
+
+        return epma.ToList();
+    }
+
     public static List<RsiResult> GetRsi(List<Kline> klines, int lookbackPeriods)
     {
         IEnumerable<Quote> quotes = GetQuotesFromKlines(klines);

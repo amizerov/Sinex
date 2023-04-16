@@ -1,17 +1,18 @@
 ﻿namespace bot2.Controls;
 
-public partial class UcIndSMMA : UcIndBase
+public partial class UcIndMABase : UcIndBase
 {
+    JIndica _ind;
     CheckBox[] _chb;
     TextBox[] _txt;
     Button[] _btn;
     NumericUpDown[] _nud;
 
-    public UcIndSMMA(List<string> indicas)
+    public UcIndMABase(JIndica ind)
     {
         InitializeComponent();
 
-        _indicaList = indicas;
+        _ind = ind;
 
         _chb = new CheckBox[6] { chbMa1, chbMa2, chbMa3, chbMa4, chbMa5, chbMa6 };
         _txt = new TextBox[6] { txtLbPer1, txtLbPer2, txtLbPer3, txtLbPer4, txtLbPer5, txtLbPer6 };
@@ -19,8 +20,11 @@ public partial class UcIndSMMA : UcIndBase
         _nud = new NumericUpDown[6] { nudLine1, nudLine2, nudLine3, nudLine4, nudLine5, nudLine6 };
     }
 
-    private void UcIndSMMA_Load(object sender, EventArgs e)
+    private void UcIndMA_Load(object sender, EventArgs e)
     {
+        label1.Text = _ind.Description;
+        _indicaList = _ind.Settings;
+
         if (_indicaList.Count == 0) return;
 
         int j = 0;

@@ -8,7 +8,7 @@ public partial class FrmChart : Form
 {
     Charty Charty;
     FrmStakan? frmOrderBook;
-    List<JIndica> IndicatorsList = new();
+    List<JIndica> IndicatorsList = JIndica.InitList();
 
     public FrmChart(AnExchange exch, string symbo)
     {
@@ -30,7 +30,16 @@ public partial class FrmChart : Form
     private void FrmChart_Load(object sender, EventArgs e)
     {
         Utils.LoadFormPosition(this);
-        IndicatorsList = Utils.LoadIndicators();
+        var inds = Utils.LoadIndicators();
+        foreach (var ind in inds)
+        {
+            var indica = IndicatorsList.FirstOrDefault(i => i.Name == ind.Name);
+            if (indica != null)
+            {
+                indica.IsChecked = true;
+                indica.Settings = ind.Settings;
+            }
+        }
 
         chart.MouseWheel += chart_MouseWheel;
         InitChart();
@@ -120,23 +129,9 @@ public partial class FrmChart : Form
 
     private async void btnIndicator_Click(object sender, EventArgs e)
     {
-        /**_indicators*******************
-        [
-            {
-                "Name": "SMA",
-                "Settings": ["12;2;-45698","27;2;-654433","99;3;-324466"]
-            },
-            {
-                "Name": "SMMA",
-                "Settings": ["12;2;-45698","27;2;-654433","99;3;-324466"]
-            }
-        ]
-        **********************************/
-        FrmIndicator f = new(IndicatorsList);
+        FrmIndica f = new(IndicatorsList);
         if (f.ShowDialog(this) == DialogResult.OK)
         {
-            //IndicatorsList = f.IndicatorsList; 
-            //await Charty.DrawIndicators(IndicatorsList);
             await Charty.DrawIndicators();
         }
     }
@@ -145,6 +140,6 @@ public partial class FrmChart : Form
     {
         Charty.UnsubKlineSocket();
         Utils.SaveFormPosition(this);
-        Utils.SaveIndicators(IndicatorsList);
+        Utils.SaveIndicators(IndicatorsList.Where(i => i.IsChecked).ToList());
     }
 }

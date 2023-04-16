@@ -20,58 +20,36 @@ public partial class Charty
             _ch.Series.Remove(s);
         }
 
-        foreach (var ind in IndicatorsList)
+        foreach (var ind in IndicatorsList.Where(i => i.IsChecked))
         {
             foreach (string s in ind.Settings)
             {
-                Series ser = _ch.Series.Add("Indica_" + ind.Name + s.Replace(";", ""));
+                string[] a = s.Split(";");
+                if (a.Length == 3)
+                {
+                    int lp = int.Parse(a[0]);
+                    int lw = int.Parse(a[1]);
+                    int lc = int.Parse(a[2]);
 
-                if (ind.Name == "SMA")
-                {
-                    string[] a = s.Split(";");
-                    if (a.Length == 3)
-                    {
-                        int lp = int.Parse(a[0]);
-                        int lw = int.Parse(a[1]);
-                        int lc = int.Parse(a[2]);
-                        DrawSma(lp, lw, lc, ser);
-                    }
-                }
-                if (ind.Name == "SMMA")
-                {
-                    string[] a = s.Split(";");
-                    if (a.Length == 3)
-                    {
-                        int lp = int.Parse(a[0]);
-                        int lw = int.Parse(a[1]);
-                        int lc = int.Parse(a[2]);
-                        DrawSmma(lp, lw, lc, ser);
-                    }
-                }
-                if (ind.Name == "EMA")
-                {
-                    string[] a = s.Split(";");
-                    if (a.Length == 3)
-                    {
-                        int lp = int.Parse(a[0]);
-                        int lw = int.Parse(a[1]);
-                        int lc = int.Parse(a[2]);
-                        DrawEma(lp, lw, lc, ser);
-                    }
+                    Series ser = _ch.Series.Add("Indica_" + ind.Name + s.Replace(";", ""));
+                    ser.ChartType = SeriesChartType.FastLine;
+                    ser.YAxisType = AxisType.Secondary;
+                    ser.Color = Color.FromArgb(lc);
+                    ser.BorderWidth = lw;
+
+                    if (ind.Name == "SMA") DrawSma(lp, ser);
+                    if (ind.Name == "SMMA") DrawSmma(lp, ser);
+                    if (ind.Name == "EMA") DrawEma(lp, ser);
+                    if (ind.Name == "WMA") DrawWma(lp, ser);
+                    if (ind.Name == "EPMA") DrawEpma(lp, ser);
                 }
             }
         }
         return Task.CompletedTask;
     }
-    void DrawEma(int lookbackPeriods, int lineWidth, int lineColor, Series sIndica)
+    void DrawEma(int lookbackPeriods, Series sIndica)
     {
-        sIndica.ChartType = SeriesChartType.FastLine;
-        sIndica.YAxisType = AxisType.Secondary;
-        sIndica.Color = Color.FromArgb(lineColor);
-        sIndica.BorderWidth = lineWidth;
-
         List<EmaResult> ema = Indica.GetEma(_klines, lookbackPeriods);
-
         List<Kline> ks = _klines.Skip(_klines.Count - _zoom).ToList();
 
         try
@@ -88,15 +66,9 @@ public partial class Charty
             Log.Error(Exchange.ID, "DrawEma", "Error: " + ex.Message);
         }
     }
-    void DrawSma(int lookbackPeriods, int lineWidth, int lineColor, Series sIndica)
+    void DrawSma(int lookbackPeriods, Series sIndica)
     {
-        sIndica.ChartType = SeriesChartType.FastLine;
-        sIndica.YAxisType = AxisType.Secondary;
-        sIndica.Color = Color.FromArgb(lineColor);
-        sIndica.BorderWidth = lineWidth;
-
         List<SmaResult> sma = Indica.GetSma(_klines, lookbackPeriods);
-
         List<Kline> ks = _klines.Skip(_klines.Count - _zoom).ToList();
 
         try
@@ -113,15 +85,9 @@ public partial class Charty
             Log.Error(Exchange.ID, "DrawSma", "Error: " + ex.Message);
         }
     }
-    void DrawSmma(int lookbackPeriods, int lineWidth, int lineColor, Series sIndica)
+    void DrawSmma(int lookbackPeriods, Series sIndica)
     {
-        sIndica.ChartType = SeriesChartType.FastLine;
-        sIndica.YAxisType = AxisType.Secondary;
-        sIndica.Color = Color.FromArgb(lineColor);
-        sIndica.BorderWidth = lineWidth;
-
         List<SmmaResult> smma = Indica.GetSmma(_klines, lookbackPeriods);
-
         List<Kline> ks = _klines.Skip(_klines.Count - _zoom).ToList();
 
         try
@@ -131,6 +97,44 @@ public partial class Charty
             foreach (var v in smmas)
             {
                 sIndica.Points.AddXY(DL(v.Date), v.Smma);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(Exchange.ID, "DrawSma", "Error: " + ex.Message);
+        }
+    }
+    void DrawWma(int lookbackPeriods, Series sIndica)
+    {
+        List<WmaResult> wma = Indica.GetWma(_klines, lookbackPeriods);
+        List<Kline> ks = _klines.Skip(_klines.Count - _zoom).ToList();
+
+        try
+        {
+            List<WmaResult> wmas = new(wma.Where(p => p.Date >= ks.First().OpenTime));
+            sIndica.Points.Clear();
+            foreach (var v in wmas)
+            {
+                sIndica.Points.AddXY(DL(v.Date), v.Wma);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(Exchange.ID, "DrawSma", "Error: " + ex.Message);
+        }
+    }
+    void DrawEpma(int lookbackPeriods, Series sIndica)
+    {
+        List<EpmaResult> epma = Indica.GetEpma(_klines, lookbackPeriods);
+        List<Kline> ks = _klines.Skip(_klines.Count - _zoom).ToList();
+
+        try
+        {
+            List<EpmaResult> epmas = new(epma.Where(p => p.Date >= ks.First().OpenTime));
+            sIndica.Points.Clear();
+            foreach (var v in epmas)
+            {
+                sIndica.Points.AddXY(DL(v.Date), v.Epma);
             }
         }
         catch (Exception ex)
@@ -169,5 +173,27 @@ public partial class Charty
         {
             Log.Error(Exchange.ID, "DrawSma", "Error: " + ex.Message);
         }
+    }
+}
+
+public class JIndica
+{
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public List<string> Settings { get; set; }
+    public bool IsChecked { get; set; }
+    public JIndica() { Name = ""; Description = ""; Settings = new(); IsChecked = false; }
+
+    public static List<JIndica> InitList()
+    {
+        List<JIndica> res = new();
+
+        res.Add(new() { Name = "SMA", Description = "Simple Moving Average (SMA)" });
+        res.Add(new() { Name = "SMMA", Description = "Smoothed Moving Average (SMMA)" });
+        res.Add(new() { Name = "EMA", Description = "Exponential Moving Average (EMA)" });
+        res.Add(new() { Name = "WMA", Description = "Weighted Moving Average (WMA)" });
+        res.Add(new() { Name = "EPMA", Description = "Endpoint Moving Average (EPMA)" });
+
+        return res;
     }
 }

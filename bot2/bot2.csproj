@@ -24,8 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Controls\UcIndEMA.cs" />
-    <Compile Update="Controls\UcIndSMMA.cs" />
+    <Compile Update="Controls\UcIndMABase.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
