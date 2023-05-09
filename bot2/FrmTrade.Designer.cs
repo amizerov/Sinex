@@ -100,7 +100,7 @@
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(445, 283);
+            ClientSize = new Size(571, 406);
             Controls.Add(lblPrice);
             Controls.Add(lblQuote);
             Controls.Add(txtQuote);
@@ -111,8 +111,10 @@
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
             Name = "FrmTrade";
             ShowInTaskbar = false;
-            StartPosition = FormStartPosition.CenterParent;
+            StartPosition = FormStartPosition.Manual;
             Text = "FrmTade";
+            TopMost = true;
+            FormClosing += FrmTrade_FormClosing;
             Load += FrmTade_Load;
             ResumeLayout(false);
             PerformLayout();

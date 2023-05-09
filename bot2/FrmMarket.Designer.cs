@@ -35,6 +35,7 @@
             label2 = new Label();
             cbQuote = new ComboBox();
             label3 = new Label();
+            btnBot1 = new Button();
             ((System.ComponentModel.ISupportInitialize)dgProducts).BeginInit();
             SuspendLayout();
             // 
@@ -111,11 +112,23 @@
             label3.TabIndex = 5;
             label3.Text = "Quote asset";
             // 
+            // btnBot1
+            // 
+            btnBot1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnBot1.Location = new Point(851, 17);
+            btnBot1.Name = "btnBot1";
+            btnBot1.Size = new Size(86, 34);
+            btnBot1.TabIndex = 6;
+            btnBot1.Text = "bot1";
+            btnBot1.UseVisualStyleBackColor = true;
+            btnBot1.Click += btnBot1_Click;
+            // 
             // FrmMarket
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(949, 777);
+            Controls.Add(btnBot1);
             Controls.Add(label3);
             Controls.Add(cbQuote);
             Controls.Add(txtSearch);
@@ -141,5 +154,6 @@
         private Label label2;
         private ComboBox cbQuote;
         private Label label3;
+        private Button btnBot1;
     }
 }

@@ -23,13 +23,19 @@ public class CaBinance : AnExchange
     BinanceClient restClient = new();
     BinanceSocketClient socketClient = new();
 
+    public override async Task<Ticker> GetTickerAsync(string symbol)
+    {
+        var r = await restClient.SpotApi.CommonSpotClient.GetTickerAsync(symbol);
+        return r.Data;
+    }
     public async override Task<List<Kline>> GetKlines(string symbol, string inter)
     {
         _symbol = symbol;
         List<Kline> klines = new();
-
+        CancellationToken cancellationToken = new CancellationToken();
         var r = await restClient.SpotApi.CommonSpotClient
-            .GetKlinesAsync(symbol, TimeSpan.FromSeconds(IntervalInSeconds(inter)));
+            .GetKlinesAsync(symbol, TimeSpan.FromSeconds(IntervalInSeconds(inter)),
+            null, null, 1000, cancellationToken);
 
         if (r.Success)
         {

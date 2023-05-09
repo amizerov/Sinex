@@ -15,6 +15,7 @@ public abstract class AnExchange
     public abstract string Name { get; }
 
     public abstract ISymbolOrderBook OrderBook { get; }
+    public abstract Task<Ticker> GetTickerAsync(string symbol);
     public abstract Task<List<Kline>> GetKlines(string symbol, string inter);
     public abstract void UnsubKlineSocket(int subscriptionId);
     public abstract List<string> Intervals { get; }

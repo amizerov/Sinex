@@ -23,6 +23,12 @@ public class CaBittrex : AnExchange
     BittrexClient restClient = new();
     BittrexSocketClient socketClient = new();
 
+    public override async Task<Ticker> GetTickerAsync(string symbol)
+    {
+        var r = await restClient.SpotApi.CommonSpotClient.GetTickerAsync(symbol);
+        return r.Data;
+    }
+
     public async override Task<List<Kline>> GetKlines(string symbol, string inter)
     {
         _symbol = symbol;

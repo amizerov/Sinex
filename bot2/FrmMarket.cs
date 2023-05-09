@@ -3,6 +3,8 @@ using CaDb;
 using CaExch;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Diagnostics;
 
 namespace bot2;
 
@@ -109,5 +111,16 @@ public partial class FrmMarket : Form
     private void cbQuote_SelectedIndexChanged(object sender, EventArgs e)
     {
         LoadProducts();
+    }
+
+    private void btnBot1_Click(object sender, EventArgs e)
+    {
+        string p = "D:\\Projects\\CryptoTrading\\Sinex\\" +
+                   "bot1\\bot1\\bin\\Debug\\net7.0-windows\\";
+        string f = "bot1.exe";
+        if(File.Exists(p + f))
+        {
+            Process.Start(p + f);
+        }
     }
 }

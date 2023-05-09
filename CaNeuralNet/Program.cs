@@ -1,4 +1,4 @@
-namespace CaNewralNet
+namespace CaNeuralNet
 {
     internal static class Program
     {

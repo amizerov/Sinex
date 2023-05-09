@@ -123,8 +123,8 @@ public partial class FrmChart : Form
 
     private void btnTrade_Click(object sender, EventArgs e)
     {
-        FrmTrade f = new();
-        f.ShowDialog(this);
+        FrmTrade f = new(Charty);
+        f.Show(this);
     }
 
     private async void btnIndicator_Click(object sender, EventArgs e)
