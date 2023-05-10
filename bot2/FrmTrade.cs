@@ -30,7 +30,7 @@ public partial class FrmTrade : Form
 
     private async void FrmTade_Load(object sender, EventArgs e)
     {
-        Utils.LoadFormPosition(this);
+        Utils.LoadFormPosition(this, false);
 
         var r = await _charty.Exchange.GetTickerAsync(_symbol);
         lblPrice.Text = r.LastPrice.ToString();
@@ -38,6 +38,11 @@ public partial class FrmTrade : Form
         Text = _symbol;
         lblBase.Text = _base;
         lblQuote.Text = _quote;
+
+        btnBuy.Text = "Buy " + _base;
+        btnSell.Text = "Sell " + _base;
+
+        _charty.Exchange.CheckApiKey();
     }
 
     void OnPriceUpdated(Kline k)

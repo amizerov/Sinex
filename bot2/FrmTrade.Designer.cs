@@ -35,72 +35,111 @@
             txtQuote = new TextBox();
             lblQuote = new Label();
             lblPrice = new Label();
+            lblAvlblBase = new Label();
+            lblAvlblQuote = new Label();
             SuspendLayout();
             // 
             // btnBuy
             // 
-            btnBuy.Location = new Point(39, 174);
+            btnBuy.BackColor = Color.DarkSeaGreen;
+            btnBuy.Font = new Font("Segoe UI Black", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            btnBuy.ForeColor = Color.White;
+            btnBuy.Location = new Point(41, 255);
             btnBuy.Name = "btnBuy";
-            btnBuy.Size = new Size(150, 69);
+            btnBuy.Size = new Size(260, 69);
             btnBuy.TabIndex = 0;
             btnBuy.Text = "Buy";
-            btnBuy.UseVisualStyleBackColor = true;
+            btnBuy.UseVisualStyleBackColor = false;
             // 
             // btnSell
             // 
-            btnSell.Location = new Point(253, 174);
+            btnSell.BackColor = Color.IndianRed;
+            btnSell.Font = new Font("Segoe UI Black", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            btnSell.ForeColor = Color.White;
+            btnSell.Location = new Point(318, 255);
             btnSell.Name = "btnSell";
-            btnSell.Size = new Size(147, 69);
+            btnSell.Size = new Size(260, 69);
             btnSell.TabIndex = 1;
             btnSell.Text = "Sell";
-            btnSell.UseVisualStyleBackColor = true;
+            btnSell.UseVisualStyleBackColor = false;
             // 
             // txtBase
             // 
-            txtBase.Location = new Point(39, 111);
+            txtBase.Font = new Font("Segoe UI", 16F, FontStyle.Regular, GraphicsUnit.Point);
+            txtBase.Location = new Point(50, 179);
             txtBase.Name = "txtBase";
-            txtBase.Size = new Size(150, 31);
+            txtBase.PlaceholderText = "Amount";
+            txtBase.Size = new Size(150, 50);
             txtBase.TabIndex = 2;
+            txtBase.Text = "0";
+            txtBase.TextAlign = HorizontalAlignment.Right;
             // 
             // lblBase
             // 
             lblBase.AutoSize = true;
-            lblBase.Location = new Point(39, 74);
+            lblBase.Font = new Font("Segoe UI", 16F, FontStyle.Regular, GraphicsUnit.Point);
+            lblBase.Location = new Point(206, 179);
             lblBase.Name = "lblBase";
-            lblBase.Size = new Size(136, 25);
+            lblBase.Size = new Size(78, 45);
             lblBase.TabIndex = 3;
-            lblBase.Text = "Amount of ZEN";
+            lblBase.Text = "ZEN";
             // 
             // txtQuote
             // 
-            txtQuote.Location = new Point(253, 111);
+            txtQuote.Font = new Font("Segoe UI", 16F, FontStyle.Regular, GraphicsUnit.Point);
+            txtQuote.Location = new Point(327, 179);
             txtQuote.Name = "txtQuote";
-            txtQuote.Size = new Size(150, 31);
+            txtQuote.PlaceholderText = "Amount";
+            txtQuote.Size = new Size(150, 50);
             txtQuote.TabIndex = 2;
+            txtQuote.Text = "0";
+            txtQuote.TextAlign = HorizontalAlignment.Right;
             // 
             // lblQuote
             // 
             lblQuote.AutoSize = true;
-            lblQuote.Location = new Point(253, 74);
+            lblQuote.Font = new Font("Segoe UI", 16F, FontStyle.Regular, GraphicsUnit.Point);
+            lblQuote.Location = new Point(483, 179);
             lblQuote.Name = "lblQuote";
-            lblQuote.Size = new Size(147, 25);
+            lblQuote.Size = new Size(97, 45);
             lblQuote.TabIndex = 3;
-            lblQuote.Text = "Amount of USDT";
+            lblQuote.Text = "USDT";
             // 
             // lblPrice
             // 
             lblPrice.AutoSize = true;
-            lblPrice.Location = new Point(177, 20);
+            lblPrice.Font = new Font("Segoe UI", 36F, FontStyle.Regular, GraphicsUnit.Point);
+            lblPrice.Location = new Point(119, 39);
             lblPrice.Name = "lblPrice";
-            lblPrice.Size = new Size(96, 25);
+            lblPrice.Size = new Size(368, 96);
             lblPrice.TabIndex = 4;
             lblPrice.Text = "28.022365";
+            // 
+            // lblAvlblBase
+            // 
+            lblAvlblBase.AutoSize = true;
+            lblAvlblBase.Location = new Point(50, 151);
+            lblAvlblBase.Name = "lblAvlblBase";
+            lblAvlblBase.Size = new Size(67, 25);
+            lblAvlblBase.TabIndex = 5;
+            lblAvlblBase.Text = "Avlbl 0";
+            // 
+            // lblAvlblQuote
+            // 
+            lblAvlblQuote.AutoSize = true;
+            lblAvlblQuote.Location = new Point(327, 151);
+            lblAvlblQuote.Name = "lblAvlblQuote";
+            lblAvlblQuote.Size = new Size(67, 25);
+            lblAvlblQuote.TabIndex = 5;
+            lblAvlblQuote.Text = "Avlbl 0";
             // 
             // FrmTrade
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(571, 406);
+            ClientSize = new Size(624, 366);
+            Controls.Add(lblAvlblQuote);
+            Controls.Add(lblAvlblBase);
             Controls.Add(lblPrice);
             Controls.Add(lblQuote);
             Controls.Add(txtQuote);
@@ -129,5 +168,7 @@
         private TextBox txtQuote;
         private Label lblQuote;
         private Label lblPrice;
+        private Label lblAvlblBase;
+        private Label lblAvlblQuote;
     }
 }

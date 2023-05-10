@@ -2,6 +2,8 @@
 using Binance.Net.Clients;
 using Binance.Net.Enums;
 using Binance.Net.Interfaces;
+using Binance.Net.Objects.Models.Spot;
+using Binance.Net.Objects;
 using Binance.Net.SymbolOrderBooks;
 using CryptoExchange.Net.CommonObjects;
 using CryptoExchange.Net.Interfaces;
@@ -22,6 +24,49 @@ public class CaBinance : AnExchange
 
     BinanceClient restClient = new();
     BinanceSocketClient socketClient = new();
+
+    public override async Task<bool> CheckApiKey(string apiKey, string apiSecret)
+    {
+        bool res = false;
+        try
+        {
+            restClient = new BinanceClient(
+                new BinanceClientOptions()
+                {
+                    ApiCredentials = new BinanceApiCredentials(apiKey, apiSecret)
+                });
+
+            // Если получен доступ к балансам, ключ считается рабочим
+            List<Balance> bs = await GetBalances();
+            res = bs.Count > 0;
+
+            Console.WriteLine($"CheckApiKey - Key.IsWorking: {res}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Init api key - Error: {ex.Message}");
+        }
+        return res;
+    }
+    public override async Task<List<Balance>> GetBalances()
+    {
+        List<Balance> balances = new();
+        var res = await restClient.SpotApi.Account.GetAccountInfoAsync();
+        if (res.Success)
+        {
+            var bals = res.Data.Balances.ToList();
+            foreach( var b in bals )
+            {
+                balances.Add(new Balance() { Asset = b.Asset, Available = b.Available, Total = b.Total });
+            }
+        }
+        else
+        {
+            Console.WriteLine("GetBalances - " +
+                $"Error GetAccountInfoAsync: {res.Error?.Message}");
+        }
+        return balances;
+    }
 
     public override async Task<Ticker> GetTickerAsync(string symbol)
     {

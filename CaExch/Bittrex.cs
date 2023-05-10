@@ -7,6 +7,7 @@ using CryptoExchange.Net.CommonObjects;
 using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.Sockets;
 using CryptoExchange.Net.Objects;
+using Binance.Net.Objects.Models.Spot;
 
 namespace CaExch;
 public class CaBittrex : AnExchange
@@ -22,6 +23,31 @@ public class CaBittrex : AnExchange
 
     BittrexClient restClient = new();
     BittrexSocketClient socketClient = new();
+
+    public override async Task<bool> CheckApiKey(string apiKey, string apiSecret)
+    {
+        await Task.Delay(10);
+        return false;
+    }
+    public override async Task<List<Balance>> GetBalances()
+    {
+        List<Balance> balances = new();
+        var res = await restClient.SpotApi.Account.GetBalancesAsync();
+        if (res.Success)
+        {
+            var bals = res.Data.ToList();
+            foreach(var b in bals)
+            {
+                balances.Add(new Balance() { Asset = b.Asset, Available = b.Available, Total = b.Total });
+            }
+        }
+        else
+        {
+            Console.WriteLine("GetBalances - " +
+                $"Error GetAccountInfoAsync: {res.Error?.Message}");
+        }
+        return balances;
+    }
 
     public override async Task<Ticker> GetTickerAsync(string symbol)
     {

@@ -15,6 +15,8 @@ public abstract class AnExchange
     public abstract string Name { get; }
 
     public abstract ISymbolOrderBook OrderBook { get; }
+    public abstract Task<bool> CheckApiKey(string apiKey, string apiSecret);
+    public abstract Task<List<Balance>> GetBalances();
     public abstract Task<Ticker> GetTickerAsync(string symbol);
     public abstract Task<List<Kline>> GetKlines(string symbol, string inter);
     public abstract void UnsubKlineSocket(int subscriptionId);

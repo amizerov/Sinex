@@ -22,6 +22,31 @@ public class CaHuobi : AnExchange
     HuobiClient restClient = new();
     HuobiSocketClient socketClient = new();
 
+    public override async Task<bool> CheckApiKey(string apiKey, string apiSecret)
+    {
+        await Task.Delay(10);
+        return false;
+    }
+    public override async Task<List<Balance>> GetBalances()
+    {
+        List<Balance> balances = new();
+        var res = await restClient.SpotApi.Account.GetBalancesAsync(1);
+        if (res.Success)
+        {
+            var bals = res.Data.ToList();
+            foreach (var b in bals)
+            {
+                balances.Add(new Balance() { Asset = b.Asset, Available = b.Balance, Total = b.Balance });
+            }
+        }
+        else
+        {
+            Console.WriteLine("GetBalances - " +
+                $"Error GetAccountInfoAsync: {res.Error?.Message}");
+        }
+        return balances;
+    }
+
     public override async Task<Ticker> GetTickerAsync(string symbol)
     {
         var r = await restClient.SpotApi.CommonSpotClient.GetTickerAsync(symbol);

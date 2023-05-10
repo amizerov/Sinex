@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using CaSecrets;
 
 namespace CaDb;
 public class CaDbContext : DbContext
@@ -6,13 +7,7 @@ public class CaDbContext : DbContext
     private String SqlConnectionString;
     public CaDbContext()
     {
-        string path = "D:\\Projects\\Common\\Secrets\\SqlConnectionStringForCaProgerX.txt";
-        if (File.Exists(path))
-        {
-            SqlConnectionString = File.ReadAllText(path);
-        }
-        else
-            throw new Exception("File with Sql Connection is not found");
+        SqlConnectionString = Secrets.SqlConnectionString;
     }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
