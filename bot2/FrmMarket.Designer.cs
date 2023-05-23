@@ -136,6 +136,7 @@
             Controls.Add(label2);
             Controls.Add(label1);
             Controls.Add(cbExchange);
+            KeyPreview = true;
             Name = "FrmMarket";
             Text = "Market watch";
             FormClosing += FrmMarket_FormClosing;

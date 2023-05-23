@@ -126,6 +126,6 @@ public partial class FrmMarket : Form
 
     private void FrmMarket_KeyUp(object sender, KeyEventArgs e)
     {
-        if(e.KeyCode == Keys.F5) { LoadProducts(); }
+        if (e.KeyCode == Keys.F5) { LoadProducts(); }
     }
 }
