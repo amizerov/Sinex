@@ -118,9 +118,14 @@ public partial class FrmMarket : Form
         string p = "D:\\Projects\\CryptoTrading\\Sinex\\" +
                    "bot1\\bot1\\bin\\Debug\\net7.0-windows\\";
         string f = "bot1.exe";
-        if(File.Exists(p + f))
+        if (File.Exists(p + f))
         {
             Process.Start(p + f);
         }
+    }
+
+    private void FrmMarket_KeyUp(object sender, KeyEventArgs e)
+    {
+        if(e.KeyCode == Keys.F5) { LoadProducts(); }
     }
 }

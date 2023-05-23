@@ -140,6 +140,7 @@
             Text = "Market watch";
             FormClosing += FrmMarket_FormClosing;
             Load += FrmMarket_Load;
+            KeyUp += FrmMarket_KeyUp;
             ((System.ComponentModel.ISupportInitialize)dgProducts).EndInit();
             ResumeLayout(false);
             PerformLayout();
