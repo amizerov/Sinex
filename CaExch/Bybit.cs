@@ -22,7 +22,7 @@ public class CaBybit : AnExchange
     BybitClient restClient = new();
     BybitSocketClient socketClient = new();
 
-    public override async Task<bool> CheckApiKey(string apiKey, string apiSecret)
+    public override async Task<bool> CheckApiKey()
     {
         await Task.Delay(10);
         return false;

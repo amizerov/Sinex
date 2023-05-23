@@ -8,10 +8,15 @@ namespace bot2;
 
 public partial class FrmTrade : Form
 {
+    bool _buySell = true;
+
+    decimal _baseAvailable;
+    decimal _quoteAvailable;
+
     string? _base;
     string? _quote;
     string _symbol;
-    int _exchangeId;
+    AnExchange _excha;
 
     Charty _charty;
 
@@ -21,9 +26,9 @@ public partial class FrmTrade : Form
 
         _charty = chart;
         _symbol = _charty.Symbol;
-        _exchangeId = _charty.Exchange.ID;
+        _excha = _charty.Exchange;
 
-        GetBaseQuote();
+        GetAssets();
 
         _charty.OnKlineUpdated += OnPriceUpdated;
     }
@@ -32,33 +37,36 @@ public partial class FrmTrade : Form
     {
         Utils.LoadFormPosition(this, false);
 
-        var r = await _charty.Exchange.GetTickerAsync(_symbol);
+        var r = await _excha.GetTickerAsync(_symbol);
         lblPrice.Text = r.LastPrice.ToString();
 
         Text = _symbol;
         lblBase.Text = _base;
         lblQuote.Text = _quote;
 
-        btnBuy.Text = "Buy " + _base;
-        btnSell.Text = "Sell " + _base;
+        btnBuySell.Text = "Buy " + _base;
 
-        _charty.Exchange.CheckApiKey();
+        var res = await _excha.GetBalances();
+        List<CaExch.Balance> bals = res.ToList();
+
+        _baseAvailable = bals.FirstOrDefault(b => b.Asset == _base)!.Available;
+        _quoteAvailable = bals.FirstOrDefault(b => b.Asset == _quote)!.Available;
+
+        lblAvlblBase.Text = "Available " + _baseAvailable;
+        lblAvlblQuote.Text = "Available " + _quoteAvailable;
     }
 
     void OnPriceUpdated(Kline k)
     {
         if (this.IsDisposed) return;
-        Invoke(() =>
-        {
-            lblPrice.Text = k.ClosePrice.ToString();
-        });
+        Invoke(() => lblPrice.Text = k.ClosePrice.ToString());
     }
 
-    void GetBaseQuote()
+    void GetAssets()
     {
         using (CaDbContext dbContext = new())
         {
-            var prods = dbContext.Products?.FromSql($"Sinex_Get_Products {_exchangeId}, {_symbol}");
+            var prods = dbContext.Products?.FromSql($"Sinex_Get_Products {_excha.ID}, {_symbol}");
             if (prods != null)
             {
                 List<Product> ps = prods.ToList();
@@ -78,5 +86,33 @@ public partial class FrmTrade : Form
     private void FrmTrade_FormClosing(object sender, FormClosingEventArgs e)
     {
         Utils.SaveFormPosition(this);
+    }
+
+    private void txtBase_TextChanged(object sender, EventArgs e)
+    {
+        if (txtQuote.Focused) return;
+        txtQuote.Text = decimal.Parse(txtBase.Text) * decimal.Parse(lblPrice.Text) + "";
+    }
+
+    private void txtQuote_TextChanged(object sender, EventArgs e)
+    {
+        if (txtBase.Focused) return;
+        txtBase.Text = decimal.Parse(txtQuote.Text) / decimal.Parse(lblPrice.Text) + "";
+    }
+
+    private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if(tabControl1.SelectedIndex == 0)
+        {
+            btnBuySell.BackColor = Color.DarkSeaGreen;
+            btnBuySell.Text = "Buy " + _base;
+            _buySell = true;
+        }
+        else
+        {
+            btnBuySell.BackColor = Color.IndianRed;
+            btnBuySell.Text = "Sell " + _base;
+            _buySell = false;
+        }
     }
 }

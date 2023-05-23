@@ -27,9 +27,11 @@ public partial class FrmChart : Form
         Text = exch.Name + " - " + symbo + " - Chart";
     }
 
-    private void FrmChart_Load(object sender, EventArgs e)
+    private async void FrmChart_Load(object sender, EventArgs e)
     {
         Utils.LoadFormPosition(this);
+        btnTrade.Enabled = await Charty.Exchange.CheckApiKey();
+
         var inds = Utils.LoadIndicators();
         foreach (var ind in inds)
         {

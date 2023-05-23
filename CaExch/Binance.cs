@@ -9,6 +9,7 @@ using CryptoExchange.Net.CommonObjects;
 using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Sockets;
+using CaSecrets;
 
 namespace CaExch;
 public class CaBinance : AnExchange
@@ -25,11 +26,14 @@ public class CaBinance : AnExchange
     BinanceClient restClient = new();
     BinanceSocketClient socketClient = new();
 
-    public override async Task<bool> CheckApiKey(string apiKey, string apiSecret)
+    public override async Task<bool> CheckApiKey()
     {
         bool res = false;
         try
         {
+            string apiKey = Secrets.BinanceApiKey;
+            string apiSecret = Secrets.BinanceApiSecret;
+
             restClient = new BinanceClient(
                 new BinanceClientOptions()
                 {
