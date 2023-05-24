@@ -12,6 +12,8 @@ public partial class FrmMarket : Form
 {
     FrmLogger frmLogger = new();
 
+    AnExchange? _excha;
+
     public List<AnExchange> Exchanges = new(){
     new CaBinance(),
     new CaKucoin(),
@@ -63,10 +65,14 @@ public partial class FrmMarket : Form
             cbQuote.DataSource = quotes?.ToList();
         }
     }
-    private void cbExchange_SelectedIndexChanged(object sender, EventArgs e)
+    private async void cbExchange_SelectedIndexChanged(object sender, EventArgs e)
     {
         LoadQuoteAssets();
         LoadProducts();
+
+        _excha = cbExchange.SelectedItem as AnExchange;
+        if (_excha == null) return;
+        btnAccount.Enabled = await _excha.CheckApiKey();
     }
 
     private void txtSearch_TextChanged(object sender, EventArgs e)
@@ -127,5 +133,11 @@ public partial class FrmMarket : Form
     private void FrmMarket_KeyUp(object sender, KeyEventArgs e)
     {
         if (e.KeyCode == Keys.F5) { LoadProducts(); }
+    }
+
+    private void btnAccount_Click(object sender, EventArgs e)
+    {
+        FrmAccount f = new FrmAccount(_excha);
+        f.Show(this);
     }
 }

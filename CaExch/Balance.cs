@@ -2,8 +2,8 @@
 {
     public class Balance
     {
-        public string Asset = string.Empty;
-        public decimal Total;
-        public decimal Available;
+        public string Asset { get; set; } = string.Empty;
+        public decimal Total { get; set; }
+        public decimal Available { get; set; }
     }
 }

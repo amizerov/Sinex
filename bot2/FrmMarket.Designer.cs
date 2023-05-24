@@ -36,6 +36,7 @@
             cbQuote = new ComboBox();
             label3 = new Label();
             btnBot1 = new Button();
+            btnAccount = new Button();
             ((System.ComponentModel.ISupportInitialize)dgProducts).BeginInit();
             SuspendLayout();
             // 
@@ -71,7 +72,7 @@
             dgProducts.RowTemplate.Height = 33;
             dgProducts.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgProducts.ShowEditingIcon = false;
-            dgProducts.Size = new Size(925, 641);
+            dgProducts.Size = new Size(631, 406);
             dgProducts.TabIndex = 2;
             dgProducts.CellDoubleClick += dgProducts_CellDoubleClick;
             dgProducts.RowPrePaint += dgProducts_RowPrePaint;
@@ -115,7 +116,7 @@
             // btnBot1
             // 
             btnBot1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnBot1.Location = new Point(851, 17);
+            btnBot1.Location = new Point(557, 17);
             btnBot1.Name = "btnBot1";
             btnBot1.Size = new Size(86, 34);
             btnBot1.TabIndex = 6;
@@ -123,11 +124,23 @@
             btnBot1.UseVisualStyleBackColor = true;
             btnBot1.Click += btnBot1_Click;
             // 
+            // btnAccount
+            // 
+            btnAccount.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnAccount.Location = new Point(460, 64);
+            btnAccount.Name = "btnAccount";
+            btnAccount.Size = new Size(183, 46);
+            btnAccount.TabIndex = 7;
+            btnAccount.Text = "Account";
+            btnAccount.UseVisualStyleBackColor = true;
+            btnAccount.Click += btnAccount_Click;
+            // 
             // FrmMarket
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(949, 777);
+            ClientSize = new Size(655, 542);
+            Controls.Add(btnAccount);
             Controls.Add(btnBot1);
             Controls.Add(label3);
             Controls.Add(cbQuote);
@@ -137,6 +150,7 @@
             Controls.Add(label1);
             Controls.Add(cbExchange);
             KeyPreview = true;
+            MinimumSize = new Size(677, 0);
             Name = "FrmMarket";
             Text = "Market watch";
             FormClosing += FrmMarket_FormClosing;
@@ -157,5 +171,6 @@
         private ComboBox cbQuote;
         private Label label3;
         private Button btnBot1;
+        private Button btnAccount;
     }
 }
