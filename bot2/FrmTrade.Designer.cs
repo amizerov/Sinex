@@ -56,6 +56,7 @@
             btnBuySell.TabIndex = 0;
             btnBuySell.Text = "Buy";
             btnBuySell.UseVisualStyleBackColor = false;
+            btnBuySell.Click += btnBuySell_Click;
             // 
             // txtBase
             // 
@@ -174,10 +175,10 @@
             // tpSell
             // 
             tpSell.BackColor = Color.Transparent;
-            tpSell.Location = new Point(4, 54);
+            tpSell.Location = new Point(4, 69);
             tpSell.Name = "tpSell";
             tpSell.Padding = new Padding(3);
-            tpSell.Size = new Size(285, 1);
+            tpSell.Size = new Size(331, 0);
             tpSell.TabIndex = 1;
             tpSell.Text = "   SELL";
             // 

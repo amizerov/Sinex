@@ -102,7 +102,7 @@ public partial class FrmTrade : Form
 
     private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if(tabControl1.SelectedIndex == 0)
+        if (tabControl1.SelectedIndex == 0)
         {
             btnBuySell.BackColor = Color.DarkSeaGreen;
             btnBuySell.Text = "Buy " + _base;
@@ -114,5 +114,10 @@ public partial class FrmTrade : Form
             btnBuySell.Text = "Sell " + _base;
             _buySell = false;
         }
+    }
+
+    private void btnBuySell_Click(object sender, EventArgs e)
+    {
+
     }
 }

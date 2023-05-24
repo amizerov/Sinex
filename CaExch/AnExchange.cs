@@ -107,4 +107,12 @@ public abstract class AnExchange
 
         return seconds;
     }
+
+    /*
+        Trading
+     */
+    public abstract void SpotOrderBuy(decimal quantity);
+    public abstract void SpotOrderSell(decimal quantity);
+    public abstract void FutuOrderBuy(decimal quantity);
+    public abstract void FutuOrderSell(decimal quantity);
 }

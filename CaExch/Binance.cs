@@ -127,4 +127,43 @@ public class CaBinance : AnExchange
         int c2 = socketClient.CurrentSubscriptions;
         Log.Info(ID, $"Unsubscribe({_symbol}, {subscriptionId})", $"before unsubed {c1}, left after {c2}");
     }
+
+    /*
+     * Trading
+     */
+    public async override void SpotOrderBuy(decimal quantity)
+    {
+        Console.WriteLine("spot buy " + _symbol);
+        await restClient.SpotApi.Trading.PlaceOrderAsync(
+            _symbol!,
+            OrderSide.Buy,
+            SpotOrderType.Market, quantity);
+    }
+    public async override void SpotOrderSell(decimal quantity)
+    {
+        await restClient.SpotApi.Trading.PlaceOrderAsync(
+            _symbol!,
+            OrderSide.Sell,
+            SpotOrderType.Market, quantity);
+    }
+    public async override void FutuOrderBuy(decimal quantity)
+    {
+        Console.WriteLine("futu buy " + _symbol);
+
+        await restClient.UsdFuturesApi.Trading.PlaceOrderAsync(
+        //_restClient.CoinFuturesApi.Trading.PlaceOrderAsync(
+            _symbol!,
+            OrderSide.Buy,
+            FuturesOrderType.Market,
+            quantity);
+    }
+    public async override void FutuOrderSell(decimal quantity)
+    {
+        await restClient.CoinFuturesApi.Trading.PlaceOrderAsync(
+            _symbol!,
+            OrderSide.Sell,
+            FuturesOrderType.Market,
+            quantity);
+    }
+
 }

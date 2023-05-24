@@ -101,4 +101,27 @@ public class CaHuobi : AnExchange
         int c2 = socketClient.CurrentSubscriptions;
         Log.Info(ID, $"Unsubscribe({_symbol}, {subscriptionId})", $"before unsubed {c1}, left after {c2}");
     }
+
+    /*
+     * Trading
+     */
+    public override void SpotOrderBuy(decimal quantity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void SpotOrderSell(decimal quantity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void FutuOrderBuy(decimal quantity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void FutuOrderSell(decimal quantity)
+    {
+        throw new NotImplementedException();
+    }
 }
