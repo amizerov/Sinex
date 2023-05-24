@@ -118,6 +118,14 @@ public partial class FrmTrade : Form
 
     private void btnBuySell_Click(object sender, EventArgs e)
     {
-
+        decimal quontity = decimal.Parse(txtQuote.Text);
+        if (_buySell)
+        {
+            _excha.SpotOrderBuy(quontity);
+        }
+        else
+        {
+            _excha.SpotOrderSell(quontity);
+        }
     }
 }
