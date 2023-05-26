@@ -118,7 +118,7 @@ public partial class FrmTrade : Form
 
     private void btnBuySell_Click(object sender, EventArgs e)
     {
-        decimal quontity = decimal.Parse(txtQuote.Text);
+        decimal quontity = decimal.Parse(txtBase.Text);
         if (_buySell)
         {
             _excha.SpotOrderBuy(quontity);

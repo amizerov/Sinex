@@ -51,6 +51,7 @@
             Controls.Add(dataGridView1);
             Name = "FrmAccount";
             Text = "Account";
+            FormClosing += FrmAccount_FormClosing;
             Load += FrmAccount_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);

@@ -134,23 +134,31 @@ public class CaBinance : AnExchange
     public async override void SpotOrderBuy(decimal quantity)
     {
         Console.WriteLine("spot buy " + _symbol);
-        await restClient.SpotApi.Trading.PlaceOrderAsync(
+        var res = await restClient.SpotApi.Trading.PlaceOrderAsync(
             _symbol!,
             OrderSide.Buy,
             SpotOrderType.Market, quantity);
+        if (!res.Success)
+        {
+            Log.Error(Name, $"Error in SpotOrderBuy: {res.Error?.Message}");
+        }
     }
     public async override void SpotOrderSell(decimal quantity)
     {
-        await restClient.SpotApi.Trading.PlaceOrderAsync(
+        var res = await restClient.SpotApi.Trading.PlaceOrderAsync(
             _symbol!,
             OrderSide.Sell,
             SpotOrderType.Market, quantity);
+        if(!res.Success)
+        {
+            Log.Error(Name, $"Error in SpotOrderSell: {res.Error?.Message}");
+        }
     }
     public async override void FutuOrderBuy(decimal quantity)
     {
-        Console.WriteLine("futu buy " + _symbol);
+        Log.Info(Name, "futu buy " + _symbol);
 
-        await restClient.UsdFuturesApi.Trading.PlaceOrderAsync(
+        var res = await restClient.UsdFuturesApi.Trading.PlaceOrderAsync(
         //_restClient.CoinFuturesApi.Trading.PlaceOrderAsync(
             _symbol!,
             OrderSide.Buy,
@@ -159,11 +167,45 @@ public class CaBinance : AnExchange
     }
     public async override void FutuOrderSell(decimal quantity)
     {
-        await restClient.CoinFuturesApi.Trading.PlaceOrderAsync(
+        var res = await restClient.CoinFuturesApi.Trading.PlaceOrderAsync(
             _symbol!,
             OrderSide.Sell,
             FuturesOrderType.Market,
             quantity);
     }
 
+    /*
+     *  Account
+     */
+
+    string GetListenKey(bool spotMarg = true)
+    {
+        string listenKey = "";
+        var res = spotMarg ? restClient.SpotApi.Account.StartUserStreamAsync().Result
+                           : restClient.SpotApi.Account.StartMarginUserStreamAsync().Result;
+        if (res.Success)
+        {
+            listenKey = res.Data;
+        }
+        else
+        {
+            Log.Error(Name, $"Listen Key failed - {res.Error?.Message}");
+        }
+        return listenKey;
+    }
+
+    public async override void SubscribeToSpotAccSocket()
+    {
+        string listenKey = GetListenKey();
+        var res = await socketClient.SpotStreams
+            .SubscribeToUserDataUpdatesAsync(
+                listenKey,
+                order => OrderUpdated(),
+                ocoOrder => ocoOrderUpdated(),
+                accPosition => AccountUpdated(),
+                accBalance => AccountUpdated()
+            );
+        if (!res.Success)
+            Log.Error(Name, $"Error in SubscribeToSpotAccSocket: {res.Error?.Message}");
+    }
 }

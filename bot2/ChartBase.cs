@@ -128,6 +128,8 @@ public class ChartyBase
         if (_title.Tag == null || _title.Tag.ToString() == "") return;
 
         float fonSize = (float)(0.013 * (double)_ch.Height);
+        if(fonSize == 0) return;
+
         _title.Font = new Font("Trebuchet MS", fonSize, FontStyle.Bold);
     }
 

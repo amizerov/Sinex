@@ -125,4 +125,9 @@ public class CaBybit : AnExchange
     {
         throw new NotImplementedException();
     }
+
+    public override void SubscribeToSpotAccSocket()
+    {
+        throw new NotImplementedException();
+    }
 }
