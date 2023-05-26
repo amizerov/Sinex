@@ -59,7 +59,8 @@
             dataGridViewCellStyle3.SelectionForeColor = SystemColors.HighlightText;
             dataGridViewCellStyle3.WrapMode = DataGridViewTriState.False;
             dgBook.DefaultCellStyle = dataGridViewCellStyle3;
-            dgBook.Location = new Point(-63, -2);
+            dgBook.Location = new Point(-44, -1);
+            dgBook.Margin = new Padding(2, 2, 2, 2);
             dgBook.MultiSelect = false;
             dgBook.Name = "dgBook";
             dgBook.ReadOnly = true;
@@ -67,16 +68,17 @@
             dgBook.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             dgBook.RowTemplate.Height = 33;
             dgBook.ScrollBars = ScrollBars.None;
-            dgBook.Size = new Size(522, 982);
+            dgBook.Size = new Size(365, 589);
             dgBook.TabIndex = 0;
             // 
             // FrmStakan
             // 
-            AutoScaleDimensions = new SizeF(10F, 25F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(448, 979);
+            ClientSize = new Size(314, 587);
             Controls.Add(dgBook);
-            FormBorderStyle = FormBorderStyle.FixedToolWindow;
+            FormBorderStyle = FormBorderStyle.SizableToolWindow;
+            Margin = new Padding(2, 2, 2, 2);
             MaximizeBox = false;
             Name = "FrmStakan";
             ShowIcon = false;

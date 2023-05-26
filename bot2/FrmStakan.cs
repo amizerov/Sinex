@@ -98,7 +98,7 @@ public partial class FrmStakan : Form
         await book.StopAsync();
         Utils.SaveFormPosition(this);
     }
-    string PriceFormated(decimal price) 
+    string PriceFormated(decimal price)
     {
         string[] ar = price.ToString().Split(',');
 
@@ -113,7 +113,7 @@ public partial class FrmStakan : Form
     string QuantFormated(decimal quant)
     {
         string[] ar = quant.ToString().Split(',');
-        
+
         if (ar.Length == 1) return quant.ToString();
 
         ar[1] = ar[1].TrimEnd('0');

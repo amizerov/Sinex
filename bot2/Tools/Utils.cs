@@ -7,7 +7,8 @@ public static class Utils
 {
     static string GetFileName(Form f)
     {
-        return Application.StartupPath + $"{f.Name}{f.Tag}.pos";
+        string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.Create);
+        return path + $"\\{f.Name}{f.Tag}.pos";
     }
     public static void SaveFormPosition(Form f)
     {
