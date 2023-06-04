@@ -15,25 +15,30 @@ public partial class FrmAccount : Form
     private async void FrmAccount_Load(object sender, EventArgs e)
     {
         Utils.LoadFormPosition(this);
+
+        _excha.SubscribeToSpotAccountUpdates();
         _excha.OnAccountUpdate += OnAccountUpdate;
-        await UpdateDataAsync();
-    }
 
-    async void OnAccountUpdate()
-    {
-        await UpdateDataAsync();
-    }
-
-    async Task UpdateDataAsync()
-    {
-        List<Balance> balances = new List<Balance>();
         var bals = await _excha.GetBalances();
-        foreach (var bal in bals)
-        {
-            if (bal.Total > 0)
-                balances.Add(bal);
-        }
-        dataGridView1.DataSource = balances.ToList();
+        OnAccountUpdate(bals);
+    }
+
+    void OnAccountUpdate(List<Balance> bals)
+    {
+        string commis = "BNB";
+        string balans = "USDT";
+
+        Balance bnb = bals.FirstOrDefault(b => b.Asset == commis)!;
+        Balance usd = bals.FirstOrDefault(b => b.Asset == balans)!;
+        List<Balance> balances = bals
+                .Where(b => b.Total + b.Available > 0
+                       && !(b.Asset == commis || b.Asset == balans)).ToList();
+
+        Invoke(() => {
+            lblBnbAvailable.Text = $"{bnb.Asset}: {bnb.Available}";
+            lblUsdtAvailable.Text = $"{usd.Asset}: {usd.Available}";
+            dataGridView1.DataSource = balances;
+        });
     }
 
     private void FrmAccount_FormClosing(object sender, FormClosingEventArgs e)

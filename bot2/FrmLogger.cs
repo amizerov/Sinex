@@ -19,7 +19,7 @@ public partial class FrmLogger : Form
     void DoLog(Log log)
     {
         if (Tag?.ToString() == "111") return;
-        if(this.IsDisposed) return;
+        if (this.IsDisposed) return;
         try
         {
             Invoke(new Action(() =>
@@ -50,7 +50,7 @@ public partial class FrmLogger : Form
                     txtAll.Text;
             }));
 
-            using(CaDb.CaDbContext ca = new())
+            using (CaDb.CaDbContext ca = new())
             {
                 ca.Database.ExecuteSql($"CaLogger.dbo.DoSinexLogging {log.id}, {log.type}, {log.lvl}, {log.src}, {log.msg}");
             }

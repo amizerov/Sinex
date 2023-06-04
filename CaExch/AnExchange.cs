@@ -8,14 +8,8 @@ namespace CaExch;
 
 public abstract class AnExchange
 {
-    public event Action? OnAccountUpdate;
-    protected void AccountUpdated() => OnAccountUpdate?.Invoke();
-
-    public event Action? OnOrderUpdate;
-    protected void OrderUpdated() => OnOrderUpdate?.Invoke();
-
-    public event Action? OnocoOrderUpdate;
-    protected void ocoOrderUpdated() => OnocoOrderUpdate?.Invoke();
+    public event Action<List<Balance>>? OnAccountUpdate;
+    protected void AccountUpdated(List<Balance> balances) => OnAccountUpdate?.Invoke(balances);
 
     public event Action<string, Kline>? OnKlineUpdate;
     protected void KlineUpdated(string s, Kline k) => OnKlineUpdate?.Invoke(s, k);
@@ -128,5 +122,5 @@ public abstract class AnExchange
     /*
      *  Account 
      */
-    public abstract void SubscribeToSpotAccSocket();
+    public abstract void SubscribeToSpotAccountUpdates();
 }

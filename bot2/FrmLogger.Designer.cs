@@ -141,6 +141,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 679);
             Controls.Add(tabControl1);
+            FormBorderStyle = FormBorderStyle.SizableToolWindow;
             MinimizeBox = false;
             Name = "FrmLogger";
             ShowInTaskbar = false;

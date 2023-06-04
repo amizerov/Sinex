@@ -149,7 +149,9 @@
             Controls.Add(label2);
             Controls.Add(label1);
             Controls.Add(cbExchange);
+            FormBorderStyle = FormBorderStyle.SizableToolWindow;
             KeyPreview = true;
+            MaximizeBox = false;
             MinimumSize = new Size(677, 0);
             Name = "FrmMarket";
             Text = "Market watch";

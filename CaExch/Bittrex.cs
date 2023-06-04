@@ -136,7 +136,7 @@ public class CaBittrex : AnExchange
         throw new NotImplementedException();
     }
 
-    public override void SubscribeToSpotAccSocket()
+    public override void SubscribeToSpotAccountUpdates()
     {
         throw new NotImplementedException();
     }

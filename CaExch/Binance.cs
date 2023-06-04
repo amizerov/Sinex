@@ -194,16 +194,33 @@ public class CaBinance : AnExchange
         return listenKey;
     }
 
-    public async override void SubscribeToSpotAccSocket()
+    public async override void SubscribeToSpotAccountUpdates()
     {
         string listenKey = GetListenKey();
         var res = await socketClient.SpotStreams
             .SubscribeToUserDataUpdatesAsync(
                 listenKey,
-                order => OrderUpdated(),
-                ocoOrder => ocoOrderUpdated(),
-                accPosition => AccountUpdated(),
-                accBalance => AccountUpdated()
+                order => { 
+                    int a = 1;
+                    a++;
+                },
+                ocoOrder => { },
+                accPosition => {
+                    List<Balance> balances = new List<Balance>();
+                    foreach(var bal in accPosition.Data.Balances)
+                    {
+                        Balance balance = new Balance();
+                        balance.Asset = bal.Asset;
+                        balance.Available = bal.Available;
+                        balance.Total = bal.Total;
+                        balances.Add(balance);
+                    }
+                    AccountUpdated(balances);
+                },
+                async accBalance => {
+                    List<Balance> balances = await GetBalances();
+                    AccountUpdated(balances);
+                }
             );
         if (!res.Success)
             Log.Error(Name, $"Error in SubscribeToSpotAccSocket: {res.Error?.Message}");
