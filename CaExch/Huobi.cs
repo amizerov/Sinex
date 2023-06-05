@@ -105,22 +105,22 @@ public class CaHuobi : AnExchange
     /*
      * Trading
      */
-    public override void SpotOrderBuy(decimal quantity)
+    public override Task<bool> PlaceSpotOrderBuy(string symbol, decimal quantity)
     {
         throw new NotImplementedException();
     }
 
-    public override void SpotOrderSell(decimal quantity)
+    public override Task<bool> PlaceSpotOrderSell(string symbol, decimal quantity)
     {
         throw new NotImplementedException();
     }
 
-    public override void FutuOrderBuy(decimal quantity)
+    public override Task<bool> FutuOrderBuy(string symbol, decimal quantity)
     {
         throw new NotImplementedException();
     }
 
-    public override void FutuOrderSell(decimal quantity)
+    public override Task<bool> FutuOrderSell(string symbol, decimal quantity)
     {
         throw new NotImplementedException();
     }
@@ -130,12 +130,17 @@ public class CaHuobi : AnExchange
         throw new NotImplementedException();
     }
 
-    public override void SubsсribeToTicker(string symbol)
+    public override Task<int> SubsсribeToTicker(string symbol)
     {
         throw new NotImplementedException();
     }
 
     public override Task<Order> GetLastSpotOrder(string symbol)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void UnSubFromTicker(int subsId)
     {
         throw new NotImplementedException();
     }

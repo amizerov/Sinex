@@ -121,7 +121,7 @@ public class CaBinance : AnExchange
         return r;
     }
 
-    public async override void SubsсribeToTicker(string symbol)
+    public async override Task<int> SubsсribeToTicker(string symbol)
     {
         var res = await socketClient.SpotStreams.SubscribeToTickerUpdatesAsync(symbol,
             onMessage => {
@@ -138,6 +138,16 @@ public class CaBinance : AnExchange
         if (!res.Success)
         {
             Log.Error(Name, $"Error in SubsсribeToTicker: {res.Error?.Message}");
+            return 0;
+        }
+        return res.Data.Id;
+    }
+    public async override void UnSubFromTicker(int subsId)
+    {
+        var res = await socketClient.SpotStreams.UnsubscribeAsync(subsId);
+        if (!res)
+        {
+            Log.Error(Name, $"Error in UnSubFromTicker - не отписался");
         }
     }
     public async override void UnsubKlineSocket(int subscriptionId)
@@ -151,47 +161,66 @@ public class CaBinance : AnExchange
     /*
      * Trading
      */
-    public async override void SpotOrderBuy(decimal quantity)
+    public async override Task<bool> PlaceSpotOrderBuy(string symbol, decimal quantity)
     {
-        Console.WriteLine("spot buy " + _symbol);
+        Log.Trace(Name, "spot buy " + symbol);
         var res = await restClient.SpotApi.Trading.PlaceOrderAsync(
-            _symbol!,
+            symbol!,
             OrderSide.Buy,
             SpotOrderType.Market, quantity);
         if (!res.Success)
         {
             Log.Error(Name, $"Error in SpotOrderBuy: {res.Error?.Message}");
+            return false;
         }
+        return true;
     }
-    public async override void SpotOrderSell(decimal quantity)
+    public async override Task<bool> PlaceSpotOrderSell(string symbol, decimal quantity)
     {
+        Log.Trace(Name, "spot sell " + symbol);
         var res = await restClient.SpotApi.Trading.PlaceOrderAsync(
-            _symbol!,
+            symbol,
             OrderSide.Sell,
             SpotOrderType.Market, quantity);
         if(!res.Success)
         {
             Log.Error(Name, $"Error in SpotOrderSell: {res.Error?.Message}");
+            return false;
         }
+        return true;
     }
-    public async override void FutuOrderBuy(decimal quantity)
+    public async override Task<bool> FutuOrderBuy(string symbol, decimal quantity)
     {
-        Log.Info(Name, "futu buy " + _symbol);
+        Log.Trace(Name, "futu buy " + symbol);
 
         var res = await restClient.UsdFuturesApi.Trading.PlaceOrderAsync(
         //_restClient.CoinFuturesApi.Trading.PlaceOrderAsync(
-            _symbol!,
+            symbol!,
             OrderSide.Buy,
             FuturesOrderType.Market,
             quantity);
+        if (!res.Success)
+        {
+            Log.Error(Name, $"Error in FutuOrderBuy: {res.Error?.Message}");
+            return false;
+        }
+        return true;
     }
-    public async override void FutuOrderSell(decimal quantity)
+    public async override Task<bool> FutuOrderSell(string symbol, decimal quantity)
     {
+        Log.Trace(Name, "futu sell " + symbol);
+
         var res = await restClient.CoinFuturesApi.Trading.PlaceOrderAsync(
-            _symbol!,
+            symbol!,
             OrderSide.Sell,
             FuturesOrderType.Market,
             quantity);
+        if (!res.Success)
+        {
+            Log.Error(Name, $"Error in FutuOrderSell: {res.Error?.Message}");
+            return false;
+        }
+        return true;
     }
 
     /*

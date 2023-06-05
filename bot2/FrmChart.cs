@@ -125,7 +125,7 @@ public partial class FrmChart : Form
 
     private void btnTrade_Click(object sender, EventArgs e)
     {
-        FrmTrade f = new(Charty);
+        FrmTrade f = new(Charty.Exchange, Charty.Symbol);
         f.Show(this);
     }
 

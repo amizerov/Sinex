@@ -28,10 +28,11 @@ public abstract class AnExchange
     public abstract Task<List<Balance>> GetBalances();
     public abstract Task<Ticker> GetTickerAsync(string symbol);
     public abstract Task<List<Kline>> GetKlines(string symbol, string inter);
-    public abstract void UnsubKlineSocket(int subscriptionId);
     public abstract List<string> Intervals { get; }
 
-    public abstract void SubsсribeToTicker(string symbol);
+    public abstract Task<int> SubsсribeToTicker(string symbol);
+    public abstract void UnSubFromTicker(int subsId);
+
     protected abstract Task<CallResult<UpdateSubscription>> SubsToSock(string symbol, string inter);
     public async Task<int> SubscribeToSocket(string symbol, string inter)
     {
@@ -57,6 +58,7 @@ public abstract class AnExchange
         }
         return subscriptionId;
     }
+    public abstract void UnsubKlineSocket(int subscriptionId);
 
     protected int IntervalInSeconds(string inter)
     {
@@ -121,10 +123,10 @@ public abstract class AnExchange
     /*
         Trading
      */
-    public abstract void SpotOrderBuy(decimal quantity);
-    public abstract void SpotOrderSell(decimal quantity);
-    public abstract void FutuOrderBuy(decimal quantity);
-    public abstract void FutuOrderSell(decimal quantity);
+    public abstract Task<bool> PlaceSpotOrderBuy(string symbol, decimal quantity);
+    public abstract Task<bool> PlaceSpotOrderSell(string symbol, decimal quantity);
+    public abstract Task<bool> FutuOrderBuy(string symbol, decimal quantity);
+    public abstract Task<bool> FutuOrderSell(string symbol, decimal quantity);
 
     /*
      *  Account 

@@ -58,17 +58,20 @@ public partial class FrmAccount : Form
             p.Current = (decimal)res.LastPrice!;
             _position.Add(p);
 
-            _exchange.SubsсribeToTicker(symbol);
+            int subsId = await _exchange.SubsсribeToTicker(symbol);
         }
 
-        Invoke(() =>
+        if (IsDisposed) return;
+        try
         {
-            lblBnbAvailable.Text = $"{_comisBal.Asset}: {_comisBal.Total}";
-            lblUsdtAvailable.Text = $"{_quoteBal.Asset}: {_quoteBal.Total}";
-            lblBalance.Text = $"Balance: {_totalEquity.ToString().TrimEnd('0')}";
+            Invoke(() => {
+                lblBnbAvailable.Text = $"{_comisBal.Asset}: {_comisBal.Total}";
+                lblUsdtAvailable.Text = $"{_quoteBal.Asset}: {_quoteBal.Total}";
+                lblBalance.Text = $"Balance: {_totalEquity.ToString().TrimEnd('0')}";
 
-            dataGridView1.DataSource = _position;
-        });
+                dataGridView1.DataSource = _position;
+            });
+        }catch (Exception ex) { Log.Error("OnAccountPositionUpdate", ex.Message); }
     }
 
     void OnAccountBalanceUpdate(string asset, decimal delta)
@@ -89,7 +92,10 @@ public partial class FrmAccount : Form
         _position.Remove(pos);
         pos.Current = (decimal)t.LastPrice!;
         pos.Delta = (decimal)(t.LastPrice - pos.Purchase)!;
-        pos.Percent = 100 * (decimal)(t.LastPrice - pos.Purchase) / pos.Purchase!;
+
+        if (pos.Purchase > 0)
+            pos.Percent = 100 * (decimal)(t.LastPrice - pos.Purchase) / pos.Purchase!;
+
         _position.Add(pos);
 
         _totalEquity += (decimal)(pos.Total * delta)!;
@@ -98,8 +104,16 @@ public partial class FrmAccount : Form
         Invoke(() =>
         {
             lblBalance.Text = $"Balance: {_totalEquity.ToString().TrimEnd('0')}";
+
+            int r = -1;
+            if (dataGridView1.SelectedRows.Count > 0)
+                r = dataGridView1.SelectedRows[0].Index;
+
             dataGridView1.DataSource = _position.OrderBy(p => p.Asset).ToList();
             dataGridView1.Invalidate();
+
+            if (dataGridView1.Rows.Count > 0 && r >= 0)
+                dataGridView1.Rows[r].Selected = true;
         });
     }
     private void FrmAccount_FormClosing(object sender, FormClosingEventArgs e)
@@ -109,7 +123,9 @@ public partial class FrmAccount : Form
 
     private void btnTrade_Click(object sender, EventArgs e)
     {
-        FrmTrade frm = new()
+        string symbol = dataGridView1.SelectedRows[0].Cells[0].Value.ToString() + _quoteBal.Asset;
+        FrmTrade frm = new(_exchange, symbol, false);
+        frm.ShowDialog();
     }
 }
 

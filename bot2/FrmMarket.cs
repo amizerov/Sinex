@@ -15,12 +15,13 @@ public partial class FrmMarket : Form
     AnExchange? _excha;
 
     public List<AnExchange> Exchanges = new(){
-    new CaBinance(),
-    new CaKucoin(),
-    new CaHuobi(),
-    new CaBittrex(),
-    new CaBybit()
-};
+        new CaBinance(),
+        new CaKucoin(),
+        new CaHuobi(),
+        new CaBittrex(),
+        new CaBybit()
+    };
+
     public FrmMarket()
     {
         InitializeComponent();

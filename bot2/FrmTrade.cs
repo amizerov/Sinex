@@ -1,8 +1,10 @@
-﻿using bot2.Tools;
+﻿using amLogger;
+using bot2.Tools;
 using CaDb;
 using CaExch;
 using CryptoExchange.Net.CommonObjects;
 using Microsoft.EntityFrameworkCore;
+using System.Windows.Forms;
 
 namespace bot2;
 
@@ -18,22 +20,25 @@ public partial class FrmTrade : Form
     string _symbol;
     AnExchange _excha;
 
-    public FrmTrade(string symbol, AnExchange exch)
+    int _tickerSubscriptionId = 0;
+
+    public FrmTrade(AnExchange exch, string symbol, bool buySell = true)
     {
         InitializeComponent();
 
         _symbol = symbol;
         _excha = exch;
+        _buySell = buySell;
 
         GetAssets();
-
-        _excha.SubsсribeToTicker(_symbol);
-        _excha.OnTickerUpdate += OnLastPriceUpdated;
     }
 
     private async void FrmTade_Load(object sender, EventArgs e)
     {
         Utils.LoadFormPosition(this, false);
+
+        tabControl1.SelectedIndex = _buySell ? 0 : 1;
+        //btnBuySell.Text = (_buySell ? "Buy " : "Sell ") + _base;
 
         var r = await _excha.GetTickerAsync(_symbol);
         lblPrice.Text = r.LastPrice.ToString();
@@ -41,8 +46,6 @@ public partial class FrmTrade : Form
         Text = _symbol;
         lblBase.Text = _base;
         lblQuote.Text = _quote;
-
-        btnBuySell.Text = "Buy " + _base;
 
         var res = await _excha.GetBalances();
         List<Balance> bals = res.ToList();
@@ -53,17 +56,19 @@ public partial class FrmTrade : Form
 
         lblAvlblBase.Text = "Available " + _baseAvailable;
         lblAvlblQuote.Text = "Available " + _quoteAvailable;
+
+        _tickerSubscriptionId = await _excha.SubsсribeToTicker(_symbol);
+        _excha.OnTickerUpdate += OnLastPriceUpdated;
     }
 
-    void OnPriceUpdated(Kline k)
-    {
-        if (this.IsDisposed) return;
-        Invoke(() => lblPrice.Text = k.ClosePrice.ToString());
-    }
     void OnLastPriceUpdated(Ticker t)
     {
         if (this.IsDisposed) return;
-        Invoke(() => lblPrice.Text = t.LastPrice.ToString());
+        try
+        {
+            Invoke(() => lblPrice.Text = t.LastPrice.ToString());
+        }
+        catch (Exception ex) { Log.Error("OnLastPriceUpdated", ex.Message); }
     }
 
     void GetAssets()
@@ -89,6 +94,7 @@ public partial class FrmTrade : Form
 
     private void FrmTrade_FormClosing(object sender, FormClosingEventArgs e)
     {
+        _excha.UnSubFromTicker(_tickerSubscriptionId);
         Utils.SaveFormPosition(this);
     }
 
@@ -106,30 +112,31 @@ public partial class FrmTrade : Form
 
     private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (tabControl1.SelectedIndex == 0)
-        {
-            btnBuySell.BackColor = Color.DarkSeaGreen;
-            btnBuySell.Text = "Buy " + _base;
-            _buySell = true;
-        }
-        else
-        {
-            btnBuySell.BackColor = Color.IndianRed;
-            btnBuySell.Text = "Sell " + _base;
-            _buySell = false;
-        }
+        _buySell = tabControl1.SelectedIndex == 0;
+        btnBuySell.Text = (_buySell ? "Buy " : "Sell ") + _base;
+        btnBuySell.BackColor = _buySell ? Color.DarkSeaGreen : Color.IndianRed;
     }
 
-    private void btnBuySell_Click(object sender, EventArgs e)
+    private async void btnBuySell_Click(object sender, EventArgs e)
     {
+        bool res = false;
         decimal quontity = decimal.Parse(txtBase.Text);
         if (_buySell)
         {
-            _excha.SpotOrderBuy(quontity);
+            res = await _excha.PlaceSpotOrderBuy(_symbol, quontity);
         }
         else
         {
-            _excha.SpotOrderSell(quontity);
+            res = await _excha.PlaceSpotOrderSell(_symbol, quontity);
+        }
+        if (res)
+        {
+            DialogResult = DialogResult.OK;
+            Close();
+        }
+        else
+        {
+            MessageBox.Show("Error");
         }
     }
 }

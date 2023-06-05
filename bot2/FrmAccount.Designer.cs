@@ -82,17 +82,20 @@
             // 
             lblBalance.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             lblBalance.AutoSize = true;
-            lblBalance.Location = new Point(402, 20);
+            lblBalance.Font = new Font("Segoe UI", 16F, FontStyle.Regular, GraphicsUnit.Point);
+            lblBalance.Location = new Point(300, 8);
             lblBalance.Name = "lblBalance";
-            lblBalance.Size = new Size(134, 25);
+            lblBalance.Size = new Size(236, 45);
             lblBalance.TabIndex = 1;
             lblBalance.Text = "Balance: 220,50";
             // 
             // btnTrade
             // 
-            btnTrade.Location = new Point(413, 64);
+            btnTrade.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnTrade.Font = new Font("Segoe UI", 16F, FontStyle.Regular, GraphicsUnit.Point);
+            btnTrade.Location = new Point(353, 61);
             btnTrade.Name = "btnTrade";
-            btnTrade.Size = new Size(112, 34);
+            btnTrade.Size = new Size(180, 60);
             btnTrade.TabIndex = 3;
             btnTrade.Text = "Trade";
             btnTrade.UseVisualStyleBackColor = true;
