@@ -68,7 +68,7 @@ public partial class FrmTrade : Form
         {
             Invoke(() => lblPrice.Text = t.LastPrice.ToString());
         }
-        catch (Exception ex) { Log.Error("OnLastPriceUpdated", ex.Message); }
+        catch {}
     }
 
     void GetAssets()
