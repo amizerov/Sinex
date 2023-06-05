@@ -130,4 +130,9 @@ public class CaBybit : AnExchange
     {
         throw new NotImplementedException();
     }
+
+    public override void SubsсribeToTicker(string symbol)
+    {
+        throw new NotImplementedException();
+    }
 }

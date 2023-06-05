@@ -47,10 +47,11 @@ public partial class FrmTrade : Form
         btnBuySell.Text = "Buy " + _base;
 
         var res = await _excha.GetBalances();
-        List<CaExch.Balance> bals = res.ToList();
-
-        _baseAvailable = bals.FirstOrDefault(b => b.Asset == _base)!.Available;
-        _quoteAvailable = bals.FirstOrDefault(b => b.Asset == _quote)!.Available;
+        List<Balance> bals = res.ToList();
+        Balance basee = bals.FirstOrDefault(b => b.Asset == _base)!;
+        Balance quote = bals.FirstOrDefault(b => b.Asset == _quote)!;
+        _baseAvailable = (decimal)basee.Available!;
+        _quoteAvailable = (decimal)quote.Available!;
 
         lblAvlblBase.Text = "Available " + _baseAvailable;
         lblAvlblQuote.Text = "Available " + _quoteAvailable;

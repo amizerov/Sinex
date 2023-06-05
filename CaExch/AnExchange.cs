@@ -8,11 +8,17 @@ namespace CaExch;
 
 public abstract class AnExchange
 {
-    public event Action<List<Balance>>? OnAccountUpdate;
-    protected void AccountUpdated(List<Balance> balances) => OnAccountUpdate?.Invoke(balances);
+    public event Action<List<Balance>>? OnAccPositionUpdate;
+    protected void AccPositionUpdated(List<Balance> balances) => OnAccPositionUpdate?.Invoke(balances);
+
+    public event Action<string, decimal>? OnAccBalanceUpdate;
+    protected void AccBalanceUpdated(string asset, decimal delta) => OnAccBalanceUpdate?.Invoke(asset, delta);
 
     public event Action<string, Kline>? OnKlineUpdate;
     protected void KlineUpdated(string s, Kline k) => OnKlineUpdate?.Invoke(s, k);
+    
+    public event Action<Ticker>? OnTickerUpdate;
+    protected void TickerUpdated(Ticker t) => OnTickerUpdate?.Invoke(t);
 
     public abstract int ID { get; }
     public abstract string Name { get; }
@@ -25,6 +31,7 @@ public abstract class AnExchange
     public abstract void UnsubKlineSocket(int subscriptionId);
     public abstract List<string> Intervals { get; }
 
+    public abstract void SubsсribeToTicker(string symbol);
     protected abstract Task<CallResult<UpdateSubscription>> SubsToSock(string symbol, string inter);
     public async Task<int> SubscribeToSocket(string symbol, string inter)
     {

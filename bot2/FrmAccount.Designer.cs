@@ -32,7 +32,7 @@
             lblBnbAvailable = new Label();
             lblUsdtAvailable = new Label();
             label1 = new Label();
-            label2 = new Label();
+            lblBalance = new Label();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
@@ -40,10 +40,13 @@
             // 
             dataGridView1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridView1.EditMode = DataGridViewEditMode.EditProgrammatically;
             dataGridView1.Location = new Point(12, 126);
+            dataGridView1.MultiSelect = false;
             dataGridView1.Name = "dataGridView1";
             dataGridView1.RowHeadersWidth = 62;
             dataGridView1.RowTemplate.Height = 33;
+            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.Size = new Size(524, 260);
             dataGridView1.TabIndex = 0;
             // 
@@ -74,15 +77,15 @@
             label1.TabIndex = 2;
             label1.Text = "Open positions:";
             // 
-            // label2
+            // lblBalance
             // 
-            label2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            label2.AutoSize = true;
-            label2.Location = new Point(402, 20);
-            label2.Name = "label2";
-            label2.Size = new Size(134, 25);
-            label2.TabIndex = 1;
-            label2.Text = "Balance: 220,50";
+            lblBalance.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            lblBalance.AutoSize = true;
+            lblBalance.Location = new Point(402, 20);
+            lblBalance.Name = "lblBalance";
+            lblBalance.Size = new Size(134, 25);
+            lblBalance.TabIndex = 1;
+            lblBalance.Text = "Balance: 220,50";
             // 
             // FrmAccount
             // 
@@ -90,7 +93,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(552, 398);
             Controls.Add(label1);
-            Controls.Add(label2);
+            Controls.Add(lblBalance);
             Controls.Add(lblUsdtAvailable);
             Controls.Add(lblBnbAvailable);
             Controls.Add(dataGridView1);
@@ -110,6 +113,6 @@
         private Label lblBnbAvailable;
         private Label lblUsdtAvailable;
         private Label label1;
-        private Label label2;
+        private Label lblBalance;
     }
 }

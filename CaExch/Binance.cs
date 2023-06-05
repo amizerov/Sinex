@@ -120,6 +120,26 @@ public class CaBinance : AnExchange
 
         return r;
     }
+
+    public async override void SubsсribeToTicker(string symbol)
+    {
+        var res = await socketClient.SpotStreams.SubscribeToTickerUpdatesAsync(symbol,
+            onMessage => {
+                Ticker t = new();
+                var d = onMessage.Data;
+                t.HighPrice = d.HighPrice;
+                t.LowPrice = d.LowPrice;
+                t.LastPrice = d.LastPrice;
+                t.Symbol = d.Symbol;
+                t.Volume = d.Volume;
+                t.Price24H = d.PrevDayClosePrice;
+                TickerUpdated(t);
+            });
+        if (!res.Success)
+        {
+            Log.Error(Name, $"Error in SubsсribeToTicker: {res.Error?.Message}");
+        }
+    }
     public async override void UnsubKlineSocket(int subscriptionId)
     {
         int c1 = socketClient.CurrentSubscriptions;
@@ -215,14 +235,16 @@ public class CaBinance : AnExchange
                         balance.Total = bal.Total;
                         balances.Add(balance);
                     }
-                    AccountUpdated(balances);
+                    AccPositionUpdated(balances);
                 },
-                async accBalance => {
-                    List<Balance> balances = await GetBalances();
-                    AccountUpdated(balances);
+                accBalance => {
+                    string asset = accBalance.Data.Asset;
+                    decimal delta = accBalance.Data.BalanceDelta;
+                    AccBalanceUpdated(asset, delta);
                 }
             );
         if (!res.Success)
             Log.Error(Name, $"Error in SubscribeToSpotAccSocket: {res.Error?.Message}");
     }
+
 }
