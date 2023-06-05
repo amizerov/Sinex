@@ -63,12 +63,14 @@ public partial class FrmTrade : Form
 
     void OnLastPriceUpdated(Ticker t)
     {
+        if (decimal.Parse(lblPrice.Text) - t.LastPrice == 0) return;
         if (this.IsDisposed) return;
         try
         {
             Invoke(() => lblPrice.Text = t.LastPrice.ToString());
         }
         catch {}
+        Log.Trace("FrmTrade - OnLastPriceUpdated", $"{t.Symbol}/{t.LastPrice}");
     }
 
     void GetAssets()

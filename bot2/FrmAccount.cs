@@ -64,14 +64,16 @@ public partial class FrmAccount : Form
         if (IsDisposed) return;
         try
         {
-            Invoke(() => {
+            Invoke(() =>
+            {
                 lblBnbAvailable.Text = $"{_comisBal.Asset}: {_comisBal.Total}";
                 lblUsdtAvailable.Text = $"{_quoteBal.Asset}: {_quoteBal.Total}";
                 lblBalance.Text = $"Balance: {_totalEquity.ToString().TrimEnd('0')}";
 
                 dataGridView1.DataSource = _position;
             });
-        }catch (Exception ex) { Log.Error("OnAccountPositionUpdate", ex.Message); }
+        }
+        catch (Exception ex) { Log.Error("OnAccountPositionUpdate", ex.Message); }
     }
 
     void OnAccountBalanceUpdate(string asset, decimal delta)
@@ -81,13 +83,12 @@ public partial class FrmAccount : Form
     }
     void OnLastPriceUpdated(Ticker t)
     {
-        Log.Info("OnLastPriceUpdated", $"{t.Symbol}/{t.LastPrice}");
-
         if (_position.Count == 0) return;
 
         Position pos = _position.FirstOrDefault(p => p.Asset == t.Symbol.Replace("USDT", ""));
         decimal? delta = t.LastPrice - pos.Current;
         if (delta == 0) return;
+        Log.Trace(_exchange.ID, "FrmAccount - OnLastPriceUpdated", $"{t.Symbol}/{t.LastPrice}");
 
         _position.Remove(pos);
         pos.Current = (decimal)t.LastPrice!;

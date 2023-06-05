@@ -92,10 +92,10 @@
             // btnTrade
             // 
             btnTrade.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnTrade.Font = new Font("Segoe UI", 16F, FontStyle.Regular, GraphicsUnit.Point);
-            btnTrade.Location = new Point(353, 61);
+            btnTrade.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            btnTrade.Location = new Point(407, 66);
             btnTrade.Name = "btnTrade";
-            btnTrade.Size = new Size(180, 60);
+            btnTrade.Size = new Size(129, 43);
             btnTrade.TabIndex = 3;
             btnTrade.Text = "Trade";
             btnTrade.UseVisualStyleBackColor = true;
