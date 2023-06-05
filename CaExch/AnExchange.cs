@@ -129,5 +129,6 @@ public abstract class AnExchange
     /*
      *  Account 
      */
+    public abstract Task<Order> GetLastSpotOrder(string symbol);
     public abstract void SubscribeToSpotAccountUpdates();
 }

@@ -135,4 +135,9 @@ public class CaBybit : AnExchange
     {
         throw new NotImplementedException();
     }
+
+    public override Task<Order> GetLastSpotOrder(string symbol)
+    {
+        throw new NotImplementedException();
+    }
 }

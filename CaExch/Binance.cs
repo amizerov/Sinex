@@ -214,6 +214,32 @@ public class CaBinance : AnExchange
         return listenKey;
     }
 
+    public async override Task<Order> GetLastSpotOrder(string symbol)
+    {
+        Order? order = new() { Symbol = symbol };
+        var res = await restClient.SpotApi.Trading.GetOrdersAsync(symbol);
+        if (res.Success)
+        {
+            var ord = res.Data
+                .Where(o => o.Status == OrderStatus.Filled && o.Side == OrderSide.Buy)
+                .MaxBy(o => o.CreateTime);
+            if (ord != null)
+            {
+                order.Status = (CommonOrderStatus)ord.Status;
+                order.QuantityFilled = ord.QuantityFilled;
+                order.Quantity = ord.Quantity;
+                order.Price = ord.Price;
+                order.Side = (CommonOrderSide)ord.Side;
+                order.Timestamp = ord.CreateTime;
+            }
+        }
+        else
+        {
+            Log.Error(Name, $"GetSpotOrders failed - {res.Error?.Message}");
+        }
+        return order;
+    }
+
     public async override void SubscribeToSpotAccountUpdates()
     {
         string listenKey = GetListenKey();
@@ -226,8 +252,9 @@ public class CaBinance : AnExchange
                 },
                 ocoOrder => { },
                 accPosition => {
+                    var d = accPosition.Data;
                     List<Balance> balances = new List<Balance>();
-                    foreach(var bal in accPosition.Data.Balances)
+                    foreach(var bal in d.Balances)
                     {
                         Balance balance = new Balance();
                         balance.Asset = bal.Asset;

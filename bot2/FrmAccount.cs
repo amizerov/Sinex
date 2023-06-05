@@ -26,13 +26,13 @@ public partial class FrmAccount : Form
     {
         Utils.LoadFormPosition(this);
 
+        var bals = await _exchange.GetBalances();
+        OnAccountPositionUpdate(bals);
+
         _exchange.SubscribeToSpotAccountUpdates();
         _exchange.OnAccPositionUpdate += OnAccountPositionUpdate;
         _exchange.OnAccBalanceUpdate += OnAccountBalanceUpdate;
         _exchange.OnTickerUpdate += OnLastPriceUpdated;
-
-        var bals = await _exchange.GetBalances();
-        OnAccountPositionUpdate(bals);
     }
 
     async void OnAccountPositionUpdate(List<Balance> bals)
@@ -53,6 +53,8 @@ public partial class FrmAccount : Form
             _totalEquity += (decimal)(res.LastPrice * b.Total)!;
 
             Position p = new Position() { Asset = b.Asset, Total = (decimal)b.Total! };
+            var ord = await _exchange.GetLastSpotOrder(symbol);
+            p.Purchase = (decimal)ord.Price!;
             p.Current = (decimal)res.LastPrice!;
             _position.Add(p);
 
@@ -78,27 +80,36 @@ public partial class FrmAccount : Form
     {
         Log.Info("OnLastPriceUpdated", $"{t.Symbol}/{t.LastPrice}");
 
-        Position pos = _position.First(p => p.Asset == t.Symbol.Replace("USDT", ""));
+        if (_position.Count == 0) return;
+
+        Position pos = _position.FirstOrDefault(p => p.Asset == t.Symbol.Replace("USDT", ""));
         decimal? delta = t.LastPrice - pos.Current;
         if (delta == 0) return;
 
         _position.Remove(pos);
         pos.Current = (decimal)t.LastPrice!;
+        pos.Delta = (decimal)(t.LastPrice - pos.Purchase)!;
+        pos.Percent = 100 * (decimal)(t.LastPrice - pos.Purchase) / pos.Purchase!;
         _position.Add(pos);
 
         _totalEquity += (decimal)(pos.Total * delta)!;
 
+        if (IsDisposed) return;
         Invoke(() =>
         {
-            if (this.IsDisposed) return;
             lblBalance.Text = $"Balance: {_totalEquity.ToString().TrimEnd('0')}";
-            dataGridView1.DataSource = _position;
+            dataGridView1.DataSource = _position.OrderBy(p => p.Asset).ToList();
             dataGridView1.Invalidate();
         });
     }
     private void FrmAccount_FormClosing(object sender, FormClosingEventArgs e)
     {
         Utils.SaveFormPosition(this);
+    }
+
+    private void btnTrade_Click(object sender, EventArgs e)
+    {
+        FrmTrade frm = new()
     }
 }
 
@@ -108,4 +119,6 @@ struct Position
     public decimal Total { get; set; }
     public decimal Purchase { get; set; }
     public decimal Current { get; set; }
+    public decimal Delta { get; set; }
+    public decimal Percent { get; set; }
 }

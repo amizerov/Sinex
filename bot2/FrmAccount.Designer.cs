@@ -33,6 +33,7 @@
             lblUsdtAvailable = new Label();
             label1 = new Label();
             lblBalance = new Label();
+            btnTrade = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
@@ -87,11 +88,22 @@
             lblBalance.TabIndex = 1;
             lblBalance.Text = "Balance: 220,50";
             // 
+            // btnTrade
+            // 
+            btnTrade.Location = new Point(413, 64);
+            btnTrade.Name = "btnTrade";
+            btnTrade.Size = new Size(112, 34);
+            btnTrade.TabIndex = 3;
+            btnTrade.Text = "Trade";
+            btnTrade.UseVisualStyleBackColor = true;
+            btnTrade.Click += btnTrade_Click;
+            // 
             // FrmAccount
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(552, 398);
+            Controls.Add(btnTrade);
             Controls.Add(label1);
             Controls.Add(lblBalance);
             Controls.Add(lblUsdtAvailable);
@@ -114,5 +126,6 @@
         private Label lblUsdtAvailable;
         private Label label1;
         private Label lblBalance;
+        private Button btnTrade;
     }
 }

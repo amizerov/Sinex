@@ -18,19 +18,17 @@ public partial class FrmTrade : Form
     string _symbol;
     AnExchange _excha;
 
-    Charty _charty;
-
-    public FrmTrade(Charty chart)
+    public FrmTrade(string symbol, AnExchange exch)
     {
         InitializeComponent();
 
-        _charty = chart;
-        _symbol = _charty.Symbol;
-        _excha = _charty.Exchange;
+        _symbol = symbol;
+        _excha = exch;
 
         GetAssets();
 
-        _charty.OnKlineUpdated += OnPriceUpdated;
+        _excha.SubsсribeToTicker(_symbol);
+        _excha.OnTickerUpdate += OnLastPriceUpdated;
     }
 
     private async void FrmTade_Load(object sender, EventArgs e)
@@ -61,6 +59,11 @@ public partial class FrmTrade : Form
     {
         if (this.IsDisposed) return;
         Invoke(() => lblPrice.Text = k.ClosePrice.ToString());
+    }
+    void OnLastPriceUpdated(Ticker t)
+    {
+        if (this.IsDisposed) return;
+        Invoke(() => lblPrice.Text = t.LastPrice.ToString());
     }
 
     void GetAssets()
