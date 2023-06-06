@@ -38,7 +38,7 @@ public partial class FrmTrade : Form
         Utils.LoadFormPosition(this, false);
 
         tabControl1.SelectedIndex = _buySell ? 0 : 1;
-        //btnBuySell.Text = (_buySell ? "Buy " : "Sell ") + _base;
+        btnBuySell.Text = (_buySell ? "Buy " : "Sell ") + _base;
 
         var r = await _excha.GetTickerAsync(_symbol);
         lblPrice.Text = r.LastPrice.ToString();
@@ -63,10 +63,11 @@ public partial class FrmTrade : Form
 
     void OnLastPriceUpdated(Ticker t)
     {
-        if (decimal.Parse(lblPrice.Text) - t.LastPrice == 0) return;
-        if (this.IsDisposed) return;
         try
         {
+            if (decimal.Parse(lblPrice.Text) - t.LastPrice == 0) return;
+            if (this.IsDisposed) return;
+
             Invoke(() => lblPrice.Text = t.LastPrice.ToString());
         }
         catch {}

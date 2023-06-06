@@ -14,7 +14,7 @@ public class ChartyBase
     protected List<Kline> _klines = new();
     protected List<JIndica> IndicatorsList = new();
 
-    protected int _zoom = 100;
+    protected int _zoom = 200;
     protected double _volumeRate = 0;
     protected double _yMax = 0;
     protected double _yMin = 0;

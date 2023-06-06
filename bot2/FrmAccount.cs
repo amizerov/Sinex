@@ -71,6 +71,8 @@ public partial class FrmAccount : Form
                 lblBalance.Text = $"Balance: {_totalEquity.ToString().TrimEnd('0')}";
 
                 dataGridView1.DataSource = _position;
+
+                btnTrade.Enabled = _position.Count > 0;
             });
         }
         catch (Exception ex) { Log.Error("OnAccountPositionUpdate", ex.Message); }
@@ -115,6 +117,8 @@ public partial class FrmAccount : Form
 
             if (dataGridView1.Rows.Count > 0 && r >= 0)
                 dataGridView1.Rows[r].Selected = true;
+
+            btnTrade.Enabled = _position.Count > 0;
         });
     }
     private void FrmAccount_FormClosing(object sender, FormClosingEventArgs e)
@@ -124,6 +128,7 @@ public partial class FrmAccount : Form
 
     private void btnTrade_Click(object sender, EventArgs e)
     {
+        if(dataGridView1.SelectedRows.Count == 0) return;
         string symbol = dataGridView1.SelectedRows[0].Cells[0].Value.ToString() + _quoteBal.Asset;
         FrmTrade frm = new(_exchange, symbol, false);
         frm.ShowDialog();
