@@ -10,7 +10,7 @@ public class Kucoin : AnExchange
     public override int ID => 2;
     public override string Name => "Kucoin";
 
-    KucoinClient client = new();
+    KucoinRestClient client = new();
 
     protected override Product ToProduct(object p)
     {

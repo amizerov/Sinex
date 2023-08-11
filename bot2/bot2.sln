@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CaSecrets", "..\CaSecrets\C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "caLibProdStat", "..\caLibProdStat\caLibProdStat.csproj", "{A4A873D7-5AC2-4A48-AAB6-2564C4F388E9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bot3", "..\bot3\bot3.csproj", "{C7FADA7B-D1F8-45D7-B637-86DE19632896}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,6 +84,12 @@ Global
 		{A4A873D7-5AC2-4A48-AAB6-2564C4F388E9}.Designer|Any CPU.Build.0 = Debug|Any CPU
 		{A4A873D7-5AC2-4A48-AAB6-2564C4F388E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4A873D7-5AC2-4A48-AAB6-2564C4F388E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7FADA7B-D1F8-45D7-B637-86DE19632896}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7FADA7B-D1F8-45D7-B637-86DE19632896}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7FADA7B-D1F8-45D7-B637-86DE19632896}.Designer|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7FADA7B-D1F8-45D7-B637-86DE19632896}.Designer|Any CPU.Build.0 = Debug|Any CPU
+		{C7FADA7B-D1F8-45D7-B637-86DE19632896}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7FADA7B-D1F8-45D7-B637-86DE19632896}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

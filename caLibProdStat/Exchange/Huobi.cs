@@ -11,7 +11,7 @@ public class Huobi : AnExchange
     public override int ID => 3;
     public override string Name => "Huobi";
 
-    HuobiClient client = new();
+    HuobiRestClient client = new();
 
     protected override Product ToProduct(object p)
     {

@@ -11,7 +11,7 @@ public class Bittrex : AnExchange
     public override int ID => 4;
     public override string Name => "Bittrex";
 
-    BittrexClient client = new();
+    BittrexRestClient client = new();
 
     protected override Product ToProduct(object p)
     {

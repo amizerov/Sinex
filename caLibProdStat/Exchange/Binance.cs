@@ -10,7 +10,7 @@ public class Binance : AnExchange
     public override int ID => 1;
     public override string Name => "Binance";
 
-    BinanceClient client = new();
+    BinanceRestClient client = new();
 
     protected override Product ToProduct(object p)
     {

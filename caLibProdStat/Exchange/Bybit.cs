@@ -12,7 +12,7 @@ public class Bybit : AnExchange
     public override int ID => 5;
     public override string Name => "Bybit";
 
-    BybitClient client = new();
+    BybitRestClient client = new();
 
     protected override Product ToProduct(object p)
     {
