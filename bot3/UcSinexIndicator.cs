@@ -16,7 +16,10 @@ public partial class UcSinexChart
             CrosshairEnabled = DefaultBoolean.False
         };
         _view.Indicators.Add(sma);
+    }
 
+    void Indicators1()
+    {
         RateOfChange rateOfChange = new RateOfChange
         {
             ValueLevel = ValueLevel.Close,

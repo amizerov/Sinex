@@ -25,7 +25,6 @@ public partial class UcSinexChart
         _diagram.EnableAxisXZooming = true;
         _diagram.EnableAxisXScrolling = true;
 
-        //_diagram.DefaultPane.LayoutOptions.RowSpan = 3;
         // Customize the series view settings.
 
         _view.LineThickness = 2;

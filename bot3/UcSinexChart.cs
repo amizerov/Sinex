@@ -31,11 +31,13 @@ public partial class UcSinexChart : UserControl
 
 
         SetupAxisX();
-     
-        Indicators();
-        AddVolume();
 
-        _diagram.DefaultPane.LayoutOptions.RowSpan = 2;
+        Indicators();
+        //Indicators1();
+        
+        //AddVolume();
+
+        _diagram.DefaultPane.LayoutOptions.RowSpan = 3;
 
 
         if (_diagram.Panes.Count > 0)
