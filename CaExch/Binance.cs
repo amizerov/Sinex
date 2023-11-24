@@ -10,6 +10,7 @@ using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Sockets;
 using CaSecrets;
+using CryptoExchange.Net.Authentication;
 
 namespace CaExch;
 public class CaBinance : AnExchange
@@ -23,7 +24,7 @@ public class CaBinance : AnExchange
     public override List<string> Intervals => new List<string>() 
         { "1s", "1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M" };
 
-    BinanceClient restClient = new();
+    BinanceRestClient restClient = new();
     BinanceSocketClient socketClient = new();
 
     public override async Task<bool> CheckApiKey()
@@ -34,10 +35,9 @@ public class CaBinance : AnExchange
             string apiKey = Secrets.BinanceApiKey;
             string apiSecret = Secrets.BinanceApiSecret;
 
-            restClient = new BinanceClient(
-                new BinanceClientOptions()
+            restClient = new BinanceRestClient(options =>
                 {
-                    ApiCredentials = new BinanceApiCredentials(apiKey, apiSecret)
+                    options.ApiCredentials = new ApiCredentials(apiKey, apiSecret);
                 });
 
             // Если получен доступ к балансам, ключ считается рабочим
@@ -77,7 +77,7 @@ public class CaBinance : AnExchange
         var r = await restClient.SpotApi.CommonSpotClient.GetTickerAsync(symbol);
         return r.Data;
     }
-    public async override Task<List<Kline>> GetKlines(string symbol, string inter)
+    public async override Task<List<Kline>> GetKlines(string symbol, string inter, int count = 0)
     {
         _symbol = symbol;
         List<Kline> klines = new();
@@ -100,7 +100,7 @@ public class CaBinance : AnExchange
 
     protected async override Task<CallResult<UpdateSubscription>> SubsToSock(string symbol, string inter)
     {
-        var r = await socketClient.SpotStreams.
+        var r = await socketClient.SpotApi.ExchangeData.
             SubscribeToKlineUpdatesAsync(symbol, (KlineInterval)IntervalInSeconds(inter),
             msg => 
             {
@@ -123,7 +123,8 @@ public class CaBinance : AnExchange
 
     public async override Task<int> SubsсribeToTicker(string symbol)
     {
-        var res = await socketClient.SpotStreams.SubscribeToTickerUpdatesAsync(symbol,
+        var res = await socketClient.SpotApi.ExchangeData.
+            SubscribeToTickerUpdatesAsync(symbol,
             onMessage => {
                 Ticker t = new();
                 var d = onMessage.Data;
@@ -144,8 +145,11 @@ public class CaBinance : AnExchange
     }
     public async override void UnSubFromTicker(int subsId)
     {
-        var res = await socketClient.SpotStreams.UnsubscribeAsync(subsId);
-        if (!res)
+        int c1 = socketClient.CurrentSubscriptions;
+        await socketClient.UnsubscribeAsync(subsId);
+        int c2 = socketClient.CurrentSubscriptions;
+
+        if (c1 == c2)
         {
             Log.Error(Name, $"Error in UnSubFromTicker - не отписался");
         }
@@ -272,7 +276,7 @@ public class CaBinance : AnExchange
     public async override void SubscribeToSpotAccountUpdates()
     {
         string listenKey = GetListenKey();
-        var res = await socketClient.SpotStreams
+        var res = await socketClient.SpotApi.Account
             .SubscribeToUserDataUpdatesAsync(
                 listenKey,
                 order => { 

@@ -18,7 +18,8 @@ public partial class FrmMarket : Form
         new CaKucoin(),
         new CaHuobi(),
         new CaBittrex(),
-        new CaBybit()
+        new CaBybit(),
+        new CaOKX(),
     };
 
     public FrmMarket()

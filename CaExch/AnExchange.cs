@@ -27,7 +27,7 @@ public abstract class AnExchange
     public abstract Task<bool> CheckApiKey();
     public abstract Task<List<Balance>> GetBalances();
     public abstract Task<Ticker> GetTickerAsync(string symbol);
-    public abstract Task<List<Kline>> GetKlines(string symbol, string inter);
+    public abstract Task<List<Kline>> GetKlines(string symbol, string inter, int count = 0);
     public abstract List<string> Intervals { get; }
 
     public abstract Task<int> SubsсribeToTicker(string symbol);

@@ -21,7 +21,7 @@ public class CaBittrex : AnExchange
     public override List<string> Intervals => new List<string>() 
         { "1m", "5m", "1h", "1d" };
 
-    BittrexClient restClient = new();
+    BittrexRestClient restClient = new();
     BittrexSocketClient socketClient = new();
 
     public override async Task<bool> CheckApiKey()
@@ -55,7 +55,7 @@ public class CaBittrex : AnExchange
         return r.Data;
     }
 
-    public async override Task<List<Kline>> GetKlines(string symbol, string inter)
+    public async override Task<List<Kline>> GetKlines(string symbol, string inter, int count = 0)
     {
         _symbol = symbol;
         List<Kline> klines = new();
@@ -85,7 +85,7 @@ public class CaBittrex : AnExchange
 
     protected async override Task<CallResult<UpdateSubscription>> SubsToSock(string symbol, string inter)
     {
-        var r = await socketClient.SpotStreams.
+        var r = await socketClient.SpotApi.
             SubscribeToKlineUpdatesAsync(symbol, (KlineInterval)IntervalInSeconds(inter),
             msg =>
             {

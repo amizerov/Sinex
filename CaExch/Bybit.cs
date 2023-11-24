@@ -14,12 +14,12 @@ public class CaBybit : AnExchange
     public override int ID => 5;
     public override string Name => "Bybit";
 
-    public override ISymbolOrderBook OrderBook => new BybitSpotSymbolOrderBook(_symbol);
+    public override ISymbolOrderBook OrderBook => new BybitSymbolOrderBook(_symbol, Category.Spot);
     string _symbol = "";
     public override List<string> Intervals => new List<string>()
         { "1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "12h", "1d", "1w", "1M" };
 
-    BybitClient restClient = new();
+    BybitRestClient restClient = new();
     BybitSocketClient socketClient = new();
 
     public override async Task<bool> CheckApiKey()
@@ -53,7 +53,7 @@ public class CaBybit : AnExchange
         return r.Data;
     }
 
-    public async override Task<List<Kline>> GetKlines(string symbol, string inter)
+    public async override Task<List<Kline>> GetKlines(string symbol, string inter, int count = 0)
     {
         _symbol = symbol;
         List<Kline> klines = new();
@@ -75,7 +75,7 @@ public class CaBybit : AnExchange
 
     protected async override Task<CallResult<UpdateSubscription>> SubsToSock(string symbol, string inter)
     {
-        var r = await socketClient.SpotStreamsV3.
+        var r = await socketClient.SpotV3Api.
             SubscribeToKlineUpdatesAsync(symbol, (KlineInterval)IntervalInSeconds(inter),
                 msg =>
                 {

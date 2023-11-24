@@ -19,7 +19,7 @@ public class CaHuobi : AnExchange
     public override List<string> Intervals => new List<string>()
         { "1m", "5m", "15m", "30m", "1h", "2h", "4h", "1w", "1M", "1y" };
 
-    HuobiClient restClient = new();
+    HuobiRestClient restClient = new();
     HuobiSocketClient socketClient = new();
 
     public override async Task<bool> CheckApiKey()
@@ -53,7 +53,7 @@ public class CaHuobi : AnExchange
         return r.Data;
     }
 
-    public async override Task<List<Kline>> GetKlines(string symbol, string inter)
+    public async override Task<List<Kline>> GetKlines(string symbol, string inter, int count = 0)
     {
         _symbol = symbol;
         List<Kline> klines = new();
@@ -75,7 +75,7 @@ public class CaHuobi : AnExchange
 
     protected async override Task<CallResult<UpdateSubscription>> SubsToSock(string symbol, string inter)
     {
-        var r = await socketClient.SpotStreams.
+        var r = await socketClient.SpotApi.
             SubscribeToKlineUpdatesAsync(symbol, (KlineInterval)IntervalInSeconds(inter),
                 msg =>
                 {

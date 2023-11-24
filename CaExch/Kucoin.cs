@@ -19,7 +19,7 @@ public class CaKucoin : AnExchange
     public override List<string> Intervals => new List<string>()
         { "1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "1w" };
 
-    KucoinClient restClient = new();
+    KucoinRestClient restClient = new();
     KucoinSocketClient socketClient = new();
 
     public override async Task<bool> CheckApiKey()
@@ -53,7 +53,7 @@ public class CaKucoin : AnExchange
         return r.Data;
     }
 
-    public async override Task<List<Kline>> GetKlines(string symbol, string inter)
+    public async override Task<List<Kline>> GetKlines(string symbol, string inter, int count = 0)
     {
         _symbol = symbol;
         List<Kline> klines = new();
@@ -74,7 +74,7 @@ public class CaKucoin : AnExchange
     }
     protected async override Task<CallResult<UpdateSubscription>> SubsToSock(string symbol, string inter)
     {
-        var r = await socketClient.SpotStreams.
+        var r = await socketClient.SpotApi.
             SubscribeToKlineUpdatesAsync(symbol, (KlineInterval)IntervalInSeconds(inter),
                 msg =>
                 {

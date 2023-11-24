@@ -26,6 +26,10 @@ public static class Secrets
                 return "";
         }
     }
+    public static string OKXApiKey = "";
+    public static string OKXApiSecret = "";
+
+
     static List<string> ReadKeysFromFile()
     {
         /*** формат файла BinanceApiKey.txt ******>
