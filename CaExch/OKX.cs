@@ -92,7 +92,7 @@ public class CaOKX : AnExchange
 
         OKXPeriod period = OKXPeriodFromInterval(inter);
 
-        if(count > 300) count = 300;
+        if(count > 300 || count == 0) count = 300;
 
         var r = await restClient.UnifiedApi.ExchangeData
             .GetKlinesAsync(symbol, period, limit: count);

@@ -26,6 +26,9 @@ public partial class Form1 : Form
                 log.src + " - " +
                 log.msg + "\r\n" +
                 textBox1.Text;
+
+            if (textBox1.Text.Length > 5000)
+                textBox1.Text = textBox1.Text.Substring(0, 5000);
         }));
     }
 

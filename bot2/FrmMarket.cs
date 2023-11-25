@@ -13,14 +13,7 @@ public partial class FrmMarket : Form
 
     AnExchange? _excha;
 
-    public List<AnExchange> Exchanges = new(){
-        new CaBinance(),
-        new CaKucoin(),
-        new CaHuobi(),
-        new CaBittrex(),
-        new CaBybit(),
-        new CaOKX(),
-    };
+    public List<AnExchange> Exchanges = new CaExchanges();
 
     public FrmMarket()
     {
@@ -138,6 +131,8 @@ public partial class FrmMarket : Form
 
     private void btnAccount_Click(object sender, EventArgs e)
     {
+        if (_excha == null) return;
+
         FrmAccount f = new FrmAccount(_excha);
         f.Show(this);
     }

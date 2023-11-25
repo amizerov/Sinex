@@ -11,7 +11,10 @@ public class CaInfo
         new Huobi(),
         new Bittrex(),
         new Bybit(),
+        new Bitfinex(),
+        new Kraken(),
         new OKX(),
+        new CoinEx(),
     };
 
     public static int KlineInterval = 1;

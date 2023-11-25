@@ -29,6 +29,8 @@ public static class Secrets
     public static string OKXApiKey = "";
     public static string OKXApiSecret = "";
 
+    public static string CoinExApiKey = "";
+    public static string CoinExApiSecret = "";
 
     static List<string> ReadKeysFromFile()
     {

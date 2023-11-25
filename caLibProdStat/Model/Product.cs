@@ -10,6 +10,7 @@ public class Product
     public int exchange { get; set; }
     public string baseasset { get; set; }
     public string quoteasset { get; set; }
+    public string info { get; set; }
     public double volatility { get; set; }
     public double liquidity { get; set; }
     public int cnt1 { get; set; }
@@ -20,7 +21,7 @@ public class Product
     public DateTime? dtTo { get; set; }
     public string? KlineInterval { get; set; }
     public int? KlinesCount { get; set; }
-    public Product() { symbol = baseasset = quoteasset = ""; }
+    public Product() { symbol = baseasset = quoteasset = info = ""; }
 
     public bool IsTradingEnabled;
     public void CalcStat(List<Kline> klines)
