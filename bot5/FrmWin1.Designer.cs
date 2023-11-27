@@ -45,22 +45,29 @@
             // 
             dgvProds.AllowUserToAddRows = false;
             dgvProds.AllowUserToDeleteRows = false;
+            dgvProds.AllowUserToResizeRows = false;
+            dgvProds.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            dgvProds.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvProds.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            dgvProds.CellBorderStyle = DataGridViewCellBorderStyle.None;
             dgvProds.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvProds.Location = new Point(12, 90);
+            dgvProds.Location = new Point(12, 100);
+            dgvProds.MultiSelect = false;
             dgvProds.Name = "dgvProds";
             dgvProds.ReadOnly = true;
             dgvProds.RowHeadersVisible = false;
             dgvProds.RowHeadersWidth = 72;
             dgvProds.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvProds.Size = new Size(420, 833);
+            dgvProds.Size = new Size(392, 820);
             dgvProds.TabIndex = 0;
             dgvProds.SelectionChanged += dgvProds_SelectionChanged;
             // 
             // txtSearch
             // 
-            txtSearch.Location = new Point(26, 34);
+            txtSearch.Font = new Font("Segoe UI", 15.8571434F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            txtSearch.Location = new Point(12, 14);
             txtSearch.Name = "txtSearch";
-            txtSearch.Size = new Size(175, 35);
+            txtSearch.Size = new Size(392, 57);
             txtSearch.TabIndex = 1;
             txtSearch.TextChanged += txtSearch_TextChanged;
             // 
@@ -68,84 +75,88 @@
             // 
             panel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             panel.BackColor = SystemColors.ControlLight;
-            panel.Location = new Point(470, 235);
+            panel.Location = new Point(430, 250);
             panel.Name = "panel";
-            panel.Size = new Size(604, 673);
+            panel.Size = new Size(527, 673);
             panel.TabIndex = 2;
             // 
             // lblSym
             // 
             lblSym.AutoSize = true;
-            lblSym.Location = new Point(465, 52);
+            lblSym.Font = new Font("Segoe UI", 36F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            lblSym.Location = new Point(443, 35);
             lblSym.Name = "lblSym";
-            lblSym.Size = new Size(68, 30);
+            lblSym.Size = new Size(268, 112);
             lblSym.TabIndex = 3;
             lblSym.Text = "label1";
             // 
             // lblExc1
             // 
             lblExc1.AutoSize = true;
-            lblExc1.Location = new Point(465, 141);
+            lblExc1.Font = new Font("Segoe UI", 15.8571434F);
+            lblExc1.Location = new Point(430, 184);
             lblExc1.Name = "lblExc1";
-            lblExc1.Size = new Size(68, 30);
+            lblExc1.Size = new Size(120, 50);
             lblExc1.TabIndex = 3;
             lblExc1.Text = "label1";
             // 
             // lblExc2
             // 
             lblExc2.AutoSize = true;
-            lblExc2.Location = new Point(577, 141);
+            lblExc2.Font = new Font("Segoe UI", 15.8571434F);
+            lblExc2.Location = new Point(556, 184);
             lblExc2.Name = "lblExc2";
-            lblExc2.Size = new Size(68, 30);
+            lblExc2.Size = new Size(120, 50);
             lblExc2.TabIndex = 3;
             lblExc2.Text = "label1";
             // 
             // lblMaxProc
             // 
             lblMaxProc.AutoSize = true;
-            lblMaxProc.Location = new Point(713, 141);
+            lblMaxProc.Font = new Font("Segoe UI", 15.8571434F);
+            lblMaxProc.Location = new Point(690, 184);
             lblMaxProc.Name = "lblMaxProc";
-            lblMaxProc.Size = new Size(68, 30);
+            lblMaxProc.Size = new Size(120, 50);
             lblMaxProc.TabIndex = 3;
             lblMaxProc.Text = "label1";
             // 
             // btnReload
             // 
             btnReload.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnReload.Location = new Point(943, 46);
+            btnReload.Location = new Point(824, 26);
             btnReload.Name = "btnReload";
-            btnReload.Size = new Size(131, 40);
+            btnReload.Size = new Size(131, 54);
             btnReload.TabIndex = 4;
-            btnReload.Text = "button1";
+            btnReload.Text = "Обновить";
             btnReload.UseVisualStyleBackColor = true;
             btnReload.Click += btnReload_Click;
             // 
             // btnArbit
             // 
             btnArbit.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnArbit.Location = new Point(943, 111);
+            btnArbit.Location = new Point(824, 83);
             btnArbit.Name = "btnArbit";
-            btnArbit.Size = new Size(131, 40);
+            btnArbit.Size = new Size(131, 54);
             btnArbit.TabIndex = 4;
-            btnArbit.Text = "button1";
+            btnArbit.Text = "Арбитраж";
             btnArbit.UseVisualStyleBackColor = true;
             btnArbit.Click += btnArbit_Click;
             // 
             // button3
             // 
-            button3.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            button3.Location = new Point(943, 173);
+            button3.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            button3.Location = new Point(824, 140);
             button3.Name = "button3";
-            button3.Size = new Size(131, 40);
+            button3.Size = new Size(131, 54);
             button3.TabIndex = 4;
-            button3.Text = "button1";
+            button3.Text = "Бот1";
             button3.UseVisualStyleBackColor = true;
             // 
             // FrmWin1
             // 
             AutoScaleDimensions = new SizeF(12F, 30F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1095, 935);
+            ClientSize = new Size(983, 935);
             Controls.Add(button3);
             Controls.Add(btnArbit);
             Controls.Add(btnReload);
@@ -158,6 +169,7 @@
             Controls.Add(dgvProds);
             MaximizeBox = false;
             Name = "FrmWin1";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Склейки по биржам";
             Load += FrmWin1_Load;
             ((System.ComponentModel.ISupportInitialize)dgvProds).EndInit();

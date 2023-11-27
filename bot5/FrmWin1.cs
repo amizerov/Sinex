@@ -22,15 +22,21 @@ public partial class FrmWin1 : Form
         {
             dgvProds.DataSource = null;
             var prods = db.Database
-                .SqlQuery<ProdEx>($"Sinex_GetProductsExchanges {txtSearch.Text}");
+                .SqlQuery<ProdEx>($"Sinex_GetProductsExch {txtSearch.Text}");
 
             dgvProds.DataSource = prods.ToList();
-            dgvProds.Columns[2].Visible = false;
+            //dgvProds.Columns[2].Visible = false;
             dgvProds.Columns[3].Visible = false;
             dgvProds.Columns[4].Visible = false;
+            dgvProds.Columns[5].Visible = false;
+
+            dgvProds.Columns[0].Width = 60;
+            dgvProds.Columns[1].Width = 80;
+            dgvProds.Columns[2].Width = 50;
         }
         _loaded = true;
-        ShowPrices();
+        //ShowPrices();
+        DoIt();
     }
 
     private void FrmWin1_Load(object sender, EventArgs e)
@@ -50,6 +56,18 @@ public partial class FrmWin1 : Form
         LoadProducts();
     }
 
+    async Task<Stat> CalcSt(int[] arrExchanges, string asset)
+    {
+        Stat st = new();
+        foreach (var ex in arrExchanges)
+        {
+            AnExchange exch = _exs.Find(x => x.ID == ex)!;
+            var p = await GetPrice(exch, asset!);
+            st.Add(new PriceSt() { exchange = exch, symbol = asset, price = p });
+        }
+        st.work();
+        return st;
+    }
     async void ShowPrices()
     {
         lblExc1.Text = lblExc2.Text = lblMaxProc.Text = "";
@@ -73,7 +91,7 @@ public partial class FrmWin1 : Form
         lblExc2.Text = st.exc2!.Name;
         lblMaxProc.Text = st.proc + "%";
     }
-    async Task<decimal> AddLabel(AnExchange exc, string ass)
+    async Task<decimal> GetPrice(AnExchange exc, string ass)
     {
         string symbol = "";
         switch (exc.ID)
@@ -109,16 +127,23 @@ public partial class FrmWin1 : Form
         var t = await exc.GetTickerAsync(symbol);
         decimal? price = t.LastPrice;
 
+        return (decimal)price!;
+    }
+    async Task<decimal> AddLabel(AnExchange exc, string ass)
+    {
+        decimal price = await GetPrice(exc, ass);
+
+        int c = panel.Controls.Count + 2;
         Label lblEx = new();
         lblEx.Text = exc.Name;
-        lblEx.Width = 100;
+        lblEx.Width = 100; lblEx.Top = 30 * c / 2; lblEx.Left = 11;
         Label lblPr = new();
         lblPr.Text = price.ToString();
-        lblPr.Width = 200;
+        lblPr.Width = 200; lblPr.Top = lblEx.Top; lblPr.Left = 111;
         panel.Controls.Add(lblEx);
         panel.Controls.Add(lblPr);
 
-        return (decimal)price!;
+        return price;
     }
 
     private void txtSearch_TextChanged(object sender, EventArgs e)
@@ -130,12 +155,31 @@ public partial class FrmWin1 : Form
     {
         (new FrmWin2()).Show();
     }
+
+    async void DoIt()
+    {
+        await Task.Run(async () =>
+        {
+            foreach (DataGridViewRow r in dgvProds.Rows)
+            {
+                var ass = r.Cells[0].Value.ToString();
+                var ens = r.Cells[1].Value.ToString();
+                var aex = ens!.Split(',');
+                int[] ints = new int[aex.Length];
+                for(int i=0; i<aex.Length; i++) ints[i] = Convert.ToInt32(aex[i]);
+
+                Stat st = await CalcSt(ints, ass!);
+                r.Cells[2].Value = st.proc.ToString();
+            }
+        });
+    }
 }
 
 class ProdEx
 {
     public string? symbol { get; set; }
     public string? exc { get; set; }
+    public string? d { get; set; }
     public int c { get; set; }
     public DateTime dmin { get; set; }
     public DateTime dmax { get; set; }
