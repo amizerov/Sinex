@@ -1,4 +1,5 @@
-﻿using CaDb;
+﻿using Binance.Net.Objects.Models.Futures;
+using CaDb;
 using CaExch;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
@@ -62,8 +63,12 @@ public partial class FrmWin1 : Form
         foreach (var ex in arrExchanges)
         {
             AnExchange exch = _exs.Find(x => x.ID == ex)!;
-            var p = await GetPrice(exch, asset!);
-            st.Add(new PriceSt() { exchange = exch, symbol = asset, price = p });
+            var p = await GetPriceVolum(exch, asset!);
+            st.Add(new PriceSt() { 
+                exchange = exch, symbol = asset, 
+                price = p.Item1, 
+                volum = p.Item2
+            });
         }
         st.work();
         return st;
@@ -84,14 +89,19 @@ public partial class FrmWin1 : Form
         {
             AnExchange exchange = _exs.Find(x => x.ID == int.Parse(ex))!;
             var p = await AddLabel(exchange, ass!);
-            st.Add(new PriceSt() { exchange = exchange, symbol = ass, price = p });
+            if (p.Item1 == 0) continue;
+
+            st.Add(new PriceSt() { 
+                exchange = exchange, symbol = ass, 
+                price = p.Item1, volum = p.Item2 
+            });
         }
         st.work();
         lblExc1.Text = st.exc1!.Name;
         lblExc2.Text = st.exc2!.Name;
         lblMaxProc.Text = st.proc + "%";
     }
-    async Task<decimal> GetPrice(AnExchange exc, string ass)
+    async Task<(decimal, decimal)> GetPriceVolum(AnExchange exc, string ass)
     {
         string symbol = "";
         switch (exc.ID)
@@ -124,14 +134,24 @@ public partial class FrmWin1 : Form
                 symbol = ass.ToUpper() + "USDT";
                 break;
         }
-        var t = await exc.GetTickerAsync(symbol);
-        decimal? price = t.LastPrice;
+        //var t = await exc.GetTickerAsync(symbol);
+        //if(t == null) return (0, 0);
 
-        return (decimal)price!;
+        var k = await exc.GetKlines(symbol, "1m", 10);
+        if (k == null || k.Count == 0) return (0, 0);
+        var s = k.Last();
+        var v = s.Volume;
+        var p = s.ClosePrice;
+
+        decimal? price = p; // t.LastPrice;
+        decimal? volum = v; // t.LastPrice;
+
+        return ((decimal)price!, (decimal)volum!);
     }
-    async Task<decimal> AddLabel(AnExchange exc, string ass)
+    async Task<(decimal, decimal)> AddLabel(AnExchange exc, string ass)
     {
-        decimal price = await GetPrice(exc, ass);
+        (decimal price, decimal volum) = await GetPriceVolum(exc, ass);
+        if(price == 0) return (0, 0);
 
         int c = panel.Controls.Count + 2;
         Label lblEx = new();
@@ -143,7 +163,7 @@ public partial class FrmWin1 : Form
         panel.Controls.Add(lblEx);
         panel.Controls.Add(lblPr);
 
-        return price;
+        return (price, volum);
     }
 
     private void txtSearch_TextChanged(object sender, EventArgs e)
@@ -153,7 +173,10 @@ public partial class FrmWin1 : Form
 
     private void btnArbit_Click(object sender, EventArgs e)
     {
-        (new FrmWin2()).Show();
+        FrmWin2 f = new();
+        f.Top = this.Top;
+        f.Left = this.Left + this.Width + 11;
+        f.Show();
     }
 
     async void DoIt()
@@ -166,10 +189,31 @@ public partial class FrmWin1 : Form
                 var ens = r.Cells[1].Value.ToString();
                 var aex = ens!.Split(',');
                 int[] ints = new int[aex.Length];
-                for(int i=0; i<aex.Length; i++) ints[i] = Convert.ToInt32(aex[i]);
+                for (int i = 0; i < aex.Length; i++) ints[i] = Convert.ToInt32(aex[i]);
 
                 Stat st = await CalcSt(ints, ass!);
+                if (st == null || st.exc1 == null || st.exc2 == null) return;
+
                 r.Cells[2].Value = st.proc.ToString();
+
+                using (CaDbContext db = new())
+                {
+                    db.Database.ExecuteSql(
+                        @$"
+                        declare @n int
+                        select @n=max(shotNumber) from Sinex_Arbitrage
+                        update Sinex_Arbitrage 
+                            set procDiffer={st.proc},
+                                exch1={st.exc1!.Name}, 
+                                exch2={st.exc2!.Name},
+                                vol1={st.vol1},
+                                vol2={st.vol2}             
+                        where 
+                            shotNumber=@n 
+                            and baseAsset={ass}
+                            and quoteAsset='USDT'"
+                    );
+                }
             }
         });
     }
@@ -190,12 +234,15 @@ class PriceSt
     public AnExchange? exchange { get; set; }
     public string? symbol { get; set; }
     public decimal? price { get; set; }
+    public decimal? volum { get; set; }
 }
 class Stat : List<PriceSt>
 {
     public AnExchange? exc1 { get; set; }
     public AnExchange? exc2 { get; set; }
     public decimal proc { get; set; } = 0;
+    public decimal vol1 { get; set; }
+    public decimal vol2 { get; set; }
 
     public void work()
     {
@@ -214,13 +261,13 @@ class Stat : List<PriceSt>
                     proc = d;
                     if (i.price > j.price)
                     {
-                        exc1 = i.exchange;
-                        exc2 = j.exchange;
+                        exc1 = i.exchange; vol1 = (decimal)i.volum!;
+                        exc2 = j.exchange; vol2 = (decimal)j.volum!;
                     }
                     else
                     {
-                        exc2 = i.exchange;
-                        exc1 = j.exchange;
+                        exc2 = i.exchange; vol2 = (decimal)j.volum!;
+                        exc1 = j.exchange; vol1 = (decimal)i.volum!;
                     }
                 }
             }
