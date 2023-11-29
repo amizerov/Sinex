@@ -106,12 +106,14 @@ public partial class FrmWin1 : Form
         f2.Left = this.Left + this.Width + 11;
     }
 
-    async void StartScan()
+    async void StartScan(Action? OnComplete = null)
     {
         await Task.Run(async () =>
         {
             foreach (DataGridViewRow r in dgvProds.Rows)
             {
+                if (btnScan.Text == "Scan") return;
+
                 var ass = r.Cells[0].Value.ToString();
                 var ens = r.Cells[1].Value.ToString();
                 if (ens == null || ass == null) continue;
@@ -126,6 +128,8 @@ public partial class FrmWin1 : Form
                 if (st.vol1 > 0 && st.vol2 > 0)
                     Invoke(() => f2.btnUpdate_Click(null, null));
             }
+
+            OnComplete?.Invoke();
         });
     }
 
@@ -136,6 +140,27 @@ public partial class FrmWin1 : Form
 
     private void btnScan_Click(object sender, EventArgs e)
     {
-        StartScan();
+        if (btnScan.Text == "Scan")
+        {
+            btnScan.Text = "Stop scan";
+            btnReload.Enabled = false;
+            txtSearch.Enabled = false;
+
+            StartScan(() => {
+                Invoke(() =>
+                {
+                    btnScan.Text = "Scan";
+                    btnReload.Enabled = true;
+                    txtSearch.Enabled = true;
+                });
+            });
+        }
+        else
+        {
+            btnScan.Text = "Scan";
+            btnReload.Enabled = true;
+            txtSearch.Enabled = true;
+        }
+
     }
 }
