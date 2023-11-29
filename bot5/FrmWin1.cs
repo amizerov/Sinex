@@ -1,19 +1,20 @@
-﻿using Binance.Net.Objects.Models.Futures;
+﻿using amLogger;
 using CaDb;
 using CaExch;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel;
-using System.Data;
 
 namespace bot5;
 
 public partial class FrmWin1 : Form
 {
+    FrmWin2 f2 = new();
+
     bool _loaded = false;
-    CaExchanges _exs = new();
+
     public FrmWin1()
     {
         InitializeComponent();
+        (new FrmLog()).Show();
     }
 
     void LoadProducts()
@@ -36,8 +37,6 @@ public partial class FrmWin1 : Form
             dgvProds.Columns[2].Width = 50;
         }
         _loaded = true;
-        //ShowPrices();
-        DoIt();
     }
 
     private void FrmWin1_Load(object sender, EventArgs e)
@@ -49,7 +48,7 @@ public partial class FrmWin1 : Form
     {
         if (!_loaded) return;
 
-        ShowPrices();
+        //ShowPrices();
     }
 
     private void btnReload_Click(object sender, EventArgs e)
@@ -57,113 +56,42 @@ public partial class FrmWin1 : Form
         LoadProducts();
     }
 
-    async Task<Stat> CalcSt(int[] arrExchanges, string asset)
+    async void ShowAllStatistics()
     {
-        Stat st = new();
-        foreach (var ex in arrExchanges)
-        {
-            AnExchange exch = _exs.Find(x => x.ID == ex)!;
-            var p = await GetPriceVolum(exch, asset!);
-            st.Add(new PriceSt() { 
-                exchange = exch, symbol = asset, 
-                price = p.Item1, 
-                volum = p.Item2
-            });
-        }
-        st.work();
-        return st;
-    }
-    async void ShowPrices()
-    {
+        panel.Controls.Clear();
         lblExc1.Text = lblExc2.Text = lblMaxProc.Text = "";
         if (dgvProds.Rows.Count == 0) return;
 
         var ass = dgvProds.CurrentRow.Cells[0].Value.ToString();
-        lblSym.Text = ass;
-
-        Stat st = new();
         var ens = dgvProds.CurrentRow.Cells[1].Value.ToString();
-        var aex = ens!.Split(',');
-        panel.Controls.Clear();
-        foreach (var ex in aex)
-        {
-            AnExchange exchange = _exs.Find(x => x.ID == int.Parse(ex))!;
-            var p = await AddLabel(exchange, ass!);
-            if (p.Item1 == 0) continue;
+        if (ens == null || ass == null) return;
 
-            st.Add(new PriceSt() { 
-                exchange = exchange, symbol = ass, 
-                price = p.Item1, volum = p.Item2 
-            });
-        }
-        st.work();
+        lblSym.Text = ass;
+        Stat st = await Stat.Init(ens, ass, s => AddLabel(s));
+        dgvProds.CurrentRow.Cells[2].Value = st.proc.ToString();
+        st.Save();
+
         lblExc1.Text = st.exc1!.Name;
         lblExc2.Text = st.exc2!.Name;
         lblMaxProc.Text = st.proc + "%";
     }
-    async Task<(decimal, decimal)> GetPriceVolum(AnExchange exc, string ass)
+
+    void AddLabel(PriceSt s)
     {
-        string symbol = "";
-        switch (exc.ID)
-        {
-            case 1:
-                symbol = ass.ToUpper() + "USDT";
-                break;
-            case 2:
-                symbol = ass.ToUpper() + "-USDT";
-                break;
-            case 3:
-                symbol = ass.ToLower() + "usdt";
-                break;
-            case 4:
-                symbol = ass.ToUpper() + "-USDT";
-                break;
-            case 5:
-                symbol = ass.ToUpper() + "USDT";
-                break;
-            case 6:
-                symbol = ass.ToLower() + "usdt";
-                break;
-            case 7:
-                symbol = ass.ToUpper() + "USDT";
-                break;
-            case 8:
-                symbol = ass.ToUpper() + "-USDT";
-                break;
-            case 9:
-                symbol = ass.ToUpper() + "USDT";
-                break;
-        }
-        //var t = await exc.GetTickerAsync(symbol);
-        //if(t == null) return (0, 0);
-
-        var k = await exc.GetKlines(symbol, "1m", 10);
-        if (k == null || k.Count == 0) return (0, 0);
-        var s = k.Last();
-        var v = s.Volume;
-        var p = s.ClosePrice;
-
-        decimal? price = p; // t.LastPrice;
-        decimal? volum = v; // t.LastPrice;
-
-        return ((decimal)price!, (decimal)volum!);
-    }
-    async Task<(decimal, decimal)> AddLabel(AnExchange exc, string ass)
-    {
-        (decimal price, decimal volum) = await GetPriceVolum(exc, ass);
-        if(price == 0) return (0, 0);
-
-        int c = panel.Controls.Count + 2;
+        int c = panel.Controls.Count + 3;
         Label lblEx = new();
-        lblEx.Text = exc.Name;
-        lblEx.Width = 100; lblEx.Top = 30 * c / 2; lblEx.Left = 11;
+        lblEx.Text = s.exchange!.Name;
+        lblEx.Width = 60; lblEx.Top = 30 * c / 3; lblEx.Left = 10;
         Label lblPr = new();
-        lblPr.Text = price.ToString();
-        lblPr.Width = 200; lblPr.Top = lblEx.Top; lblPr.Left = 111;
+        lblPr.Text = s.price.ToString();
+        lblPr.Width = 100; lblPr.Top = lblEx.Top; lblPr.Left = 80;
+        Label lblVo = new();
+        lblVo.Text = s.volum.ToString();
+        lblVo.Width = 200; lblVo.Top = lblEx.Top; lblVo.Left = 200;
+
         panel.Controls.Add(lblEx);
         panel.Controls.Add(lblPr);
-
-        return (price, volum);
+        panel.Controls.Add(lblVo);
     }
 
     private void txtSearch_TextChanged(object sender, EventArgs e)
@@ -173,13 +101,12 @@ public partial class FrmWin1 : Form
 
     private void btnArbit_Click(object sender, EventArgs e)
     {
-        FrmWin2 f = new();
-        f.Top = this.Top;
-        f.Left = this.Left + this.Width + 11;
-        f.Show();
+        f2.Show();
+        f2.Top = this.Top;
+        f2.Left = this.Left + this.Width + 11;
     }
 
-    async void DoIt()
+    async void StartScan()
     {
         await Task.Run(async () =>
         {
@@ -187,92 +114,28 @@ public partial class FrmWin1 : Form
             {
                 var ass = r.Cells[0].Value.ToString();
                 var ens = r.Cells[1].Value.ToString();
-                var aex = ens!.Split(',');
-                int[] ints = new int[aex.Length];
-                for (int i = 0; i < aex.Length; i++) ints[i] = Convert.ToInt32(aex[i]);
+                if (ens == null || ass == null) continue;
 
-                Stat st = await CalcSt(ints, ass!);
+                Stat st = await Stat.Init(ens, ass);
                 if (st == null || st.exc1 == null || st.exc2 == null) return;
 
                 r.Cells[2].Value = st.proc.ToString();
 
-                using (CaDbContext db = new())
-                {
-                    db.Database.ExecuteSql(
-                        @$"
-                        declare @n int
-                        select @n=max(shotNumber) from Sinex_Arbitrage
-                        update Sinex_Arbitrage 
-                            set procDiffer={st.proc},
-                                exch1={st.exc1!.Name}, 
-                                exch2={st.exc2!.Name},
-                                vol1={st.vol1},
-                                vol2={st.vol2}             
-                        where 
-                            shotNumber=@n 
-                            and baseAsset={ass}
-                            and quoteAsset='USDT'"
-                    );
-                }
+                st.Save();
+
+                if (st.vol1 > 0 && st.vol2 > 0)
+                    Invoke(() => f2.btnUpdate_Click(null, null));
             }
         });
     }
-}
 
-class ProdEx
-{
-    public string? symbol { get; set; }
-    public string? exc { get; set; }
-    public string? d { get; set; }
-    public int c { get; set; }
-    public DateTime dmin { get; set; }
-    public DateTime dmax { get; set; }
-}
-
-class PriceSt
-{
-    public AnExchange? exchange { get; set; }
-    public string? symbol { get; set; }
-    public decimal? price { get; set; }
-    public decimal? volum { get; set; }
-}
-class Stat : List<PriceSt>
-{
-    public AnExchange? exc1 { get; set; }
-    public AnExchange? exc2 { get; set; }
-    public decimal proc { get; set; } = 0;
-    public decimal vol1 { get; set; }
-    public decimal vol2 { get; set; }
-
-    public void work()
+    private void dgvProds_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
     {
-        foreach (var i in
-            this.Where(e => e.exchange!.ID != 4
-                         && e.exchange!.ID != 1))
-        {
-            foreach (var j in
-                this.Where(e => e.exchange!.ID != i.exchange!.ID
-                             && e.exchange!.ID != 4
-                             && e.exchange!.ID != 1))
-            {
-                var d = (decimal)(i.price - j.price)!;
-                if (proc < Math.Abs(d))
-                {
-                    proc = d;
-                    if (i.price > j.price)
-                    {
-                        exc1 = i.exchange; vol1 = (decimal)i.volum!;
-                        exc2 = j.exchange; vol2 = (decimal)j.volum!;
-                    }
-                    else
-                    {
-                        exc2 = i.exchange; vol2 = (decimal)j.volum!;
-                        exc1 = j.exchange; vol1 = (decimal)i.volum!;
-                    }
-                }
-            }
-        }
-        proc = 100 * proc / (decimal)this.Max(a => a.price)!;
-        proc = Math.Round(proc, 2);
+        ShowAllStatistics();
+    }
+
+    private void btnScan_Click(object sender, EventArgs e)
+    {
+        StartScan();
     }
 }

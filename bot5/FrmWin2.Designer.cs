@@ -54,11 +54,11 @@
             // 
             // btnUpdate
             // 
-            btnUpdate.Location = new Point(613, 29);
+            btnUpdate.Location = new Point(613, 23);
             btnUpdate.Name = "btnUpdate";
-            btnUpdate.Size = new Size(131, 40);
+            btnUpdate.Size = new Size(131, 51);
             btnUpdate.TabIndex = 1;
-            btnUpdate.Text = "button1";
+            btnUpdate.Text = "Обновить";
             btnUpdate.UseVisualStyleBackColor = true;
             btnUpdate.Click += btnUpdate_Click;
             // 
@@ -70,7 +70,7 @@
             Controls.Add(btnUpdate);
             Controls.Add(dgvProds);
             Name = "FrmWin2";
-            Text = "FrmWin2";
+            Text = "Арбитраж";
             Load += FrmWin2_Load;
             ((System.ComponentModel.ISupportInitialize)dgvProds).EndInit();
             ResumeLayout(false);

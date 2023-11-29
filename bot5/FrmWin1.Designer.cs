@@ -38,6 +38,7 @@
             btnReload = new Button();
             btnArbit = new Button();
             button3 = new Button();
+            btnScan = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvProds).BeginInit();
             SuspendLayout();
             // 
@@ -60,6 +61,7 @@
             dgvProds.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvProds.Size = new Size(392, 820);
             dgvProds.TabIndex = 0;
+            dgvProds.CellMouseClick += dgvProds_CellMouseClick;
             dgvProds.SelectionChanged += dgvProds_SelectionChanged;
             // 
             // txtSearch
@@ -77,7 +79,7 @@
             panel.BackColor = SystemColors.ControlLight;
             panel.Location = new Point(430, 250);
             panel.Name = "panel";
-            panel.Size = new Size(527, 673);
+            panel.Size = new Size(630, 673);
             panel.TabIndex = 2;
             // 
             // lblSym
@@ -123,7 +125,7 @@
             // btnReload
             // 
             btnReload.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnReload.Location = new Point(824, 26);
+            btnReload.Location = new Point(927, 26);
             btnReload.Name = "btnReload";
             btnReload.Size = new Size(131, 54);
             btnReload.TabIndex = 4;
@@ -134,7 +136,7 @@
             // btnArbit
             // 
             btnArbit.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnArbit.Location = new Point(824, 83);
+            btnArbit.Location = new Point(927, 83);
             btnArbit.Name = "btnArbit";
             btnArbit.Size = new Size(131, 54);
             btnArbit.TabIndex = 4;
@@ -145,18 +147,30 @@
             // button3
             // 
             button3.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            button3.Location = new Point(824, 140);
+            button3.Location = new Point(927, 140);
             button3.Name = "button3";
             button3.Size = new Size(131, 54);
             button3.TabIndex = 4;
             button3.Text = "Бот1";
             button3.UseVisualStyleBackColor = true;
             // 
+            // btnScan
+            // 
+            btnScan.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnScan.Location = new Point(775, 26);
+            btnScan.Name = "btnScan";
+            btnScan.Size = new Size(131, 54);
+            btnScan.TabIndex = 4;
+            btnScan.Text = "Scan";
+            btnScan.UseVisualStyleBackColor = true;
+            btnScan.Click += btnScan_Click;
+            // 
             // FrmWin1
             // 
             AutoScaleDimensions = new SizeF(12F, 30F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(983, 935);
+            ClientSize = new Size(1086, 935);
+            Controls.Add(btnScan);
             Controls.Add(button3);
             Controls.Add(btnArbit);
             Controls.Add(btnReload);
@@ -189,5 +203,6 @@
         private Button btnReload;
         private Button btnArbit;
         private Button button3;
+        private Button btnScan;
     }
 }

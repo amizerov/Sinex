@@ -15,7 +15,7 @@ public partial class FrmWin2 : Form
         btnUpdate.PerformClick();
     }
 
-    private void btnUpdate_Click(object sender, EventArgs e)
+    public void btnUpdate_Click(object sender, EventArgs e)
     {
         var prods = new List<Arbitrage>();
         dgvProds.DataSource = null;
@@ -32,6 +32,7 @@ public partial class FrmWin2 : Form
                             shotNumber = @n
                         and vol1 > 0
                         and vol2 > 0
+                        and procDiffer > 1.5
                         order by procDiffer desc
                     "
             ).ToList<Arbitrage>();
