@@ -87,7 +87,7 @@ class Data
         }
 
     }
-    public static async void AddCaTeleBotUser(long chatId)
+    public static async Task AddCaTeleBotUser(long chatId)
     {
         using (CaDbContext db = new())
         {

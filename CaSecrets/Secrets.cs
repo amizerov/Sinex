@@ -76,4 +76,20 @@ public static class Secrets
             return cs;
         }
     }
+    static public string Sinex_CaTelegramBotToken
+    {
+        get
+        {
+            string cs = "";
+            string path = "D:\\Projects\\Common\\Secrets\\Sinex_CaTelegramBotToken.txt";
+            if (File.Exists(path))
+            {
+                cs = File.ReadAllText(path);
+            }
+            else
+                throw new Exception("File with Sql Connection is not found");
+
+            return cs;
+        }
+    }
 }

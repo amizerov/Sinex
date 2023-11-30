@@ -1,4 +1,5 @@
 ﻿using amLogger;
+using CaSecrets;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
@@ -12,7 +13,7 @@ namespace bot5;
 
 public partial class FrmWin2 : Form
 {
-    TelegramBotClient botClient = new("6497433153:AAGk7Tr7ReV99DuECgW80H93AJaTKMkE1PU");
+    TelegramBotClient botClient = new(Secrets.Sinex_CaTelegramBotToken);
     CancellationTokenSource cts = new();
 
     public FrmWin2()
@@ -46,15 +47,14 @@ public partial class FrmWin2 : Form
         dgvProds.Columns[0].Visible = false;
         dgvProds.Columns[1].Visible = false;
         dgvProds.Columns[3].Visible = false;
-        string msg = CreateMessage();
     }
 
-    private void btnSend_Click(object sender, EventArgs e)
+    private async void btnSend_Click(object sender, EventArgs e)
     {
         string msg = CreateMessage();
         if (string.IsNullOrEmpty(msg)) return;
 
-        SendMessage(msg);   
+        await SendMessage(msg);   
     }
     async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     
@@ -67,7 +67,7 @@ public partial class FrmWin2 : Form
             return;
 
         var chatId = message.Chat.Id;
-        Data.AddCaTeleBotUser(chatId);
+        await Data.AddCaTeleBotUser(chatId);
     }
 
     Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
