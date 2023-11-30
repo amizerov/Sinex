@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Telegram.Bot" Version="19.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CaDb\CaDb.csproj" />
     <ProjectReference Include="..\CaExch\CaExch.csproj" />
   </ItemGroup>

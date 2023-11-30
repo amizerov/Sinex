@@ -30,6 +30,7 @@
         {
             dgvProds = new DataGridView();
             btnUpdate = new Button();
+            btnSend = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvProds).BeginInit();
             SuspendLayout();
             // 
@@ -49,11 +50,12 @@
             dgvProds.RowHeadersVisible = false;
             dgvProds.RowHeadersWidth = 72;
             dgvProds.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvProds.Size = new Size(735, 909);
+            dgvProds.Size = new Size(1249, 909);
             dgvProds.TabIndex = 0;
             // 
             // btnUpdate
             // 
+            btnUpdate.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnUpdate.Location = new Point(613, 23);
             btnUpdate.Name = "btnUpdate";
             btnUpdate.Size = new Size(131, 51);
@@ -62,11 +64,23 @@
             btnUpdate.UseVisualStyleBackColor = true;
             btnUpdate.Click += btnUpdate_Click;
             // 
+            // btnSend
+            // 
+            btnSend.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnSend.Location = new Point(1042, 23);
+            btnSend.Name = "btnSend";
+            btnSend.Size = new Size(197, 51);
+            btnSend.TabIndex = 1;
+            btnSend.Text = "Отправка";
+            btnSend.UseVisualStyleBackColor = true;
+            btnSend.Click += btnSend_Click;
+            // 
             // FrmWin2
             // 
             AutoScaleDimensions = new SizeF(12F, 30F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1273, 1016);
+            Controls.Add(btnSend);
             Controls.Add(btnUpdate);
             Controls.Add(dgvProds);
             Name = "FrmWin2";
@@ -79,6 +93,7 @@
         #endregion
 
         private DataGridView dgvProds;
-        private Button btnUpdate;
+        public Button btnUpdate;
+        public Button btnSend;
     }
 }

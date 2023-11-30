@@ -20,22 +20,19 @@ public partial class FrmWin1 : Form
     void LoadProducts()
     {
         _loaded = false;
-        using (CaDbContext db = new())
-        {
-            dgvProds.DataSource = null;
-            var prods = db.Database
-                .SqlQuery<ProdEx>($"Sinex_GetProductsExch {txtSearch.Text}");
 
-            dgvProds.DataSource = prods.ToList();
-            //dgvProds.Columns[2].Visible = false;
-            dgvProds.Columns[3].Visible = false;
-            dgvProds.Columns[4].Visible = false;
-            dgvProds.Columns[5].Visible = false;
+        dgvProds.DataSource = null;
 
-            dgvProds.Columns[0].Width = 60;
-            dgvProds.Columns[1].Width = 80;
-            dgvProds.Columns[2].Width = 50;
-        }
+        dgvProds.DataSource = Data.GetProds(txtSearch.Text);
+        //dgvProds.Columns[2].Visible = false;
+        dgvProds.Columns[3].Visible = false;
+        dgvProds.Columns[4].Visible = false;
+        dgvProds.Columns[5].Visible = false;
+
+        dgvProds.Columns[0].Width = 60;
+        dgvProds.Columns[1].Width = 80;
+        dgvProds.Columns[2].Width = 50;
+
         _loaded = true;
     }
 
@@ -126,7 +123,9 @@ public partial class FrmWin1 : Form
                 st.Save();
 
                 if (st.vol1 > 0 && st.vol2 > 0)
+                {
                     Invoke(() => f2.btnUpdate_Click(null, null));
+                }
             }
 
             OnComplete?.Invoke();
