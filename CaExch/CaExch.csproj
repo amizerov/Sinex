@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\amLogger\amLogger.csproj" />
-    <ProjectReference Include="..\CaIndex\CaIndy.csproj" />
     <ProjectReference Include="..\CaSecrets\CaSecrets.csproj" />
   </ItemGroup>
 
