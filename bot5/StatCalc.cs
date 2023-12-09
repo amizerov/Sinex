@@ -103,11 +103,13 @@ class Stat : List<PriceSt>
     {
         foreach (var i in
             this.Where(e => 1 == 1
+                         && e.exchange!.ID != 3
                          && e.exchange!.ID != 4
                          && e.exchange!.ID != 1))
         {
             foreach (var j in
                 this.Where(e => e.exchange!.ID != i.exchange!.ID
+                             && e.exchange!.ID != 3
                              && e.exchange!.ID != 4
                              && e.exchange!.ID != 1))
             {

@@ -1,4 +1,5 @@
 ﻿using amLogger;
+using CryptoExchange.Net;
 using CryptoExchange.Net.CommonObjects;
 using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.Objects;
@@ -22,6 +23,7 @@ public abstract class AnExchange
 
     public abstract int ID { get; }
     public abstract string Name { get; }
+    public virtual BaseRestClient? RestClient { get => null; }
 
     public abstract ISymbolOrderBook OrderBook { get; }
     public abstract Task<bool> CheckApiKey();
