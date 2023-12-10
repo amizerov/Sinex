@@ -124,7 +124,7 @@ public partial class FrmWin1 : Form
 
                 if (st.vol1 > 0 && st.vol2 > 0)
                 {
-                    Invoke(() => f2.btnUpdate_Click(null, null));
+                    Invoke(() => f2.btnUpdate_Click(this, new EventArgs()));
                 }
             }
 
