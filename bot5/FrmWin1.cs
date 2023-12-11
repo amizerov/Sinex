@@ -102,7 +102,6 @@ public partial class FrmWin1 : Form
 
     private void txtSearch_TextChanged(object sender, EventArgs e)
     {
-        //LoadProducts();
         int rowIndex = -1;
         var rs = dgvProds.Rows
             .Cast<DataGridViewRow>()
