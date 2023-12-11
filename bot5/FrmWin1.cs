@@ -2,12 +2,14 @@
 using CaDb;
 using CaExch;
 using Microsoft.EntityFrameworkCore;
+using System.Buffers;
+using System.Windows.Forms;
 
 namespace bot5;
 
 public partial class FrmWin1 : Form
 {
-    FrmWin2 f2 = new();
+    FrmWin2 frm2 = new();
 
     bool _loaded = false;
 
@@ -24,7 +26,7 @@ public partial class FrmWin1 : Form
         dgvProds.DataSource = null;
 
         dgvProds.DataSource = Data.GetProds(txtSearch.Text);
-        //dgvProds.Columns[2].Visible = false;
+
         dgvProds.Columns[3].Visible = false;
         dgvProds.Columns[4].Visible = false;
         dgvProds.Columns[5].Visible = false;
@@ -100,14 +102,31 @@ public partial class FrmWin1 : Form
 
     private void txtSearch_TextChanged(object sender, EventArgs e)
     {
-        LoadProducts();
+        //LoadProducts();
+        int rowIndex = -1;
+        var rs = dgvProds.Rows
+            .Cast<DataGridViewRow>()
+                .Where(r => {
+                    var c = r.Cells[0];
+                    if (c == null) return false;
+                    var v = c.Value;
+                    if (v == null) return false;
+                    string? s = v.ToString();
+                    if (s == null) return false;
+
+                    return s.ToUpper().StartsWith(txtSearch.Text.ToUpper());
+                });
+        if (rs.Count() == 0) return;
+        DataGridViewRow row = rs.First();
+        rowIndex = row.Index;
+        dgvProds.Rows[rowIndex].Selected = true;
     }
 
     private void btnArbit_Click(object sender, EventArgs e)
     {
-        f2.Show();
-        f2.Top = this.Top;
-        f2.Left = this.Left + this.Width + 11;
+        frm2.Show();
+        frm2.Top = this.Top;
+        frm2.Left = this.Left + this.Width + 11;
     }
 
     async void StartScan(Action? OnComplete = null)
@@ -135,7 +154,7 @@ public partial class FrmWin1 : Form
 
                 if (st.vol1 > 0 && st.vol2 > 0)
                 {
-                    Invoke(() => f2.btnUpdate_Click(this, new EventArgs()));
+                    Invoke(() => frm2.btnUpdate_Click(this, new EventArgs()));
                 }
 
                 r.DefaultCellStyle.BackColor = Color.LightGreen;
