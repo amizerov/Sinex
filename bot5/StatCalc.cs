@@ -5,6 +5,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace bot5;
 
+class PairStat
+{
+    public string? asset { get; set; }
+    public string? exc1 { get; set; }
+    public string? exc2 { get; set; }
+    public decimal proc { get; set; }
+    public decimal vol1 { get; set; }
+    public decimal vol2 { get; set; }
+}
 class ProdEx
 {
     public string? symbol { get; set; }
@@ -18,7 +27,7 @@ class ProdEx
 class PriceSt
 {
     public AnExchange? exchange { get; set; }
-    public string? symbol { get; set; }
+    public string? asset { get; set; }
     public decimal? price { get; set; }
     public decimal? volum { get; set; }
 }
@@ -56,7 +65,7 @@ class Stat : List<PriceSt>
     }
     static async Task<PriceSt> GetPriceVolum(AnExchange exc, string ass)
     {
-        PriceSt pv = new() { exchange = exc, symbol = ass };
+        PriceSt pv = new() { exchange = exc, asset = ass };
         string symbol = "";
         switch (exc.ID)
         {

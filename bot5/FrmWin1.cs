@@ -66,10 +66,17 @@ public partial class FrmWin1 : Form
         lblSym.Text = ass;
         Stat st = await Stat.Init(ens, ass, s => AddLabel(s));
         dgvProds.CurrentRow.Cells[2].Value = st.proc.ToString();
+
+        if (st == null || st.exc1 == null || st.exc2 == null)
+        {
+            Log.Warn(ass, "sciped");
+            return;
+        }
+
         st.Save();
 
-        lblExc1.Text = st.exc1!.Name;
-        lblExc2.Text = st.exc2!.Name;
+        lblExc1.Text = st.exc1.Name;
+        lblExc2.Text = st.exc2.Name;
         lblMaxProc.Text = st.proc + "%";
     }
 
@@ -116,7 +123,11 @@ public partial class FrmWin1 : Form
                 if (ens == null || ass == null) continue;
 
                 Stat st = await Stat.Init(ens, ass);
-                if (st == null || st.exc1 == null || st.exc2 == null) return;
+                if (st == null || st.exc1 == null || st.exc2 == null)
+                {
+                    Log.Warn(ass, "sciped");
+                    return; 
+                }
 
                 r.Cells[2].Value = st.proc.ToString();
 
@@ -126,6 +137,8 @@ public partial class FrmWin1 : Form
                 {
                     Invoke(() => f2.btnUpdate_Click(this, new EventArgs()));
                 }
+
+                r.DefaultCellStyle.BackColor = Color.LightGreen;
             }
 
             OnComplete?.Invoke();
