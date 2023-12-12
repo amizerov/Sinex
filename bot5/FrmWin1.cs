@@ -9,7 +9,7 @@ namespace bot5;
 
 public partial class FrmWin1 : Form
 {
-    FrmWin2 frm2 = new();
+    FrmWin2 frmArbitrage = new();
 
     bool _loaded = false;
 
@@ -50,8 +50,7 @@ public partial class FrmWin1 : Form
 
     async void ShowAllStatistics()
     {
-        if (!_loaded) return;
-        _loaded = false;
+        if (!_loaded) return; _loaded = false;
 
         panel.Controls.Clear();
         lblExc1.Text = lblExc2.Text = lblMaxProc.Text = "";
@@ -121,9 +120,9 @@ public partial class FrmWin1 : Form
 
     private void btnArbit_Click(object sender, EventArgs e)
     {
-        frm2.Show();
-        frm2.Top = this.Top;
-        frm2.Left = this.Left + this.Width + 11;
+        frmArbitrage.Show();
+        frmArbitrage.Top = this.Top;
+        frmArbitrage.Left = this.Left + this.Width + 11;
     }
 
     async void StartScan(Action? OnComplete = null)
@@ -134,15 +133,15 @@ public partial class FrmWin1 : Form
             {
                 if (btnScan.Text == "Scan") return;
 
-                var ass = r.Cells[0].Value.ToString();
-                var ens = r.Cells[1].Value.ToString();
-                if (ens == null || ass == null) continue;
+                var asset = r.Cells[0].Value.ToString();
+                var exchs = r.Cells[1].Value.ToString();
+                if (exchs == null || asset == null) continue;
 
-                FullStat st = await FullStat.Init(ens, ass);
+                FullStat st = await FullStat.Init(exchs, asset);
                 if (st == null || st.exc1 == null || st.exc2 == null)
                 {
-                    Log.Warn(ass, "sciped");
-                    return; 
+                    Log.Warn(asset, "sciped");
+                    continue; 
                 }
 
                 r.Cells[2].Value = st.proc.ToString();
@@ -151,7 +150,7 @@ public partial class FrmWin1 : Form
 
                 if (st.vol1 > 0 && st.vol2 > 0)
                 {
-                    Invoke(() => frm2.btnUpdate_Click(this, new EventArgs()));
+                    Invoke(() => frmArbitrage.btnUpdate_Click(this, new EventArgs()));
                 }
 
                 r.DefaultCellStyle.BackColor = Color.LightGreen;

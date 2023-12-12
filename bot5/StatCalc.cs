@@ -95,15 +95,23 @@ class FullStat : List<PriceSt>
             this.Where(e => 1 == 1
                          && e.exchange!.ID != 3
                          && e.exchange!.ID != 4
-                         && e.exchange!.ID != 1))
+                         && e.exchange!.ID != 1
+                      ))
         {
             foreach (var j in
                 this.Where(e => e.exchange!.ID != i.exchange!.ID
                              && e.exchange!.ID != 3
                              && e.exchange!.ID != 4
-                             && e.exchange!.ID != 1))
+                             && e.exchange!.ID != 1
+                          ))
             {
-                if (i.price == null || j.price == null) continue;
+                if (i.price == null || j.price == null)
+                { 
+                    Log.Warn("Calc", 
+                        @$"{i.asset}({i.exchange!.ID}).price == null 
+                        || {j.asset}({j.exchange!.ID}).price == null");
+                    continue; 
+                }
 
                 var d = (decimal)(i.price - j.price)!;
                 if (proc < Math.Abs(d) && i.volum > 0 && j.volum > 0)
