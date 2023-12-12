@@ -135,12 +135,16 @@ public partial class FrmWin1 : Form
 
                 var asset = r.Cells[0].Value.ToString();
                 var exchs = r.Cells[1].Value.ToString();
-                if (exchs == null || asset == null) continue;
+                if (exchs == null || asset == null)
+                {
+                    Log.Warn("Scan", "sciped 1");
+                    continue;
+                }
 
                 FullStat st = await FullStat.Init(exchs, asset);
                 if (st == null || st.exc1 == null || st.exc2 == null)
                 {
-                    Log.Warn(asset, "sciped");
+                    Log.Warn(asset, "sciped 2");
                     continue; 
                 }
 
