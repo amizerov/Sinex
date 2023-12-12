@@ -5,25 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace bot5;
 
-class PairStat
-{
-    public string? asset { get; set; }
-    public string? exc1 { get; set; }
-    public string? exc2 { get; set; }
-    public decimal proc { get; set; }
-    public decimal vol1 { get; set; }
-    public decimal vol2 { get; set; }
-}
-class ProdEx
-{
-    public string? symbol { get; set; }
-    public string? exc { get; set; }
-    public string? d { get; set; }
-    public int c { get; set; }
-    public DateTime dmin { get; set; }
-    public DateTime dmax { get; set; }
-}
-
 class PriceSt
 {
     public AnExchange? exchange { get; set; }
@@ -31,7 +12,7 @@ class PriceSt
     public decimal? price { get; set; }
     public decimal? volum { get; set; }
 }
-class Stat : List<PriceSt>
+class FullStat : List<PriceSt>
 {
     public string? asset { get; set; }
     public AnExchange? exc1 { get; set; }
@@ -40,12 +21,12 @@ class Stat : List<PriceSt>
     public decimal vol1 { get; set; }
     public decimal vol2 { get; set; }
 
-    public static async Task<Stat> Init(
+    public static async Task<FullStat> Init(
         string exchengesString, string baseAsset,
         Action<PriceSt>? onStep = null
     )
     {
-        Stat st = new();
+        FullStat st = new();
         st.asset = baseAsset;
         var aex = exchengesString.Split(',');
         int[] arrExchangeIds = new int[aex.Length];
@@ -63,38 +44,38 @@ class Stat : List<PriceSt>
         st.Calc();
         return st;
     }
-    static async Task<PriceSt> GetPriceVolum(AnExchange exc, string ass)
+    static async Task<PriceSt> GetPriceVolum(AnExchange exc, string asset)
     {
-        PriceSt pv = new() { exchange = exc, asset = ass };
+        PriceSt pv = new() { exchange = exc, asset = asset };
         string symbol = "";
         switch (exc.ID)
         {
             case 1:
-                symbol = ass.ToUpper() + "USDT";
+                symbol = asset.ToUpper() + "USDT";
                 break;
             case 2:
-                symbol = ass.ToUpper() + "-USDT";
+                symbol = asset.ToUpper() + "-USDT";
                 break;
             case 3:
-                symbol = ass.ToLower() + "usdt";
+                symbol = asset.ToLower() + "usdt";
                 break;
             case 4:
-                symbol = ass.ToUpper() + "-USDT";
+                symbol = asset.ToUpper() + "-USDT";
                 break;
             case 5:
-                symbol = ass.ToUpper() + "USDT";
+                symbol = asset.ToUpper() + "USDT";
                 break;
             case 6:
-                symbol = ass.ToLower() + "usdt";
+                symbol = asset.ToLower() + "usdt";
                 break;
             case 7:
-                symbol = ass.ToUpper() + "USDT";
+                symbol = asset.ToUpper() + "USDT";
                 break;
             case 8:
-                symbol = ass.ToUpper() + "-USDT";
+                symbol = asset.ToUpper() + "-USDT";
                 break;
             case 9:
-                symbol = ass.ToUpper() + "USDT";
+                symbol = asset.ToUpper() + "USDT";
                 break;
         }
         var t = await exc.GetTickerAsync(symbol);
@@ -108,7 +89,7 @@ class Stat : List<PriceSt>
 
         return pv;
     }
-    void Calc()
+    private void Calc()
     {
         foreach (var i in
             this.Where(e => 1 == 1
@@ -144,35 +125,8 @@ class Stat : List<PriceSt>
         proc = 100 * proc / (decimal)this.Max(a => a.price)!;
         proc = Math.Round(proc, 2);
     }
-    public void Save()
+    public async Task Save()
     {
-        if (exc1 == null || exc2 == null) return;
-        using (CaDbContext db = new())
-        {
-            try
-            {
-                db.Database.ExecuteSql(
-                    @$"
-                        declare @n int
-                        select @n=max(shotNumber) from Sinex_Arbitrage
-                        update Sinex_Arbitrage 
-                            set procDiffer={proc},
-                                exch1={exc1.Name}, 
-                                exch2={exc2.Name},
-                                vol1={vol1},
-                                vol2={vol2}             
-                        where 
-                            shotNumber=@n 
-                            and baseAsset={asset}
-                            and quoteAsset='USDT'"
-                );
-            }
-            catch (Exception e)
-            {
-                Log.Error(
-                    $"Stat Save {asset} {proc} {exc1.Name} {exc2.Name} {vol1} {vol2}"
-                    , e.Message);
-            }
-        }
+        await Data.SaveFullStat(this);
     }
 }

@@ -25,7 +25,7 @@ public partial class FrmWin1 : Form
 
         dgvProds.DataSource = null;
 
-        dgvProds.DataSource = Data.GetProds(txtSearch.Text);
+        dgvProds.DataSource = Data.GetProdsWithExchanges(txtSearch.Text);
 
         dgvProds.Columns[3].Visible = false;
         dgvProds.Columns[4].Visible = false;
@@ -66,7 +66,7 @@ public partial class FrmWin1 : Form
         if (ens == null || ass == null) return;
 
         lblSym.Text = ass;
-        Stat st = await Stat.Init(ens, ass, s => AddLabel(s));
+        FullStat st = await FullStat.Init(ens, ass, s => AddLabel(s));
         dgvProds.CurrentRow.Cells[2].Value = st.proc.ToString();
 
         if (st == null || st.exc1 == null || st.exc2 == null)
@@ -75,7 +75,7 @@ public partial class FrmWin1 : Form
             return;
         }
 
-        st.Save();
+        await st.Save();
 
         lblExc1.Text = st.exc1.Name;
         lblExc2.Text = st.exc2.Name;
@@ -140,7 +140,7 @@ public partial class FrmWin1 : Form
                 var ens = r.Cells[1].Value.ToString();
                 if (ens == null || ass == null) continue;
 
-                Stat st = await Stat.Init(ens, ass);
+                FullStat st = await FullStat.Init(ens, ass);
                 if (st == null || st.exc1 == null || st.exc2 == null)
                 {
                     Log.Warn(ass, "sciped");
@@ -149,7 +149,7 @@ public partial class FrmWin1 : Form
 
                 r.Cells[2].Value = st.proc.ToString();
 
-                st.Save();
+                await st.Save();
 
                 if (st.vol1 > 0 && st.vol2 > 0)
                 {

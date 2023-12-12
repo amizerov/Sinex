@@ -41,7 +41,7 @@ public partial class FrmWin2 : Form
     {
         dgvProds.DataSource = null;
 
-        dgvProds.DataSource = Data.GetArbitrages();
+        dgvProds.DataSource = Data.GetArbitragesToShow();
         dgvProds.Columns[0].Visible = false;
         dgvProds.Columns[1].Visible = false;
         dgvProds.Columns[3].Visible = false;
@@ -90,7 +90,7 @@ public partial class FrmWin2 : Form
         foreach (var p in prods)
         {
             msg += $"{p.baseAsset} - {p.exch1}/{p.exch2} - {p.procDiffer}% - {p.vol1}/{p.vol2}\n\r";
-            Data.UpdateSentArbitr(p.ID);
+            Data.SetSentFlagForArbitrage(p.ID);
         }
         return msg;
     }

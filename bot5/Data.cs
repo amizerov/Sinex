@@ -1,11 +1,12 @@
-﻿using CaDb;
+﻿using amLogger;
+using CaDb;
 using Microsoft.EntityFrameworkCore;
 
 namespace bot5;
 
 class Data
 {
-    public static List<ProdEx> GetProds(string seatch)
+    public static List<ProdEx> GetProdsWithExchanges(string seatch)
     {
         using (CaDbContext db = new())
         {
@@ -15,7 +16,7 @@ class Data
             return prods.ToList();
         }
     }
-    public static List<Arbitrage> GetArbitrages()
+    public static List<Arbitrage> GetArbitragesToShow()
     {
         using (CaDbContext db = new())
         {
@@ -60,7 +61,7 @@ class Data
             return prods;
         }
     }
-    public static void UpdateSentArbitr(int id)
+    public static void SetSentFlagForArbitrage(int id)
     {
         using (CaDbContext db = new())
         {
@@ -104,6 +105,50 @@ class Data
                  );
         }
     }
+    public static async Task SaveFullStat(FullStat s) {
+
+        if (s.exc1 == null || s.exc2 == null) return;
+
+        using (CaDbContext db = new())
+        {
+            try
+            {
+                await db.Database.ExecuteSqlAsync(
+                    @$"
+                        declare @n int
+                        select @n=max(shotNumber) from Sinex_Arbitrage
+                        update Sinex_Arbitrage 
+                            set procDiffer={s.proc},
+                                exch1={s.exc1.Name}, 
+                                exch2={s.exc2.Name},
+                                vol1={s.vol1},
+                                vol2={s.vol2}             
+                        where 
+                            shotNumber=@n 
+                            and baseAsset={s.asset}
+                            and quoteAsset='USDT'"
+                );
+            }
+            catch (Exception e)
+            {
+                Log.Error(
+                    @$"Stat Save 
+                        {s.asset} {s.proc} {s.exc1.Name} {s.exc2.Name} {s.vol1} {s.vol2}"
+                    , e.Message);
+            }
+        }
+
+    }
+}
+
+class ProdEx
+{
+    public string? symbol { get; set; }
+    public string? exc { get; set; }
+    public string? d { get; set; }
+    public int c { get; set; }
+    public DateTime dmin { get; set; }
+    public DateTime dmax { get; set; }
 }
 
 class Arbitrage
