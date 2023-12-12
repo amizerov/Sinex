@@ -43,13 +43,6 @@ public partial class FrmWin1 : Form
         LoadProducts();
     }
 
-    private void dgvProds_SelectionChanged(object sender, EventArgs e)
-    {
-        if (!_loaded) return;
-
-        //ShowPrices();
-    }
-
     private void btnReload_Click(object sender, EventArgs e)
     {
         LoadProducts();
@@ -57,6 +50,9 @@ public partial class FrmWin1 : Form
 
     async void ShowAllStatistics()
     {
+        if (!_loaded) return;
+        _loaded = false;
+
         panel.Controls.Clear();
         lblExc1.Text = lblExc2.Text = lblMaxProc.Text = "";
         if (dgvProds.Rows.Count == 0) return;
@@ -80,6 +76,8 @@ public partial class FrmWin1 : Form
         lblExc1.Text = st.exc1.Name;
         lblExc2.Text = st.exc2.Name;
         lblMaxProc.Text = st.proc + "%";
+    
+        _loaded = true;
     }
 
     void AddLabel(PriceSt s)

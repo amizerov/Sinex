@@ -62,7 +62,6 @@
             dgvProds.Size = new Size(392, 820);
             dgvProds.TabIndex = 0;
             dgvProds.CellMouseClick += dgvProds_CellMouseClick;
-            dgvProds.SelectionChanged += dgvProds_SelectionChanged;
             // 
             // txtSearch
             // 
