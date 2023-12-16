@@ -159,7 +159,7 @@ class Data
                                 @n, 
                                 {s1.asset}, 
                                 'USDT', 
-                                {Math.Abs((decimal)(s1.price - s2.price)!)},
+                                {Math.Abs(100*(decimal)(s1.price - s2.price)!)/Math.Max((decimal)s1.price!, (decimal)s2.price!)},
                                 {(s1.price > s2.price ? s1.exchange!.Name : s2.exchange!.Name)}, 
                                 {(s1.price > s2.price ? s2.exchange!.Name : s2.exchange!.Name)}, 
                                 {(s1.price > s2.price ? s1.volum : s2.volum)}, 
