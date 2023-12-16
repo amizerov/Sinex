@@ -109,7 +109,7 @@ public partial class Form1 : Form
     }
     void ExecuteAsync()
     {
-        ProductsUpdater.Start(ref paused, OnComplete);
+        ProductsUpdater.Start(OnComplete);
     }
     void OnComplete()
     {

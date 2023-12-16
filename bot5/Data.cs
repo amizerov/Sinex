@@ -105,39 +105,78 @@ class Data
                  );
         }
     }
-    public static async Task SaveFullStat(FullStat s) {
+    public static async Task SaveFullStat(FullStat ss) {
 
-        if (s.exc1 == null || s.exc2 == null) return;
+        if (ss.exc1 == null || ss.exc2 == null) return;
 
         using (CaDbContext db = new())
         {
             try
             {
-                await db.Database.ExecuteSqlAsync(
-                    @$"
-                        declare @n int
-                        select @n=max(shotNumber) from Sinex_Arbitrage
-                        update Sinex_Arbitrage 
-                            set procDiffer={s.proc},
-                                exch1={s.exc1.Name}, 
-                                exch2={s.exc2.Name},
-                                vol1={s.vol1},
-                                vol2={s.vol2}             
-                        where 
-                            shotNumber=@n 
-                            and baseAsset={s.asset}
-                            and quoteAsset='USDT'"
-                );
+                await db.Database.ExecuteSqlAsync(@$"
+                    declare @n int
+                    select @n=max(shotNumber) from Sinex_Arbitrage
+
+                    update Sinex_Arbitrage 
+                        set procDiffer={ss.proc},
+                            exch1={ss.exc1.Name}, 
+                            exch2={ss.exc2.Name},
+                            vol1={ss.vol1},
+                            vol2={ss.vol2},
+                            dtu=getdate()
+                    where 
+                        shotNumber=@n 
+                        and baseAsset={ss.asset}
+                        and quoteAsset='USDT'
+                ");
+
+
+                string w = "";
+                foreach (PriceSt s1 in ss)
+                {
+                    foreach (PriceSt s2 in ss.Where(s => s.exchange!.ID != s1.exchange!.ID))
+                    {
+                        if(s1.exchange!.ID != s1.exchange!.ID) continue;
+
+                        string q = $"[{s1.exchange!.ID}|{s2.exchange!.ID}]";
+                        if (w.Contains(q)) continue;
+                        w += $"[{s1.exchange!.ID | s2.exchange!.ID}]";
+
+                        await db.Database.ExecuteSqlAsync(@$"
+                            declare @n int
+                            select @n=max(shotNumber) from Sinex_Arbitrage
+
+                            insert Sinex_Arbitrage(
+                                shotNumber, 
+                                baseAsset, 
+                                quoteAsset, 
+                                procDiffer,
+                                exch1, 
+                                exch2, 
+                                vol1, 
+                                vol2
+                            ) values(
+                                @n, 
+                                {s1.asset}, 
+                                'USDT', 
+                                {Math.Abs((decimal)(s1.price - s2.price)!)},
+                                {(s1.price > s2.price ? s1.exchange!.Name : s2.exchange!.Name)}, 
+                                {(s1.price > s2.price ? s2.exchange!.Name : s2.exchange!.Name)}, 
+                                {(s1.price > s2.price ? s1.volum : s2.volum)}, 
+                                {(s1.price > s2.price ? s2.volum : s1.volum)} 
+                            )"
+                        );
+                    }
+                }
             }
             catch (Exception e)
             {
                 Log.Error(
                     @$"Stat Save 
-                        {s.asset} {s.proc} {s.exc1.Name} {s.exc2.Name} {s.vol1} {s.vol2}"
+                        {ss.asset} {ss.proc} {ss.exc1.Name} {ss.exc2.Name} {ss.vol1} {ss.vol2}"
                     , e.Message);
             }
         }
-
     }
 }
 
