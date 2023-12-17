@@ -130,17 +130,18 @@ class Data
                         and quoteAsset='USDT'
                 ");
 
-
-                string w = "";
+                if (ss.proc < 3/2) return;
+                string q1 = $"[{ss.exc1.ID}|{ss.exc2.ID}]";
+                string q2 = $"[{ss.exc2.ID}|{ss.exc1.ID}]";
+                string w = q1 + q2;
                 foreach (PriceSt s1 in ss)
                 {
-                    foreach (PriceSt s2 in ss.Where(s => s.exchange!.ID != s1.exchange!.ID))
+                    foreach (PriceSt s2 in ss.Where(s => s.exchange != s1.exchange))
                     {
-                        if(s1.exchange!.ID != s1.exchange!.ID) continue;
-
-                        string q = $"[{s1.exchange!.ID}|{s2.exchange!.ID}]";
-                        if (w.Contains(q)) continue;
-                        w += $"[{s1.exchange!.ID | s2.exchange!.ID}]";
+                        q1 = $"[{s1.exchange!.ID}|{s2.exchange!.ID}]";
+                        q2 = $"[{s2.exchange!.ID}|{s1.exchange!.ID}]";
+                        if (w.Contains(q1) || w.Contains(q2)) continue;
+                        w += q1 + q2;
 
                         await db.Database.ExecuteSqlAsync(@$"
                             declare @n int
@@ -159,9 +160,11 @@ class Data
                                 @n, 
                                 {s1.asset}, 
                                 'USDT', 
-                                {Math.Abs(100*(decimal)(s1.price - s2.price)!)/Math.Max((decimal)s1.price!, (decimal)s2.price!)},
+                                {Math.Abs(
+                                    100*(decimal)(s1.price - s2.price)!)
+                                       / Math.Max((decimal)s1.price!, (decimal)s2.price!)},
                                 {(s1.price > s2.price ? s1.exchange!.Name : s2.exchange!.Name)}, 
-                                {(s1.price > s2.price ? s2.exchange!.Name : s2.exchange!.Name)}, 
+                                {(s1.price > s2.price ? s2.exchange!.Name : s1.exchange!.Name)}, 
                                 {(s1.price > s2.price ? s1.volum : s2.volum)}, 
                                 {(s1.price > s2.price ? s2.volum : s1.volum)} 
                             )"

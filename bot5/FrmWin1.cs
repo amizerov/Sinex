@@ -116,6 +116,7 @@ public partial class FrmWin1 : Form
         DataGridViewRow row = rs.First();
         rowIndex = row.Index;
         dgvProds.Rows[rowIndex].Selected = true;
+        dgvProds.FirstDisplayedScrollingRowIndex = rowIndex > 2 ? rowIndex - 1 : rowIndex;
     }
 
     private void btnArbit_Click(object sender, EventArgs e)
@@ -175,7 +176,7 @@ public partial class FrmWin1 : Form
         {
             btnScan.Text = "Stop scan";
             btnReload.Enabled = false;
-            txtSearch.Enabled = false;
+            //txtSearch.Enabled = false;
 
             StartScan(() => {
                 Invoke(() =>
@@ -190,7 +191,7 @@ public partial class FrmWin1 : Form
         {
             btnScan.Text = "Scan";
             btnReload.Enabled = true;
-            txtSearch.Enabled = true;
+            //txtSearch.Enabled = true;
         }
 
     }
