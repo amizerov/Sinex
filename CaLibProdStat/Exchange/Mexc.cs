@@ -1,4 +1,5 @@
-﻿using CryptoExchange.Net.CommonObjects;
+﻿using amLogger;
+using CryptoExchange.Net.CommonObjects;
 using System.Net;
 using System.Text.Json;
 
@@ -12,7 +13,37 @@ public class Mexc : AnExchange
 
     protected override List<Kline> GetLastKlines(string symbol)
     {
-        return new List<Kline>();
+        List<Kline> klines = new();
+
+        using (HttpClient c = new())
+        {
+            var r = c.GetAsync($"https://api.mexc.com/api/v3/klines?symbol={symbol}&interval=1m").Result;
+            if (r.StatusCode == HttpStatusCode.OK)
+            {
+                var s = r.Content.ReadAsStringAsync().Result;
+                JsonDocument j = JsonDocument.Parse(s);
+                JsonElement e = j.RootElement;
+                foreach (var p in e.EnumerateArray())
+                {
+                    Kline k = new();
+
+                    double t = Math.Round(p[0].GetInt64() / 1000d);
+                    k.OpenTime = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(t).ToLocalTime();
+                    k.OpenPrice = Decimal.Parse(p[1].GetString()!.Replace(".", ","));
+                    k.HighPrice = Decimal.Parse(p[2].GetString()!.Replace(".", ","));
+                    k.LowPrice = Decimal.Parse(p[3].GetString()!.Replace(".", ","));
+                    k.ClosePrice = Decimal.Parse(p[4].GetString()!.Replace(".", ","));
+                    k.Volume = Decimal.Parse(p[5].GetString()!.Replace(".", ","));
+
+                    klines.Add(k);
+                }
+            }
+            else
+            {
+                Log.Error(ID, $"GetLastKlines({symbol})", r.StatusCode.ToString());
+            }
+        }
+        return klines;
     }
 
     protected override List<Product> GetProducts()
@@ -40,6 +71,10 @@ public class Mexc : AnExchange
 
                     products.Add(product);
                 }
+            }
+            else
+            {
+                Log.Error(ID, $"GetProduct()", r.StatusCode.ToString());
             }
         }
 
