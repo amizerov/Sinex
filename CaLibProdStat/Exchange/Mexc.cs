@@ -1,5 +1,6 @@
 ﻿using CryptoExchange.Net.CommonObjects;
 using System.Net;
+using System.Text.Json;
 
 namespace caLibProdStat;
 
@@ -23,7 +24,22 @@ public class Mexc : AnExchange
             if(r.StatusCode == HttpStatusCode.OK)
             {
                 var s = r.Content.ReadAsStringAsync().Result;
-                //System.Text.Json.
+                JsonDocument j = JsonDocument.Parse(s);
+                JsonElement e = j.RootElement.GetProperty("symbols");
+                foreach (var p in e.EnumerateArray())
+                {
+                    Product product = new();
+                    product.symbol = p.GetProperty("symbol").GetString() + "";
+                    product.exchange = ID;
+                    product.baseasset = p.GetProperty("baseAsset").GetString() + "";
+                    product.quoteasset = p.GetProperty("quoteAsset").GetString() + "";
+
+                    product.IsTradingEnabled = 
+                        p.GetProperty("status").GetString() == "ENABLED" &&
+                        p.GetProperty("isSpotTradingAllowed").GetBoolean();
+
+                    products.Add(product);
+                }
             }
         }
 
