@@ -116,6 +116,7 @@ public partial class FrmWin1 : Form
 
     private void btnArbit_Click(object sender, EventArgs e)
     {
+        frmArbitrage = new();
         frmArbitrage.Show();
         frmArbitrage.Top = this.Top;
         frmArbitrage.Left = this.Left + this.Width + 11;

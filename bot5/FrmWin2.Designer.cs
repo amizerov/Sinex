@@ -132,6 +132,7 @@
             Controls.Add(dgvProds);
             Name = "FrmWin2";
             Text = "Арбитраж";
+            FormClosing += FrmWin2_FormClosing;
             Load += FrmWin2_Load;
             ((System.ComponentModel.ISupportInitialize)dgvProds).EndInit();
             ResumeLayout(false);

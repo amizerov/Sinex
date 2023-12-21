@@ -3,7 +3,6 @@ using CaSecrets;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
-using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Update = Telegram.Bot.Types.Update;
 
@@ -35,6 +34,11 @@ public partial class FrmWin2 : Form
             receiverOptions: receiverOptions,
             cancellationToken: cts.Token
         );
+
+        if(File.Exists("ExcludeExches.txt"))
+            txtExch.Text = File.ReadAllText("ExcludeExches.txt");
+        if (File.Exists("ExcludeMonets.txt"))
+            txtMon.Text = File.ReadAllText("ExcludeMonets.txt");
     }
 
     public void btnUpdate_Click(object sender, EventArgs e)
@@ -57,10 +61,10 @@ public partial class FrmWin2 : Form
         string msg = CreateMessage();
         if (string.IsNullOrEmpty(msg)) return;
 
-        await SendMessage(msg);   
+        await SendMessage(msg);
     }
     async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
-    
+
     {
         // Only process Message updates: https://core.telegram.org/bots/api#message
         if (update.Message is not { } message)
@@ -90,7 +94,7 @@ public partial class FrmWin2 : Form
     {
         string msg = "";
         dgvProds.DataSource = null;
-        
+
         string filterExc = ("'" + txtExch.Text + "'").Replace(" ", "").Replace(",", "','");
         string filterMon = ("'" + txtMon.Text + "'").Replace(" ", "").Replace(",", "','");
 
@@ -119,5 +123,11 @@ public partial class FrmWin2 : Form
                 Log.Error("Send", ex.Message);
             }
         }
+    }
+
+    private void FrmWin2_FormClosing(object sender, FormClosingEventArgs e)
+    {
+        File.WriteAllText("ExcludeExches.txt", txtExch.Text);
+        File.WriteAllText("ExcludeMonets.txt", txtMon.Text);
     }
 }
