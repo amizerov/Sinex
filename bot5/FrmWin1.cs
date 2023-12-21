@@ -156,7 +156,7 @@ public partial class FrmWin1 : Form
 
                 var Num = st.proc;
                 int red, green, blue;
-                if (Num < (decimal)1.5)
+                if (Num < 50)
                 {
                     red = (int)(2 * 255 * Num / 100);
                     green = 255;
