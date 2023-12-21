@@ -32,7 +32,10 @@ public abstract class AnExchange
                     Log.Trace(ID, $"ProcessProducts({product.symbol})",
                         $"{Number} of {products.Count} - [{product.TraceMessage}]");
 
-                    Thread.Sleep(1000);
+                    if(product.exchange == 4/*Bittrex*/)
+                        Thread.Sleep(3000);
+                    else
+                        Thread.Sleep(1000);
                 }
                 catch (Exception e)
                 {

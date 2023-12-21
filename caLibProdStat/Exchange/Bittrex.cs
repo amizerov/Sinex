@@ -30,7 +30,7 @@ public class Bittrex : AnExchange
     protected override List<Product> GetProducts()
     {
         List<Product> products = new List<Product>();
-
+        
         var r = client.SpotApi.ExchangeData.GetSymbolsAsync().Result;
         if (r.Success)
         {
