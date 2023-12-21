@@ -2,6 +2,7 @@
 using CaDb;
 using CaExch;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Buffers;
 using System.Windows.Forms;
 
@@ -158,7 +159,21 @@ public partial class FrmWin1 : Form
                     Invoke(() => frmArbitrage.btnUpdate_Click(this, new EventArgs()));
                 }
 
-                r.DefaultCellStyle.BackColor = Color.LightGreen;
+                var Num = st.proc;
+                int red, green, blue;
+                if (Num < (decimal)1.5)
+                {
+                    red = (int)(2 * 255 * Num / 100);
+                    green = 255;
+                    blue = 0;
+                }
+                else
+                {
+                    red = 255;
+                    green = (int)((2 - 2 * Num / 100) * 255);
+                    blue = 0;
+                }
+                r.DefaultCellStyle.BackColor = Color.FromArgb(red, green, blue);
             }
 
             OnComplete?.Invoke();

@@ -1,6 +1,7 @@
 ﻿using amLogger;
 using CaDb;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
 
 namespace bot5;
 
@@ -16,48 +17,29 @@ class Data
             return prods.ToList();
         }
     }
-    public static List<Arbitrage> GetArbitragesToShow()
+
+    public static List<Arbitrage> GetArbitrages(string filter, bool toSend = false)
     {
+        string q = @$"
+                declare @n int
+                select @n=max(shotNumber) from Sinex_Arbitrage
+
+                select * from Sinex_Arbitrage 
+                where 
+                    shotNumber = @n
+                    and vol1 > 0
+                    and vol2 > 0
+                    and procDiffer > 1.5
+                    and not exch1 in ({filter})
+                    and not exch2 in ({filter})
+                    {(toSend ? "and dtSentToBot is null" : "")}
+                order by procDiffer desc";
+
         using (CaDbContext db = new())
         {
+            var fs = FormattableStringFactory.Create(q);
             var prods = db.Database
-                .SqlQuery<Arbitrage>(
-                    @$"
-                        declare @n int
-                        select @n=max(shotNumber) from Sinex_Arbitrage
-
-                        select * from Sinex_Arbitrage 
-                        where 
-                            shotNumber = @n
-                        and vol1 > 0
-                        and vol2 > 0
-                        and procDiffer > 1.5
-                        order by procDiffer desc
-                    "
-            ).ToList<Arbitrage>();
-            return prods;
-        }
-    }
-    public static List<Arbitrage> GetArbitragesToSend()
-    {
-        using (CaDbContext db = new())
-        {
-            var prods = db.Database
-                .SqlQuery<Arbitrage>(
-                    @$"
-                        declare @n int
-                        select @n=max(shotNumber) from Sinex_Arbitrage
-
-                        select * from Sinex_Arbitrage 
-                        where 
-                            shotNumber = @n
-                        and vol1 > 0
-                        and vol2 > 0
-                        and dtSentToBot is null
-                        and procDiffer > 1.5
-                        order by procDiffer desc
-                    "
-            ).ToList<Arbitrage>();
+                .SqlQuery<Arbitrage>(fs).ToList<Arbitrage>();
             return prods;
         }
     }

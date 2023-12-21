@@ -13,6 +13,7 @@
             Add(new CaOKX());
             Add(new CaCoinEx());
             Add(new CaMexc());
+            Add(new CaGate());
         }
     }
 }
