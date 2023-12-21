@@ -39,6 +39,8 @@ public partial class FrmWin2 : Form
 
     public void btnUpdate_Click(object sender, EventArgs e)
     {
+        if (!this.Visible) return;
+
         dgvProds.DataSource = null;
 
         dgvProds.DataSource = Data.GetArbitragesToShow();

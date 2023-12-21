@@ -12,6 +12,7 @@
             Add(new CaBitfinex());
             Add(new CaOKX());
             Add(new CaCoinEx());
+            Add(new CaMexc());
         }
     }
 }

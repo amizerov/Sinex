@@ -70,7 +70,7 @@ public partial class FrmWin1 : Form
             return;
         }
 
-        await st.Save();
+        await st.Update();
 
         lblExc1.Text = st.exc1.Name;
         lblExc2.Text = st.exc2.Name;

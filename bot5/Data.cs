@@ -181,6 +181,41 @@ class Data
             }
         }
     }
+    public static async Task UpdateFullStat(FullStat ss)
+    {
+
+        if (ss.exc1 == null || ss.exc2 == null) return;
+
+        using (CaDbContext db = new())
+        {
+            try
+            {
+                await db.Database.ExecuteSqlAsync(@$"
+                    declare @n int
+                    select @n=max(shotNumber) from Sinex_Arbitrage
+
+                    update Sinex_Arbitrage 
+                        set procDiffer={ss.proc},
+                            exch1={ss.exc1.Name}, 
+                            exch2={ss.exc2.Name},
+                            vol1={ss.vol1},
+                            vol2={ss.vol2},
+                            dtu=getdate()
+                    where 
+                        shotNumber=@n 
+                        and baseAsset={ss.asset}
+                        and quoteAsset='USDT'
+                ");
+            }
+            catch (Exception e)
+            {
+                Log.Error(
+                    @$"Stat Save 
+                        {ss.asset} {ss.proc} {ss.exc1.Name} {ss.exc2.Name} {ss.vol1} {ss.vol2}"
+                    , e.Message);
+            }
+        }
+    }
 }
 
 class ProdEx
