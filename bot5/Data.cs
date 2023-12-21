@@ -27,8 +27,8 @@ class Data
                 select * from Sinex_Arbitrage 
                 where 
                     shotNumber = @n
-                    and vol1 > 0
-                    and vol2 > 0
+                    and vol1 > 100
+                    and vol2 > 100
                     and procDiffer > 1.5
                     and not exch1 in ({filterExc})
                     and not exch2 in ({filterExc})
@@ -193,7 +193,7 @@ class Data
             catch (Exception e)
             {
                 Log.Error(
-                    @$"Stat Save 
+                    @$"Stat Update 
                         {ss.asset} {ss.proc} {ss.exc1.Name} {ss.exc2.Name} {ss.vol1} {ss.vol2}"
                     , e.Message);
             }
