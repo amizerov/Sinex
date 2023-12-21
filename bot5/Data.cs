@@ -18,7 +18,7 @@ class Data
         }
     }
 
-    public static List<Arbitrage> GetArbitrages(string filter, bool toSend = false)
+    public static List<Arbitrage> GetArbitrages(string filterExc, string filterMon, bool toSend = false)
     {
         string q = @$"
                 declare @n int
@@ -30,8 +30,9 @@ class Data
                     and vol1 > 0
                     and vol2 > 0
                     and procDiffer > 1.5
-                    and not exch1 in ({filter})
-                    and not exch2 in ({filter})
+                    and not exch1 in ({filterExc})
+                    and not exch2 in ({filterExc})
+                    and not baseAsset in ({filterMon})
                     {(toSend ? "and dtSentToBot is null" : "")}
                 order by procDiffer desc";
 

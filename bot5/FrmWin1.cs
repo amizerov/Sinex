@@ -156,7 +156,8 @@ public partial class FrmWin1 : Form
 
                 if (st.vol1 > 0 && st.vol2 > 0)
                 {
-                    Invoke(() => frmArbitrage.btnUpdate_Click(this, new EventArgs()));
+                    if(frmArbitrage.Visible)
+                        Invoke(() => frmArbitrage.btnUpdate_Click(this, new EventArgs()));
                 }
 
                 var Num = st.proc;

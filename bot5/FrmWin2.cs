@@ -43,9 +43,10 @@ public partial class FrmWin2 : Form
 
         dgvProds.DataSource = null;
 
-        string filter = ("'" + txtExch.Text + "'").Replace(" ", "").Replace(",", "','");
+        string filterExc = ("'" + txtExch.Text + "'").Replace(" ", "").Replace(",", "','");
+        string filterMon = ("'" + txtMon.Text + "'").Replace(" ", "").Replace(",", "','");
 
-        dgvProds.DataSource = Data.GetArbitrages(filter);
+        dgvProds.DataSource = Data.GetArbitrages(filterExc, filterMon);
         dgvProds.Columns[0].Visible = false;
         dgvProds.Columns[1].Visible = false;
         dgvProds.Columns[3].Visible = false;
@@ -90,9 +91,10 @@ public partial class FrmWin2 : Form
         string msg = "";
         dgvProds.DataSource = null;
         
-        string filter = ("'" + txtExch.Text + "'").Replace(" ", "").Replace(",", "','");
+        string filterExc = ("'" + txtExch.Text + "'").Replace(" ", "").Replace(",", "','");
+        string filterMon = ("'" + txtMon.Text + "'").Replace(" ", "").Replace(",", "','");
 
-        var prods = Data.GetArbitrages(filter, true);
+        var prods = Data.GetArbitrages(filterExc, filterMon, true);
         foreach (var p in prods)
         {
             msg += $"{p.baseAsset} - {p.exch1}/{p.exch2} - {p.procDiffer}% - {p.vol1}/{p.vol2}\n\r";
