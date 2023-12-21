@@ -16,6 +16,7 @@ public class CaInfo
         new OKX(),
         new CoinEx(),
         new Mexc(),
+        new Gate(),
     };
 
     public static int KlineInterval = 1;
