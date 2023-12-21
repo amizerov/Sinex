@@ -1,10 +1,4 @@
 ﻿using amLogger;
-using CaDb;
-using CaExch;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Buffers;
-using System.Windows.Forms;
 
 namespace bot5;
 

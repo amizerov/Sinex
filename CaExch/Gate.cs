@@ -6,128 +6,127 @@ using System.Net;
 using System.Text.Json;
 using static System.Text.Json.JsonElement;
 
-namespace CaExch
+namespace CaExch;
+
+public class CaGate : AnExchange
 {
-    public class CaGate : AnExchange
+    public override int ID => 11;
+    public override string Name => "Gate";
+
+    public override ISymbolOrderBook OrderBook => throw new NotImplementedException();
+
+    public override List<string> Intervals => new List<string>()
+    { "10s", "1m", "5m", "15m", "30m", "1h", "4h", "8h", "1d", "7d", "30d" };
+
+    string _symbol = "";
+
+    public override Task<bool> CheckApiKey()
     {
-        public override int ID => 11;
-        public override string Name => "Gate";
+        throw new NotImplementedException();
+    }
 
-        public override ISymbolOrderBook OrderBook => throw new NotImplementedException();
+    public override Task<List<Balance>> GetBalances()
+    {
+        throw new NotImplementedException();
+    }
 
-        public override List<string> Intervals => new List<string>()
-        { "10s", "1m", "5m", "15m", "30m", "1h", "4h", "8h", "1d", "7d", "30d" };
-
-        string _symbol = "";
-
-        public override Task<bool> CheckApiKey()
+    public override async Task<Ticker> GetTickerAsync(string symbol)
+    {
+        Ticker t = new();
+        using (HttpClient c = new())
         {
-            throw new NotImplementedException();
-        }
+            var res = await c.GetAsync($"https://api.gateio.ws/api/v4/spot/tickers?currency_pair={symbol}");
 
-        public override Task<List<Balance>> GetBalances()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task<Ticker> GetTickerAsync(string symbol)
-        {
-            Ticker t = new();
-            using (HttpClient c = new())
+            if (res.StatusCode == HttpStatusCode.OK)
             {
-                var res = await c.GetAsync($"https://api.gateio.ws/api/v4/spot/tickers?currency_pair={symbol}");
+                var s = res.Content.ReadAsStringAsync().Result;
+                JsonDocument j = JsonDocument.Parse(s);
+                JsonElement r = j.RootElement;
+                ArrayEnumerator a = r.EnumerateArray();
+                a.MoveNext();
+                JsonElement e = a.Current;
 
-                if (res.StatusCode == HttpStatusCode.OK)
-                {
-                    var s = res.Content.ReadAsStringAsync().Result;
-                    JsonDocument j = JsonDocument.Parse(s);
-                    JsonElement r = j.RootElement;
-                    ArrayEnumerator a = r.EnumerateArray();
-                    a.MoveNext();
-                    JsonElement e = a.Current;
+                t.Symbol = e.GetProperty("currency_pair").GetString()!;
+                decimal p1 = sd(e.GetProperty("lowest_ask"));
+                decimal p2 = sd(e.GetProperty("highest_bid"));
+                decimal v = sd(e.GetProperty("quote_volume"));
 
-                    t.Symbol = e.GetProperty("currency_pair").GetString()!;
-                    decimal p1 = sd(e.GetProperty("lowest_ask"));
-                    decimal p2 = sd(e.GetProperty("highest_bid"));
-                    decimal v = sd(e.GetProperty("quote_volume"));
-
-                    t.HighPrice = p1;
-                    t.LowPrice = p2;
-                    t.LastPrice = (p1 + p2) / 2;
-                    t.Volume = v;
-                }
+                t.HighPrice = p1;
+                t.LowPrice = p2;
+                t.LastPrice = (p1 + p2) / 2;
+                t.Volume = v;
             }
-            return t;
         }
+        return t;
+    }
 
-        public override Task<List<Kline>> GetKlines(string symbol, string inter, int count = 0)
-        {
-            throw new NotImplementedException();
-        }
+    public override Task<List<Kline>> GetKlines(string symbol, string inter, int count = 0)
+    {
+        throw new NotImplementedException();
+    }
 
-        public override Task<int> SubsсribeToTicker(string symbol)
-        {
-            throw new NotImplementedException();
-        }
+    public override Task<int> SubsсribeToTicker(string symbol)
+    {
+        throw new NotImplementedException();
+    }
 
-        public override void UnSubFromTicker(int subsId)
-        {
-            throw new NotImplementedException();
-        }
+    public override void UnSubFromTicker(int subsId)
+    {
+        throw new NotImplementedException();
+    }
 
-        protected override Task<CallResult<UpdateSubscription>> SubsToSock(string symbol, string inter)
-        {
-            throw new NotImplementedException();
-        }
+    protected override Task<CallResult<UpdateSubscription>> SubsToSock(string symbol, string inter)
+    {
+        throw new NotImplementedException();
+    }
 
-        public override void UnsubKlineSocket(int subscriptionId)
-        {
-            throw new NotImplementedException();
-        }
+    public override void UnsubKlineSocket(int subscriptionId)
+    {
+        throw new NotImplementedException();
+    }
 
-        public override Task<bool> PlaceSpotOrderBuy(string symbol, decimal quantity)
-        {
-            throw new NotImplementedException();
-        }
+    public override Task<bool> PlaceSpotOrderBuy(string symbol, decimal quantity)
+    {
+        throw new NotImplementedException();
+    }
 
-        public override Task<bool> PlaceSpotOrderSell(string symbol, decimal quantity)
-        {
-            throw new NotImplementedException();
-        }
+    public override Task<bool> PlaceSpotOrderSell(string symbol, decimal quantity)
+    {
+        throw new NotImplementedException();
+    }
 
-        public override Task<bool> FutuOrderBuy(string symbol, decimal quantity)
-        {
-            throw new NotImplementedException();
-        }
+    public override Task<bool> FutuOrderBuy(string symbol, decimal quantity)
+    {
+        throw new NotImplementedException();
+    }
 
-        public override Task<bool> FutuOrderSell(string symbol, decimal quantity)
-        {
-            throw new NotImplementedException();
-        }
+    public override Task<bool> FutuOrderSell(string symbol, decimal quantity)
+    {
+        throw new NotImplementedException();
+    }
 
-        public override Task<Order> GetLastSpotOrder(string symbol)
-        {
-            throw new NotImplementedException();
-        }
+    public override Task<Order> GetLastSpotOrder(string symbol)
+    {
+        throw new NotImplementedException();
+    }
 
-        public override void SubscribeToSpotAccountUpdates()
+    public override void SubscribeToSpotAccountUpdates()
+    {
+        throw new NotImplementedException();
+    }
+    decimal sd(JsonElement j)
+    {
+        decimal d = 0;
+        string s = j.GetString()!;
+        if (s.Contains("E"))
         {
-            throw new NotImplementedException();
+            string[] p = s.Split("E");
+            d = Decimal.Parse(p[0].Replace(".", ",")) * (decimal)Math.Pow(10, int.Parse(p[1]));
         }
-        decimal sd(JsonElement j)
+        else
         {
-            decimal d = 0;
-            string s = j.GetString()!;
-            if (s.Contains("E"))
-            {
-                string[] p = s.Split("E");
-                d = Decimal.Parse(p[0].Replace(".", ",")) * (decimal)Math.Pow(10, int.Parse(p[1]));
-            }
-            else
-            {
-                d = Decimal.Parse(s.Replace(".", ","));
-            }
-            return d;
+            d = Decimal.Parse(s.Replace(".", ","));
         }
+        return d;
     }
 }
