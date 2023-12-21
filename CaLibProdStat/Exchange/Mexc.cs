@@ -29,11 +29,11 @@ public class Mexc : AnExchange
 
                     double t = Math.Round(p[0].GetInt64() / 1000d);
                     k.OpenTime = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(t).ToLocalTime();
-                    k.OpenPrice = Decimal.Parse(p[1].GetString()!.Replace(".", ","));
-                    k.HighPrice = Decimal.Parse(p[2].GetString()!.Replace(".", ","));
-                    k.LowPrice = Decimal.Parse(p[3].GetString()!.Replace(".", ","));
-                    k.ClosePrice = Decimal.Parse(p[4].GetString()!.Replace(".", ","));
-                    k.Volume = Decimal.Parse(p[5].GetString()!.Replace(".", ","));
+                    k.OpenPrice = sd(p[1]);
+                    k.HighPrice = sd(p[2]);
+                    k.LowPrice = sd(p[3]);
+                    k.ClosePrice = sd(p[4]);
+                    k.Volume = sd(p[5]);
 
                     klines.Add(k);
                 }
@@ -84,5 +84,21 @@ public class Mexc : AnExchange
     protected override Product ToProduct(object p)
     {
         throw new NotImplementedException();
+    }
+
+    decimal sd(JsonElement j)
+    {
+        decimal d = 0;
+        string s = j.GetString()!;
+        if (s.Contains("E"))
+        {
+            string[] p = s.Split("E");
+            d = Decimal.Parse(p[0].Replace(".", ",")) * (decimal)Math.Pow(10, int.Parse(p[1]));
+        }
+        else
+        {
+            d = Decimal.Parse(s.Replace(".", ","));
+        }
+        return d;
     }
 }
