@@ -83,6 +83,9 @@ class FullStat : List<PriceSt>
             case 11:
                 symbol = asset.ToUpper() + "_USDT";
                 break;
+            case 12:
+                symbol = asset.ToUpper() + "_USDT";
+                break;
         }
         var t = await exc.GetTickerAsync(symbol);
         if (t == null) return pv;

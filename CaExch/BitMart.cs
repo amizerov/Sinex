@@ -10,7 +10,7 @@ namespace CaExch;
 
 public class CaBitMart : AnExchange
 {
-    public override int ID => 13;
+    public override int ID => 12;
     public override string Name => "BitMart";
 
     public override ISymbolOrderBook OrderBook => throw new NotImplementedException();
@@ -61,20 +61,22 @@ public class CaBitMart : AnExchange
             {
                 var s = res.Content.ReadAsStringAsync().Result;
                 JsonDocument j = JsonDocument.Parse(s);
-                JsonElement r = j.RootElement;
-                ArrayEnumerator a = r.EnumerateArray();
-                a.MoveNext();
-                JsonElement e = a.Current;
+                JsonElement r = j.RootElement.GetProperty("data");
 
-                t.Symbol = e.GetProperty("currency_pair").GetString()!;
-                decimal p1 = sd(e.GetProperty("lowest_ask"));
-                decimal p2 = sd(e.GetProperty("highest_bid"));
-                decimal v = sd(e.GetProperty("quote_volume"));
+                t.Symbol = r.GetProperty("symbol").GetString()!;
 
-                t.HighPrice = p1;
-                t.LowPrice = p2;
-                t.LastPrice = (p1 + p2) / 2;
-                t.Volume = v;
+                decimal last = sd(r.GetProperty("last"));
+
+                decimal bid_sz = sd(r.GetProperty("bid_sz"));
+                decimal bid_px = sd(r.GetProperty("bid_px"));
+
+                decimal ask_sz = sd(r.GetProperty("ask_sz"));
+                decimal ask_px = sd(r.GetProperty("ask_px"));
+
+                t.HighPrice = bid_px;
+                t.LowPrice = ask_px;
+                t.LastPrice = last;
+                t.Volume = (ask_sz + bid_sz) * last / 2;
             }
         }
         return t;
