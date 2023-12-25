@@ -17,6 +17,7 @@ public class CaInfo
         new CoinEx(),
         new Mexc(),
         new Gate(),
+        new BitMart()
     };
 
     public static int KlineInterval = 1;

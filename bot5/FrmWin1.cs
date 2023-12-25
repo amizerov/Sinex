@@ -31,6 +31,7 @@ public partial class FrmWin1 : Form
         dgvProds.Columns[2].Width = 50;
 
         _loaded = true;
+        statusCount.Text = dgvProds.Rows.Count.ToString();
     }
 
     private void FrmWin1_Load(object sender, EventArgs e)

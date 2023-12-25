@@ -14,6 +14,7 @@
             Add(new CaCoinEx());
             Add(new CaMexc());
             Add(new CaGate());
+            Add(new CaBitMart());
         }
     }
 }

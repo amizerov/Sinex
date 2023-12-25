@@ -39,7 +39,10 @@
             btnArbit = new Button();
             button3 = new Button();
             btnScan = new Button();
+            statusStrip1 = new StatusStrip();
+            statusCount = new ToolStripStatusLabel();
             ((System.ComponentModel.ISupportInitialize)dgvProds).BeginInit();
+            statusStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // dgvProds
@@ -59,7 +62,7 @@
             dgvProds.RowHeadersVisible = false;
             dgvProds.RowHeadersWidth = 72;
             dgvProds.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvProds.Size = new Size(392, 820);
+            dgvProds.Size = new Size(392, 776);
             dgvProds.TabIndex = 0;
             dgvProds.CellMouseClick += dgvProds_CellMouseClick;
             // 
@@ -78,7 +81,7 @@
             panel.BackColor = SystemColors.ControlLight;
             panel.Location = new Point(430, 250);
             panel.Name = "panel";
-            panel.Size = new Size(630, 673);
+            panel.Size = new Size(630, 626);
             panel.TabIndex = 2;
             // 
             // lblSym
@@ -164,11 +167,28 @@
             btnScan.UseVisualStyleBackColor = true;
             btnScan.Click += btnScan_Click;
             // 
+            // statusStrip1
+            // 
+            statusStrip1.ImageScalingSize = new Size(28, 28);
+            statusStrip1.Items.AddRange(new ToolStripItem[] { statusCount });
+            statusStrip1.Location = new Point(0, 896);
+            statusStrip1.Name = "statusStrip1";
+            statusStrip1.Size = new Size(1086, 39);
+            statusStrip1.TabIndex = 5;
+            statusStrip1.Text = "statusStrip1";
+            // 
+            // statusCount
+            // 
+            statusCount.Name = "statusCount";
+            statusCount.Size = new Size(206, 30);
+            statusCount.Text = "toolStripStatusLabel1";
+            // 
             // FrmWin1
             // 
             AutoScaleDimensions = new SizeF(12F, 30F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1086, 935);
+            Controls.Add(statusStrip1);
             Controls.Add(btnScan);
             Controls.Add(button3);
             Controls.Add(btnArbit);
@@ -186,6 +206,8 @@
             Text = "Склейки по биржам";
             Load += FrmWin1_Load;
             ((System.ComponentModel.ISupportInitialize)dgvProds).EndInit();
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -203,5 +225,7 @@
         private Button btnArbit;
         private Button button3;
         private Button btnScan;
+        private StatusStrip statusStrip1;
+        private ToolStripStatusLabel statusCount;
     }
 }
