@@ -113,6 +113,7 @@ public class Gate : AnExchange
     public override Coin GetCoinDetails(string baseAsset)
     {
         if (baseAssetLast == baseAsset) return new Coin();
+        baseAssetLast = baseAsset;
 
         var host = "https://api.gateio.ws";
         var prefix = "/api/v4";
