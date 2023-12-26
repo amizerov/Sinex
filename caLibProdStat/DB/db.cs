@@ -1,9 +1,8 @@
-﻿using CaDb;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace CoinsLoader;
+namespace caLibProdStat;
 
-public class Db : CaDbContext
+public class Db : CaDb
 {
     public DbSet<Coin> Sinex_Coins { get; set; }
 

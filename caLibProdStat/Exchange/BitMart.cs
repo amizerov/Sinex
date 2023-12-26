@@ -113,9 +113,9 @@ public class BitMart : AnExchange
         return dateTime;
     }
 
-    public override CoinDetails GetCoinDetails(string baseAsset)
+    public override Coin GetCoinDetails(string baseAsset)
     {
-        CoinDetails cd = new();
+        Coin cd = new();
         using (HttpClient c = new())
         {
             string uri = $"{BASE_URL}/account/v1/currencies";
@@ -134,7 +134,7 @@ public class BitMart : AnExchange
                     cd.asset = p.GetProperty("currency").GetString() + "";
                     cd.exchId = ID;
                     cd.network = p.GetProperty("network").GetString() + "";
-                    cd.address = p.GetProperty("contract_address").GetString() + "";
+                    cd.contract = p.GetProperty("contract_address").GetString() + "";
                     cd.longName = p.GetProperty("name").GetString() + "";
                 }
             }

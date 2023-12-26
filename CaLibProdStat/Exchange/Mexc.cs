@@ -11,9 +11,9 @@ public class Mexc : AnExchange
 
     public override string Name => "Mexc";
 
-    public override CoinDetails GetCoinDetails(string baseAsset)
+    public override Coin GetCoinDetails(string baseAsset)
     {
-        CoinDetails cd = new();
+        Coin cd = new();
         return cd;
     }
 

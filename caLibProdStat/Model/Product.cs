@@ -92,19 +92,6 @@ public class Product
         AnExchange? exch = CaInfo.Exchanges.FirstOrDefault(e => e.ID == exchange);
         if(exch == null) return;
 
-        CoinDetails cd = exch.GetCoinDetails(baseasset);
+        Coin cd = exch.GetCoinDetails(baseasset);
     }
-}
-
-public class CoinDetails
-{
-    public int id { get; set; }
-    public int exchId { get; set; }
-    public string? asset { get; set; }
-    public string? network { get; set; }
-    public string? address { get; set; }
-    public string? logoPath { get; set; }
-    public string? longName { get; set; }
-    public string? description { get; set; }
-    public DateTime dtc { get; set; }
 }

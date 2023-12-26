@@ -1,5 +1,6 @@
 ﻿using amLogger;
 using CryptoExchange.Net.CommonObjects;
+using System;
 using System.Net;
 using System.Text.Json;
 
@@ -108,9 +109,43 @@ public class Gate : AnExchange
         return dateTime;
     }
 
-    public override CoinDetails GetCoinDetails(string baseAsset)
+    string baseAssetLast = "";
+    public override Coin GetCoinDetails(string baseAsset)
     {
-        CoinDetails cd = new();
+        if (baseAssetLast == baseAsset) return new Coin();
+
+        var host = "https://api.gateio.ws";
+        var prefix = "/api/v4";
+        var url = "/wallet/currency_chains";
+
+        using HttpClient clt = new();
+
+        string uri = $"{host}{prefix}{url}?currency={baseAsset}";
+        var req = new HttpRequestMessage(HttpMethod.Get, uri);
+
+        Coin cd = new();
+
+        var r = clt.SendAsync(req).Result;
+        if (r.IsSuccessStatusCode)
+        {
+            var s = r.Content.ReadAsStringAsync().Result;
+            JsonDocument j = JsonDocument.Parse(s);
+            JsonElement e = j.RootElement;
+
+            cd.exchId = ID;
+            cd.asset = baseAsset;
+            int i = 0;
+            foreach (var p in e.EnumerateArray()) 
+            {
+                cd.network = p.GetProperty("chain").GetString() + "";
+                cd.contract = p.GetProperty("contract_address").GetString() + "";
+                cd.longName = (++i) + "";
+            }
+            cd.Save().Wait();
+
+            //Thread.Sleep(200);
+        }
+
         return cd;
     }
 }

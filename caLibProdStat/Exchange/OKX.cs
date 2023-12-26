@@ -84,9 +84,9 @@ public class OKX : AnExchange
         return klines;
     }
 
-    public override CoinDetails GetCoinDetails(string asset)
+    public override Coin GetCoinDetails(string asset)
     {
-        CoinDetails cd = new();
+        Coin cd = new();
         /*using (HttpClient c = new())
         {
             string uri = $"https://www.okx.com/api/v5/asset/currencies?ccy={asset}";

@@ -49,7 +49,7 @@ public abstract class AnExchange
             Log.Error(ID, "ProcessProducts", "Error: " + e.Message);
         }
     }
-    public abstract CoinDetails GetCoinDetails(string baseAsset);
+    public abstract Coin GetCoinDetails(string baseAsset);
 
     /// <summary>
     /// Convert cpecific product for each exchange 

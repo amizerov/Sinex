@@ -1,5 +1,4 @@
-﻿namespace CoinsLoader;
-
+﻿namespace caLibProdStat;
 public class Coin
 {
     public int id { get; set; }
@@ -11,7 +10,7 @@ public class Coin
     public string? longName { get; set; }
     public string? description { get; set; }
     public DateTime? dtu { get; set; }
-    
+
     //public DateTime dtc { get; set; }
 
     public async Task Save()
@@ -19,4 +18,3 @@ public class Coin
         await Db.SaveCoin(this);
     }
 }
-

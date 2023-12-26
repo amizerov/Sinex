@@ -71,9 +71,9 @@ public class Bybit : AnExchange
         return klines;
     }
 
-    public override CoinDetails GetCoinDetails(string baseAsset)
+    public override Coin GetCoinDetails(string baseAsset)
     {
-        CoinDetails cd = new();
+        Coin cd = new();
         return cd;
     }
 }
