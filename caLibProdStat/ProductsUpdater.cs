@@ -9,7 +9,7 @@ public class ProductsUpdater
 {
     public static void Start(Action? complete)
     {
-        List<AnExchange> exchas = CaInfo.ExchasList;
+        List<AnExchange> exchas = CaInfo.Exchanges;
         int cnt = 0;
         int ecnt = exchas.Count;
 

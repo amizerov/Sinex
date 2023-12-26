@@ -77,11 +77,11 @@ public partial class Form1 : Form
     private void button2_Click(object sender, EventArgs e)
     {
         textBox1.Text += "\r\n--------------\r\n";
-        foreach (var exch in CaInfo.ExchasList)
+        foreach (var exch in CaInfo.Exchanges)
         {
             textBox1.Text += exch.ID + " - " + exch.Name + "\r\n";
         }
-        textBox1.Text += CaInfo.ExchasList.Count.ToString();
+        textBox1.Text += CaInfo.Exchanges.Count.ToString();
     }
 
     private void button3_Click(object sender, EventArgs e)

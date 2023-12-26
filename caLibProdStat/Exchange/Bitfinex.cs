@@ -73,4 +73,10 @@ public class Bitfinex : AnExchange
         }
         return klines;
     }
+
+    public override CoinDetails GetCoinDetails(string baseAsset)
+    {
+        CoinDetails cd = new();
+        return cd;
+    }
 }

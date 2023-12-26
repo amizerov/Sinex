@@ -4,7 +4,7 @@ public class CaInfo
 {
     public static bool IsDbConnectionOk => new CaDb().Database.CanConnect();
 
-    public static List<AnExchange> ExchasList => new()
+    public static List<AnExchange> Exchanges => new()
     {
         new Binance(),
         new Kucoin(),

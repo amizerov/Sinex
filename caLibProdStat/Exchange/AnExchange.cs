@@ -24,7 +24,8 @@ public abstract class AnExchange
                 try
                 {
                     klines = GetLastKlines(product.symbol);
-                    
+
+                    product.GetDetails();
                     product.CalcStat(klines);
                     product.SaveStatToDb();
 
@@ -48,6 +49,7 @@ public abstract class AnExchange
             Log.Error(ID, "ProcessProducts", "Error: " + e.Message);
         }
     }
+    public abstract CoinDetails GetCoinDetails(string baseAsset);
 
     /// <summary>
     /// Convert cpecific product for each exchange 

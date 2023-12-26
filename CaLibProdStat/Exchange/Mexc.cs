@@ -11,6 +11,12 @@ public class Mexc : AnExchange
 
     public override string Name => "Mexc";
 
+    public override CoinDetails GetCoinDetails(string baseAsset)
+    {
+        CoinDetails cd = new();
+        return cd;
+    }
+
     protected override List<Kline> GetLastKlines(string symbol)
     {
         List<Kline> klines = new();

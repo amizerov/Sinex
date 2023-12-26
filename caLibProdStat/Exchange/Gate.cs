@@ -107,4 +107,10 @@ public class Gate : AnExchange
         dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
         return dateTime;
     }
+
+    public override CoinDetails GetCoinDetails(string baseAsset)
+    {
+        CoinDetails cd = new();
+        return cd;
+    }
 }

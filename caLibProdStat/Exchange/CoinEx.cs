@@ -82,4 +82,10 @@ public class CoinEx : AnExchange
         }
         return klines;
     }
+
+    public override CoinDetails GetCoinDetails(string baseAsset)
+    {
+        CoinDetails cd = new();
+        return cd;
+    }
 }

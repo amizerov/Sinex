@@ -3,6 +3,8 @@ using OKX.Net.Enums;
 using OKX.Net.Objects.Public;
 using CryptoExchange.Net.CommonObjects;
 using amLogger;
+using System.Net;
+using System.Text.Json;
 
 namespace caLibProdStat;
 
@@ -30,7 +32,7 @@ public class OKX : AnExchange
     protected override List<Product> GetProducts()
     {
         List<Product> products = new List<Product>();
-        
+
         var r = client.UnifiedApi.ExchangeData.GetSymbolsAsync(OKXInstrumentType.Spot).Result;
         if (r.Success)
         {
@@ -38,8 +40,8 @@ public class OKX : AnExchange
             foreach (var p in r.Data)
             {
                 Product product = ToProduct(p);
-                if (product.IsTradingEnabled) 
-                { 
+                if (product.IsTradingEnabled)
+                {
                     products.Add(product);
                 }
             }
@@ -64,7 +66,7 @@ public class OKX : AnExchange
             foreach (var p in r.Data)
             {
                 Kline k = new();
-                
+
                 k.OpenTime = p.Time;
                 k.OpenPrice = p.OpenPrice;
                 k.HighPrice = p.HighPrice;
@@ -80,5 +82,26 @@ public class OKX : AnExchange
             Log.Error(ID, $"GetProductStat({symbol})", r.Error!.Message);
         }
         return klines;
+    }
+
+    public override CoinDetails GetCoinDetails(string asset)
+    {
+        CoinDetails cd = new();
+        /*using (HttpClient c = new())
+        {
+            string uri = $"https://www.okx.com/api/v5/asset/currencies?ccy={asset}";
+            var r = new HttpRequestMessage(HttpMethod.Get, uri);
+            r.Headers.Add()
+
+            var r = c.SendAsync(r); 
+            if (r.StatusCode == HttpStatusCode.OK)
+            {
+                var s = r.Content.ReadAsStringAsync().Result;
+                JsonDocument j = JsonDocument.Parse(s);
+                JsonElement e = j.RootElement;
+
+            }
+        }*/
+        return cd;
     }
 }

@@ -112,4 +112,33 @@ public class BitMart : AnExchange
         dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
         return dateTime;
     }
+
+    public override CoinDetails GetCoinDetails(string baseAsset)
+    {
+        CoinDetails cd = new();
+        using (HttpClient c = new())
+        {
+            string uri = $"{BASE_URL}/account/v1/currencies";
+            var req = new HttpRequestMessage(HttpMethod.Get, uri);
+
+            var r = c.SendAsync(req).Result; 
+            if (r.IsSuccessStatusCode)
+            {
+                var s = r.Content.ReadAsStringAsync().Result;
+                JsonDocument j = JsonDocument.Parse(s);
+                JsonElement e = j.RootElement;
+                JsonElement data = e.GetProperty("data");
+                JsonElement ccs = data.GetProperty("currencies");
+                foreach (var p in ccs.EnumerateArray())
+                {
+                    cd.asset = p.GetProperty("currency").GetString() + "";
+                    cd.exchId = ID;
+                    cd.network = p.GetProperty("network").GetString() + "";
+                    cd.address = p.GetProperty("contract_address").GetString() + "";
+                    cd.longName = p.GetProperty("name").GetString() + "";
+                }
+            }
+        }
+        return cd;
+    }
 }
