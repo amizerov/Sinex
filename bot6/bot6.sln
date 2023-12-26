@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bot6", "bot6.csproj", "{30782438-31D5-49A7-9ABE-968E9FAAA0DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bot6", "bot6.csproj", "{30782438-31D5-49A7-9ABE-968E9FAAA0DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoinsLoader", "..\CoinsLoader\CoinsLoader.csproj", "{88FFC008-85D3-4B4A-B395-D09A04B9DE3D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CaDb", "..\CaDb\CaDb.csproj", "{6BDB42A8-21AF-4C74-940D-5A4CAEB3F9FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{30782438-31D5-49A7-9ABE-968E9FAAA0DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30782438-31D5-49A7-9ABE-968E9FAAA0DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30782438-31D5-49A7-9ABE-968E9FAAA0DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88FFC008-85D3-4B4A-B395-D09A04B9DE3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88FFC008-85D3-4B4A-B395-D09A04B9DE3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88FFC008-85D3-4B4A-B395-D09A04B9DE3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88FFC008-85D3-4B4A-B395-D09A04B9DE3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BDB42A8-21AF-4C74-940D-5A4CAEB3F9FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BDB42A8-21AF-4C74-940D-5A4CAEB3F9FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BDB42A8-21AF-4C74-940D-5A4CAEB3F9FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BDB42A8-21AF-4C74-940D-5A4CAEB3F9FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

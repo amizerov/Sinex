@@ -28,18 +28,32 @@
         /// </summary>
         private void InitializeComponent()
         {
+            btnStart = new Button();
             SuspendLayout();
+            // 
+            // btnStart
+            // 
+            btnStart.Location = new Point(406, 122);
+            btnStart.Name = "btnStart";
+            btnStart.Size = new Size(131, 40);
+            btnStart.TabIndex = 0;
+            btnStart.Text = "button1";
+            btnStart.UseVisualStyleBackColor = true;
+            btnStart.Click += btnStart_Click;
             // 
             // FrmMain
             // 
             AutoScaleDimensions = new SizeF(12F, 30F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(btnStart);
             Name = "FrmMain";
             Text = "Загрузка деталей коинов для криптобирж";
             ResumeLayout(false);
         }
 
         #endregion
+
+        private Button btnStart;
     }
 }
