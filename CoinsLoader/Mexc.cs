@@ -6,8 +6,8 @@ public class Mexc : AnExchange
 {
     const int ID = 10;
     const string BASE_URL = "https://api.mexc.com";
-    const string API_KEY = "mx0vglNjwyPkGbkC5n";
-    const string SEC_KEY = "996e05da3f914c4f95a52aa8bd55b275";
+    string API_KEY = CaSecrets.Secrets.MexcApiKey;
+    string SEC_KEY = CaSecrets.Secrets.MexcApiSecret;
 
     public override async Task GetCoins()
     {

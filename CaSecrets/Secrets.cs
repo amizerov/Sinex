@@ -32,7 +32,28 @@ public static class Secrets
     public static string CoinExApiKey = "";
     public static string CoinExApiSecret = "";
 
-    static List<string> ReadKeysFromFile()
+    public static string MexcApiKey
+    {
+        get
+        {
+            _keys = ReadKeysFromFile("Mexc");
+            if (_keys.Count >= 2)
+                return _keys[0];
+            else
+                return "";
+        }
+    }
+    public static string MexcApiSecret
+    {
+        get
+        {
+            if (_keys.Count >= 2)
+                return _keys[1];
+            else
+                return "";
+        }
+    }
+    static List<string> ReadKeysFromFile(string exchangeName = "Binance")
     {
         /*** формат файла BinanceApiKey.txt ******>
          {
@@ -42,7 +63,7 @@ public static class Secrets
          }
          *********************************************/
         List<string> keys = new();
-        string path = "D:\\Projects\\Common\\Secrets\\BinanceApiKey.txt";
+        string path = $"D:\\Projects\\Common\\Secrets\\{exchangeName}ApiKey.txt";
         if (File.Exists(path))
         {
             string json = File.ReadAllText(path);
