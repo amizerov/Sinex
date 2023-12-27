@@ -4,8 +4,10 @@ namespace CoinsLoader;
 
 public class Mexc : AnExchange
 {
-    public const int ID = 10;
-    public const string BASE_URL = "https://api.mexc.com";
+    const int ID = 10;
+    const string BASE_URL = "https://api.mexc.com";
+    const string API_KEY = "mx0vglNjwyPkGbkC5n";
+    const string SEC_KEY = "996e05da3f914c4f95a52aa8bd55b275";
 
     public override async Task GetCoins()
     {
@@ -13,9 +15,9 @@ public class Mexc : AnExchange
 
         string uri = $"{BASE_URL}/api/v3/capital/config/getall";
         var req = new HttpRequestMessage(HttpMethod.Get, uri);
-        //req.Headers.Add("Content-Type", "application/json");
-        //req.Headers.Add("X-MEXC-APIKEY", "mx0vgl32fTJ9DAoGih");
-        clt.DefaultRequestHeaders.Add("X-MEXC-APIKEY", "mx0vgl32fTJ9DAoGih");
+
+        req.Headers.Add("ApiKey", API_KEY);
+        req.Headers.Add("secretKey", SEC_KEY);
 
         var r = await clt.SendAsync(req);
         if (r.IsSuccessStatusCode)
