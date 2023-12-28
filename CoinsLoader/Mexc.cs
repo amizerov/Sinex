@@ -1,46 +1,56 @@
-﻿using System.Text.Json;
+﻿using MexcDotNet;
+using Microsoft.EntityFrameworkCore.Metadata;
+using System.Net.Http.Headers;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
 
 namespace CoinsLoader;
 
 public class Mexc : AnExchange
 {
     const int ID = 10;
-    const string BASE_URL = "https://api.mexc.com";
-    string API_KEY = CaSecrets.Secrets.MexcApiKey;
-    string SEC_KEY = CaSecrets.Secrets.MexcApiSecret;
+    const string spotBaseUrl = "https://api.mexc.com";
+    string apiKey = CaSecrets.Secrets.MexcApiKey;
+    string apiSecret = CaSecrets.Secrets.MexcApiSecret;
 
     public override async Task GetCoins()
     {
-        using HttpClient clt = new();
+        using HttpClient httpClient = new();
+        var mexcService = new MexcService(apiKey, apiSecret, spotBaseUrl, httpClient);
+        var res = await mexcService.SendSignedAsync("/api/v3/capital/config/getall", HttpMethod.Get);
 
-        string uri = $"{BASE_URL}/api/v3/capital/config/getall";
-        var req = new HttpRequestMessage(HttpMethod.Get, uri);
+        JsonDocument doc = JsonDocument.Parse(res);
+        JsonElement ele = doc.RootElement;
 
-        req.Headers.Add("ApiKey", API_KEY);
-        req.Headers.Add("secretKey", SEC_KEY);
-
-        var r = await clt.SendAsync(req);
-        if (r.IsSuccessStatusCode)
+        foreach (var p in ele.EnumerateArray())
         {
-            var s = await r.Content.ReadAsStringAsync();
-            JsonDocument j = JsonDocument.Parse(s);
-            JsonElement e = j.RootElement;
-            foreach (var p in e.EnumerateArray())
-            {
-                Coin cd = new();
+            Coin cd = new();
 
-                cd.exchId = ID;
-                cd.asset = p.GetProperty("coin").GetString() + "";
-                cd.longName = p.GetProperty("name").GetString() + "";
+            cd.exchId = ID;
+            cd.asset = p.GetProperty("coin").GetString() + "";
+            cd.longName = p.GetProperty("name").GetString() + "";
 
-                var nets = p.GetProperty("networkList");
-                foreach (var n in nets.EnumerateArray()) 
-                { 
-                    cd.network = p.GetProperty("network").GetString() + "";
-                    cd.contract = p.GetProperty("contract_address").GetString() + "";
-                }
-                await cd.Save();
+            var nets = p.GetProperty("networkList");
+            foreach (var n in nets.EnumerateArray()) 
+            { 
+                cd.network = n.GetProperty("network").GetString() + "";
+                cd.contract = n.GetProperty("contract").GetString() + "";
             }
+            await cd.Save();
+        }
+    }
+    /// <summary>Signs the given source with the given key using HMAC SHA256.</summary>
+    public static string Sign(string source, string key)
+    {
+        byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+        using (HMACSHA256 hmacsha256 = new HMACSHA256(keyBytes))
+        {
+            byte[] sourceBytes = Encoding.UTF8.GetBytes(source);
+
+            byte[] hash = hmacsha256.ComputeHash(sourceBytes);
+
+            return BitConverter.ToString(hash).Replace("-", "").ToLower();
         }
     }
 }
