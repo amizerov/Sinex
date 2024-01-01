@@ -6,8 +6,6 @@ namespace CoinsLoader;
 public class CaOKX : AnExchange
 {
     public const int ID = 8;
-    public const string BASE_URL = "https://www.okx.com";
-
 
     public override async Task GetCoins()
     {
