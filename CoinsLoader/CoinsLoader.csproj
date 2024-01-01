@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="OKX.Api" Version="1.5.5" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CaDb\CaDb.csproj" />
     <ProjectReference Include="..\MexcDotNet\MexcDotNet.csproj" />
   </ItemGroup>

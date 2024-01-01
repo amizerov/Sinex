@@ -26,8 +26,39 @@ public static class Secrets
                 return "";
         }
     }
-    public static string OKXApiKey = "";
-    public static string OKXApiSecret = "";
+
+    public static string OKXApiKey
+    {
+        get
+        {
+            _keys = ReadKeysFromFile("OKX");
+            if (_keys.Count >= 2)
+                return _keys[0];
+            else
+                return "";
+        }
+    }
+    public static string OKXApiSecret
+    {
+        get
+        {
+            if (_keys.Count >= 2)
+                return _keys[1];
+            else
+                return "";
+        }
+    }
+    public static string OKXPassPhrase
+    {
+        get
+        {
+            if (_keys.Count >= 3)
+                return _keys[2];
+            else
+                return "";
+        }
+    }
+
 
     public static string CoinExApiKey = "";
     public static string CoinExApiSecret = "";
