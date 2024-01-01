@@ -11,7 +11,10 @@ public class Db : CaDb
         using var db = new Db();
         try
         {
-            var existing = await db.Sinex_Coins.FirstOrDefaultAsync(c => c.asset == coin.asset);
+            var existing = await db.Sinex_Coins
+                .FirstOrDefaultAsync(c => c.asset == coin.asset 
+                                  && c.exchId == coin.exchId);
+
             if (existing == null)
             {
                 await db.Sinex_Coins.AddAsync(coin);

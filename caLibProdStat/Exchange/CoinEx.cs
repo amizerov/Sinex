@@ -4,6 +4,7 @@ using CryptoExchange.Net.CommonObjects;
 using amLogger;
 using CoinEx.Net.Objects.Models;
 using CryptoExchange.Net;
+using System.Text.Json;
 
 namespace caLibProdStat;
 
@@ -83,9 +84,42 @@ public class CoinEx : AnExchange
         return klines;
     }
 
+    string baseAssetLast = "";
     public override Coin GetCoinDetails(string baseAsset)
     {
+        if (baseAssetLast == baseAsset) return new Coin();
+        baseAssetLast = baseAsset;
+
+        var host = "https://api.coinex.com";
+        var prefix = "/v1";
+        var url = "/common/asset/config";
+
+        using HttpClient clt = new();
+
+        string uri = $"{host}{prefix}{url}?coin_type={baseAsset}";
+        var req = new HttpRequestMessage(HttpMethod.Get, uri);
+
         Coin cd = new();
+
+        var r = clt.SendAsync(req).Result;
+        if (r.IsSuccessStatusCode)
+        {
+            var s = r.Content.ReadAsStringAsync().Result;
+            JsonDocument j = JsonDocument.Parse(s);
+            JsonElement e = j.RootElement;
+            var d = e.GetProperty("data");
+
+            cd.exchId = ID;
+            cd.asset = baseAsset;
+               
+            var p = d.GetProperty(baseAsset);
+            cd.network = p.GetProperty("chain").GetString() + "";
+
+            cd.Save().Wait();
+
+            //Thread.Sleep(200);
+        }
+
         return cd;
     }
 }
