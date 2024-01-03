@@ -26,6 +26,27 @@ public static class Secrets
                 return "";
         }
     }
+    public static string KrakenApiKey
+    {
+        get
+        {
+            _keys = ReadKeysFromFile("Kraken");
+            if (_keys.Count >= 2)
+                return _keys[0];
+            else
+                return "";
+        }
+    }
+    public static string KrakenApiSecret
+    {
+        get
+        {
+            if (_keys.Count >= 2)
+                return _keys[1];
+            else
+                return "";
+        }
+    }
 
     public static string OKXApiKey
     {

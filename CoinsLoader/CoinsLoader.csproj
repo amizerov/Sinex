@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="KrakenExchange.Net" Version="4.2.0" />
     <PackageReference Include="OKX.Api" Version="1.5.5" />
   </ItemGroup>
 
