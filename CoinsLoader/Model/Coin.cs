@@ -10,6 +10,8 @@ public class Coin
     public string? logoPath { get; set; }
     public string? longName { get; set; }
     public string? description { get; set; }
+    public bool? allowDeposit { get; set; }
+    public bool? allowWithdraw { get; set; }
     public DateTime? dtu { get; set; }
     
     //public DateTime dtc { get; set; }
