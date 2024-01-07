@@ -11,7 +11,7 @@ public partial class FrmMain : Form
 
     private void btnStart_Click(object sender, EventArgs e)
     {
-        AnExchange exchange = new Kucoin();
+        AnExchange exchange = new BingX();
         exchange.GetCoins();
     }
 }
