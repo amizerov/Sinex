@@ -105,6 +105,27 @@ public static class Secrets
                 return "";
         }
     }
+    public static string BingXApiKey
+    {
+        get
+        {
+            _keys = ReadKeysFromFile("BingX");
+            if (_keys.Count >= 2)
+                return _keys[0];
+            else
+                return "";
+        }
+    }
+    public static string BingXApiSecret
+    {
+        get
+        {
+            if (_keys.Count >= 2)
+                return _keys[1];
+            else
+                return "";
+        }
+    }
     static List<string> ReadKeysFromFile(string exchangeName = "Binance")
     {
         /*** формат файла BinanceApiKey.txt ******>

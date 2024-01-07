@@ -15,8 +15,7 @@ public class Db : CaDbContext
         {
             var existing = await db.Sinex_Coins
                 .FirstOrDefaultAsync(c => c.asset == coin.asset 
-                                       && c.exchId == coin.exchId
-                                       && c.network == coin.network);
+                                       && c.exchId == coin.exchId);
 
             if (existing == null)
             {
@@ -32,6 +31,9 @@ public class Db : CaDbContext
                 existing.logoPath = coin.logoPath;
                 existing.longName = coin.longName;
                 existing.description = coin.description;
+                existing.allowDeposit = coin.allowDeposit;
+                existing.allowWithdraw = coin.allowWithdraw;
+
                 existing.dtu = DateTime.Now;
             }
         }
@@ -62,6 +64,7 @@ public class Db : CaDbContext
             }
             else
             {
+                existing.contractAddress = chain.contractAddress;
                 existing.withdrawFee = chain.withdrawFee;
                 existing.allowDeposit = chain.allowDeposit;
                 existing.allowWithdraw = chain.allowWithdraw;

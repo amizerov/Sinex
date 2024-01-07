@@ -1,8 +1,4 @@
 ﻿using MexcDotNet;
-using Microsoft.EntityFrameworkCore.Metadata;
-using System.Net.Http.Headers;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
 
 namespace CoinsLoader;
@@ -20,24 +16,47 @@ public class Mexc : AnExchange
         var mexcService = new MexcService(apiKey, apiSecret, spotBaseUrl, httpClient);
         var res = await mexcService.SendSignedAsync("/api/v3/capital/config/getall", HttpMethod.Get);
 
-        JsonDocument doc = JsonDocument.Parse(res);
-        JsonElement ele = doc.RootElement;
-
-        foreach (var p in ele.EnumerateArray())
+        try
         {
-            Coin cd = new();
+            JsonDocument doc = JsonDocument.Parse(res);
+            JsonElement ele = doc.RootElement;
 
-            cd.exchId = ID;
-            cd.asset = p.GetProperty("coin").GetString() + "";
-            cd.longName = p.GetProperty("name").GetString() + "";
+            foreach (var p in ele.EnumerateArray())
+            {
+                Coin coin = new();
 
-            var nets = p.GetProperty("networkList");
-            foreach (var n in nets.EnumerateArray()) 
-            { 
-                cd.network = n.GetProperty("network").GetString() + "";
-                cd.contract = n.GetProperty("contract").GetString() + "";
+                coin.exchId = ID;
+                coin.asset = p.GetProperty("coin").GetString() + "";
+                coin.longName = p.GetProperty("name").GetString() + "";
+
+                bool first = true;
+                var nets = p.GetProperty("networkList");
+                foreach (var n in nets.EnumerateArray()) 
+                {
+                    if (first)
+                    {
+                        coin.network = n.GetProperty("network").GetString() + "";
+                        coin.contract = n.GetProperty("contract").GetString() + "";
+                        coin.allowDeposit = n.GetProperty("depositEnable").GetBoolean();
+                        coin.allowWithdraw = n.GetProperty("withdrawEnable").GetBoolean();
+
+                        await coin.Save();
+                        first = false;
+                    }
+                    Chain chain = new Chain();
+                    chain.coinId = coin.id;
+                    chain.chainName = n.GetProperty("network").GetString() + "";
+                    chain.contractAddress = n.GetProperty("contract").GetString() + "";
+                    chain.allowDeposit = n.GetProperty("depositEnable").GetBoolean();
+                    chain.allowWithdraw = n.GetProperty("withdrawEnable").GetBoolean();
+                    await chain.Save();
+                }
+                //await cd.Save();
             }
-            await cd.Save();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
         }
     }
 }
