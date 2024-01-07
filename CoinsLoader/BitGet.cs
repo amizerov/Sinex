@@ -23,6 +23,7 @@ public class BitGet : AnExchange
                 JsonDocument j = JsonDocument.Parse(s);
                 JsonElement e = j.RootElement;
                 JsonElement data = e.GetProperty("data");
+
                 foreach (var p in data.EnumerateArray())
                 {
                     Coin coin = new();
