@@ -11,7 +11,8 @@ public partial class FrmMain : Form
 
     private void btnStart_Click(object sender, EventArgs e)
     {
-        AnExchange exchange = new BitGet();
+        //AnExchange exchange = new BitGet();
+        AnExchange exchange = new AscendEx();
         exchange.GetCoins();
     }
 }

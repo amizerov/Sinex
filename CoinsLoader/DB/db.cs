@@ -33,6 +33,7 @@ public class Db : CaDbContext
                 existing.description = coin.description;
                 existing.allowDeposit = coin.allowDeposit;
                 existing.allowWithdraw = coin.allowWithdraw;
+                existing.withdrawFee = coin.withdrawFee;
 
                 existing.dtu = DateTime.Now;
             }
@@ -70,6 +71,7 @@ public class Db : CaDbContext
                 existing.allowWithdraw = chain.allowWithdraw;
                 existing.minDepositAmt = chain.minDepositAmt;
                 existing.minWithdrawal = chain.minWithdrawal;
+                existing.withdrawFee = chain.withdrawFee;
                 existing.dtu = DateTime.Now;
             }
         }

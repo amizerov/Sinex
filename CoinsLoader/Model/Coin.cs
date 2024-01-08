@@ -12,6 +12,7 @@ public class Coin
     public string? description { get; set; }
     public bool? allowDeposit { get; set; }
     public bool? allowWithdraw { get; set; }
+    public float? withdrawFee { get; set; }
     public DateTime? dtu { get; set; }
     
     //public DateTime dtc { get; set; }
