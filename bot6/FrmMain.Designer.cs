@@ -29,31 +29,48 @@
         private void InitializeComponent()
         {
             btnStart = new Button();
+            txt = new TextBox();
             SuspendLayout();
             // 
             // btnStart
             // 
-            btnStart.Location = new Point(406, 122);
+            btnStart.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnStart.Location = new Point(553, 12);
+            btnStart.Margin = new Padding(2, 2, 2, 2);
             btnStart.Name = "btnStart";
-            btnStart.Size = new Size(131, 40);
+            btnStart.Size = new Size(109, 56);
             btnStart.TabIndex = 0;
-            btnStart.Text = "button1";
+            btnStart.Text = "Start";
             btnStart.UseVisualStyleBackColor = true;
             btnStart.Click += btnStart_Click;
             // 
+            // txt
+            // 
+            txt.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            txt.Location = new Point(12, 12);
+            txt.Multiline = true;
+            txt.Name = "txt";
+            txt.Size = new Size(536, 508);
+            txt.TabIndex = 1;
+            // 
             // FrmMain
             // 
-            AutoScaleDimensions = new SizeF(12F, 30F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(673, 532);
+            Controls.Add(txt);
             Controls.Add(btnStart);
+            Margin = new Padding(2, 2, 2, 2);
             Name = "FrmMain";
             Text = "Загрузка деталей коинов для криптобирж";
+            Load += FrmMain_Load;
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
 
         private Button btnStart;
+        private TextBox txt;
     }
 }

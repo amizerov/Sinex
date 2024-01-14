@@ -1,4 +1,6 @@
+using amLogger;
 using CoinsLoader;
+using Microsoft.Extensions.Logging;
 
 namespace bot6;
 
@@ -11,8 +13,34 @@ public partial class FrmMain : Form
 
     private void btnStart_Click(object sender, EventArgs e)
     {
-        //AnExchange exchange = new BitGet();
-        AnExchange exchange = new AscendEx();
+        List<AnExchange> exchanges = new();
+        exchanges.Add(new AscendEx());
+        exchanges.Add(new BingX());
+        exchanges.Add(new BitGet());
+        exchanges.Add(new Bybit());
+        exchanges.Add(new BitMart());
+        exchanges.Add(new Kucoin());
+        exchanges.Add(new Mexc());
+
+        AnExchange exchange = new BitMart();
         exchange.GetCoins();
+    }
+
+    private void FrmMain_Load(object sender, EventArgs e)
+    {
+        Logger.Instance.Init((Log log) => DoLog(log));
+    }
+
+    private void DoLog(Log log)
+    {
+        if(IsDisposed) return;
+        Invoke(() => { 
+            txt.Text =
+                DateTime.Now.ToString("G") + " - " +
+                log.id + " - " +
+                log.src + " - " +
+                log.msg + "\r\n" +
+                txt.Text;
+        });
     }
 }

@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CaDb", "..\CaDb\CaDb.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CaSecrets", "..\CaSecrets\CaSecrets.csproj", "{6D531E33-ABFB-4103-988E-0B5A38B3CEB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MexcDotNet", "..\MexcDotNet\MexcDotNet.csproj", "{D18982D2-8938-4545-BF11-28AF50F31675}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MexcDotNet", "..\MexcDotNet\MexcDotNet.csproj", "{D18982D2-8938-4545-BF11-28AF50F31675}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "amLogger", "..\amLogger\amLogger.csproj", "{B689E2D4-AB57-4C52-8F20-7907281241F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{D18982D2-8938-4545-BF11-28AF50F31675}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D18982D2-8938-4545-BF11-28AF50F31675}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D18982D2-8938-4545-BF11-28AF50F31675}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B689E2D4-AB57-4C52-8F20-7907281241F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B689E2D4-AB57-4C52-8F20-7907281241F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B689E2D4-AB57-4C52-8F20-7907281241F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B689E2D4-AB57-4C52-8F20-7907281241F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

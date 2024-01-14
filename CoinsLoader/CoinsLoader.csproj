@@ -9,9 +9,11 @@
   <ItemGroup>
     <PackageReference Include="KrakenExchange.Net" Version="4.2.0" />
     <PackageReference Include="OKX.Api" Version="1.5.5" />
+    <PackageReference Include="RestSharp" Version="110.2.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\amLogger\amLogger.csproj" />
     <ProjectReference Include="..\CaDb\CaDb.csproj" />
     <ProjectReference Include="..\MexcDotNet\MexcDotNet.csproj" />
   </ItemGroup>

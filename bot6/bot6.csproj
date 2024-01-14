@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\amLogger\amLogger.csproj" />
     <ProjectReference Include="..\CoinsLoader\CoinsLoader.csproj" />
   </ItemGroup>
 

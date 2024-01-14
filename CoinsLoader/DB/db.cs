@@ -88,4 +88,76 @@ public class Db : CaDbContext
             Console.WriteLine(ex.Message);
         }
     }
+    public static int FindCoinByName(Coin coin)
+    {
+        using var db = new Db();
+        try
+        {
+            var existing = db.Sinex_Coins
+                .FirstOrDefault(c => c.asset == coin.asset
+                                  && c.exchId == coin.exchId);
+
+            if (existing == null)
+            {
+                return 0;
+            }
+            else
+            {
+                coin.id = existing.id;
+
+                existing.asset = coin.asset;
+                existing.network = coin.network;
+                existing.contract = coin.contract;
+                existing.logoPath = coin.logoPath;
+                existing.longName = coin.longName;
+                existing.description = coin.description;
+                existing.allowDeposit = coin.allowDeposit;
+                existing.allowWithdraw = coin.allowWithdraw;
+                existing.withdrawFee = coin.withdrawFee;
+
+                return existing.id;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return 0;
+        }
+    }
+    public static int FindCoinByLongName(Coin coin)
+    {
+        using var db = new Db();
+        try
+        {
+            var existing = db.Sinex_Coins
+                .FirstOrDefault(c => c.longName == coin.longName
+                                  && c.exchId == coin.exchId);
+
+            if (existing == null)
+            {
+                return 0;
+            }
+            else
+            {
+                coin.id = existing.id;
+
+                existing.asset = coin.asset;
+                existing.network = coin.network;
+                existing.contract = coin.contract;
+                existing.logoPath = coin.logoPath;
+                existing.longName = coin.longName;
+                existing.description = coin.description;
+                existing.allowDeposit = coin.allowDeposit;
+                existing.allowWithdraw = coin.allowWithdraw;
+                existing.withdrawFee = coin.withdrawFee;
+
+                return existing.id;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return 0;
+        }
+    }
 }

@@ -12,7 +12,7 @@ public class Coin
     public string? description { get; set; }
     public bool? allowDeposit { get; set; }
     public bool? allowWithdraw { get; set; }
-    public float? withdrawFee { get; set; }
+    public double? withdrawFee { get; set; }
     public DateTime? dtu { get; set; }
     
     //public DateTime dtc { get; set; }
@@ -20,6 +20,14 @@ public class Coin
     public async Task Save()
     {
         await Db.SaveCoin(this);
+    }
+    public int Find()
+    {
+        return Db.FindCoinByName(this);
+    }
+    public int FindLong()
+    {
+        return Db.FindCoinByLongName(this);
     }
 }
 
