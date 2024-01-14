@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using amLogger;
+using System.Globalization;
+using System.Text.Json;
 
 namespace CoinsLoader;
 
@@ -39,6 +41,9 @@ public class BitGet : AnExchange
                         bool first = true;
                         foreach (var c in chains.EnumerateArray())
                         {
+                            string fee = c.GetProperty("withdrawFee").GetString()!;
+                            if (fee == "") fee = "0";
+
                             if (first)
                             {
                                 coin.network = c.GetProperty("chain").GetString() + "";
@@ -46,8 +51,10 @@ public class BitGet : AnExchange
 
                                 coin.allowDeposit = c.GetProperty("rechargeable").GetString() == "true";
                                 coin.allowWithdraw = c.GetProperty("withdrawable").GetString() == "true";
+                                coin.withdrawFee = float.Parse(fee, CultureInfo.InvariantCulture);
 
                                 await coin.Save();
+                                Log.Info(ID, "SaveCoin", coin.asset);
                                 first = false;
                             }
 
@@ -58,19 +65,20 @@ public class BitGet : AnExchange
                             chain.contractAddress = c.GetProperty("browserUrl").GetString() + "";
                             chain.allowDeposit = c.GetProperty("rechargeable").GetString() == "true";
                             chain.allowWithdraw = c.GetProperty("withdrawable").GetString() == "true";
+                            chain.withdrawFee = float.Parse(fee, CultureInfo.InvariantCulture);
 
                             await chain.Save();
                         }
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine(ex.ToString());
+                        Log.Error(ID, "GetCoins 2", ex.Message);
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Log.Error(ID, "GetCoins 1", ex.Message);
             }
         }
     }

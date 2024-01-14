@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using amLogger;
+using System.Text.Json;
 
 namespace CoinsLoader;
 
@@ -63,13 +64,13 @@ public class Kucoin : AnExchange
                     }
                     catch(Exception ex) 
                     {
-                        Console.WriteLine(ex.ToString());
+                        Log.Error(ID, "GetCoins 2", ex.Message);
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Log.Error(ID, "GetCoins 1", ex.Message);
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using MexcDotNet;
+﻿using amLogger;
+using MexcDotNet;
 using RestSharp;
 using System.Globalization;
 using System.Text;
@@ -81,19 +82,19 @@ public class Bybit : AnExchange
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine(ex.ToString());
+                            Log.Error(ID, "GetCoins 3", ex.Message);
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.ToString());
+                    Log.Error(ID, "GetCoins 2", ex.Message);
                 }
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            Log.Error(ID, "GetCoins 1", ex.Message);
         }
     }
 }

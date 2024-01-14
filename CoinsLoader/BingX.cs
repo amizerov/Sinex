@@ -1,4 +1,6 @@
-﻿using MexcDotNet;
+﻿using amLogger;
+using MexcDotNet;
+using System.Globalization;
 using System.Text.Json;
 
 namespace CoinsLoader;
@@ -34,28 +36,43 @@ public class BingX : AnExchange
                 var nets = p.GetProperty("networkList");
                 foreach (var n in nets.EnumerateArray())
                 {
-                    if (first)
+                    try
                     {
-                        cd.network = n.GetProperty("network").GetString() + "";
-                        //cd.contract = n.GetProperty("contract").GetString() + "";
-                        
-                        await cd.Save();
-                        first = false;
+                        string fee = n.GetProperty("withdrawFee").GetString()!;
+                        if (fee == "") fee = "0";
+
+                        if (first || n.GetProperty("isDefault").GetBoolean())
+                        {
+                            cd.network = n.GetProperty("network").GetString() + "";
+                            cd.allowWithdraw = n.GetProperty("withdrawEnable").GetBoolean();
+                            cd.allowDeposit = n.GetProperty("depositEnable").GetBoolean();
+                            cd.withdrawFee = float.Parse(fee, CultureInfo.InvariantCulture);
+                            //cd.contract = n.GetProperty("contract").GetString() + "";
+
+                            await cd.Save();
+                            first = false;
+                        }
+                        Chain chain = new Chain();
+                        chain.coinId = cd.id;
+                        chain.chainName = n.GetProperty("network").GetString() + "";
+                        //chain.contractAddress = n.GetProperty("contract").GetString() + "";
+                        chain.allowDeposit = n.GetProperty("depositEnable").GetBoolean();
+                        chain.allowWithdraw = n.GetProperty("withdrawEnable").GetBoolean();
+                        chain.withdrawFee = float.Parse(fee, CultureInfo.InvariantCulture);
+                        chain.minDepositAmt = float.Parse(n.GetProperty("depositMin").GetString()!, CultureInfo.InvariantCulture);
+                        chain.minWithdrawal = float.Parse(n.GetProperty("withdrawMin").GetString()!, CultureInfo.InvariantCulture);
+                        await chain.Save();
                     }
-                    Chain chain = new Chain();
-                    chain.coinId = cd.id;
-                    chain.chainName = n.GetProperty("network").GetString() + "";
-                    //chain.contractAddress = n.GetProperty("contract").GetString() + "";
-                    chain.allowDeposit = n.GetProperty("depositEnable").GetBoolean();
-                    chain.allowWithdraw = n.GetProperty("withdrawEnable").GetBoolean();
-                    await chain.Save();
+                    catch (Exception ex)
+                    {
+                        Log.Error(ID, "GetCoins 2", ex.Message);
+                    }
                 }
-                //await cd.Save();
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            Log.Error(ID, "GetCoins 1", ex.Message);
         }
     }
 }

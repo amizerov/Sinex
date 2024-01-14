@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using amLogger;
+using System.Globalization;
 using System.Text.Json;
 
 namespace CoinsLoader;
@@ -39,40 +40,51 @@ public class AscendEx : AnExchange
                         var bc = p.GetProperty("blockChain");
                         foreach (var c in bc.EnumerateArray())
                         {
-                            if (first)
+                            try
                             {
-                                coin.network = c.GetProperty("chainName").GetString() + "";
-                                coin.allowDeposit = c.GetProperty("allowDeposit").GetBoolean();
-                                coin.allowWithdraw = c.GetProperty("allowWithdraw").GetBoolean();
+                                string sfee = c.GetProperty("withdrawFee").GetString()!;
+                                if (sfee == "") sfee = "0";
+                                var fee = float.Parse(sfee, CultureInfo.InvariantCulture);
 
-                                string fee = c.GetProperty("withdrawFee").GetString()!;
-                                coin.withdrawFee = float.Parse(fee, CultureInfo.InvariantCulture);
+                                if (first)
+                                {
+                                    coin.network = c.GetProperty("chainName").GetString() + "";
+                                    coin.allowDeposit = c.GetProperty("allowDeposit").GetBoolean();
+                                    coin.allowWithdraw = c.GetProperty("allowWithdraw").GetBoolean();
 
-                                await coin.Save();
-                                first = false;
+                                    coin.withdrawFee = fee;
+
+                                    await coin.Save();
+                                    first = false;
+                                }
+                                Chain chain = new Chain();
+                                chain.coinId = coin.id;
+                                chain.chainName = c.GetProperty("chainName").GetString() + "";
+                                //chain.contractAddress = c.GetProperty("contractAddress").GetString() + "";
+                                chain.allowDeposit = c.GetProperty("allowDeposit").GetBoolean();
+                                chain.allowWithdraw = c.GetProperty("allowWithdraw").GetBoolean();
+                                chain.minDepositAmt = float.Parse(c.GetProperty("minDepositAmt").GetString()!, CultureInfo.InvariantCulture);
+                                chain.minWithdrawal = float.Parse(c.GetProperty("minWithdrawal").GetString()!, CultureInfo.InvariantCulture);
+
+                                chain.withdrawFee = fee;
+
+                                await chain.Save();
                             }
-                            Chain chain = new Chain();
-                            chain.coinId = coin.id;
-                            chain.chainName = c.GetProperty("chainName").GetString() + "";
-                            //chain.contractAddress = c.GetProperty("contractAddress").GetString() + "";
-                            chain.allowDeposit = c.GetProperty("allowDeposit").GetBoolean();
-                            chain.allowWithdraw = c.GetProperty("allowWithdraw").GetBoolean();
-                            
-                            string wfee = c.GetProperty("withdrawFee").GetString()!;
-                            chain.withdrawFee = float.Parse(wfee, CultureInfo.InvariantCulture);
-
-                            await chain.Save();
+                            catch (Exception ex)
+                            {
+                                Log.Error(ID, "GetCoins 3", ex.Message);
+                            }
                         }
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine(ex.ToString());
+                        Log.Error(ID, "GetCoins 2", ex.Message);
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Log.Error(ID, "GetCoins 1", ex.Message);
             }
         }
     }

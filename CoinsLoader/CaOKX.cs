@@ -32,6 +32,9 @@ public class CaOKX : AnExchange
                 cd.longName = c.Name;
                 cd.network = c.Chain.Replace(c.Currency + "-", "");
                 cd.logoPath = c.LogoLink;
+                cd.allowDeposit = c.AllowDeposit;
+                cd.allowWithdraw = c.AllowWithdrawal;
+                //cd.withdrawFee = c.;
 
                 await cd.Save();
             }

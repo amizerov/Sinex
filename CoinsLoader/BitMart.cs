@@ -1,5 +1,5 @@
 ﻿using amLogger;
-using Microsoft.Extensions.Logging;
+using System.Globalization;
 using System.Text.Json;
 
 namespace CoinsLoader;
@@ -27,45 +27,50 @@ public class BitMart : AnExchange
                 JsonElement e = j.RootElement;
                 JsonElement data = e.GetProperty("data");
                 JsonElement ccs = data.GetProperty("currencies");
-                foreach (var p in ccs.EnumerateArray())
+                foreach (var c in ccs.EnumerateArray())
                 {
                     try { 
-                        Coin cd = new();
+                        Coin coin = new();
 
-                        cd.exchId = ID;
+                        coin.exchId = ID;
 
-                        var name = cd.asset = p.GetProperty("currency").GetString() + "";
-                        cd.longName = p.GetProperty("name").GetString() + "";
-                        var netw = cd.network = p.GetProperty("network").GetString() + "";
-                        var cont = cd.contract = p.GetProperty("contract_address").GetString() + "";
-                        var adep = cd.allowDeposit = p.GetProperty("deposit_enabled").GetBoolean();
-                        var awit = cd.allowWithdraw = p.GetProperty("withdraw_enabled").GetBoolean();
+                        var name = coin.asset = c.GetProperty("currency").GetString() + "";
+                        coin.longName = c.GetProperty("name").GetString() + "";
+                        var netw = coin.network = c.GetProperty("network").GetString() + "";
+                        var cont = coin.contract = c.GetProperty("contract_address").GetString() + "";
+                        var adep = coin.allowDeposit = c.GetProperty("deposit_enabled").GetBoolean();
+                        var awit = coin.allowWithdraw = c.GetProperty("withdraw_enabled").GetBoolean();
 
-                        var fee = p.GetProperty("withdraw_minfee").GetString() + "";
+                        var fee = c.GetProperty("withdraw_minfee").GetString() + "";
                         if(fee.Length == 0) fee = "0";
-                        cd.withdrawFee = double.Parse(fee, System.Globalization.NumberStyles.Currency);
+                        coin.withdrawFee = double.Parse(fee, System.Globalization.NumberStyles.Currency);
 
-                        cd.asset = name.Replace("-" + netw, "");
+                        coin.asset = name.Replace("-" + netw, "");
 
-                        if (cd.Find() > 0 || cd.FindLong() > 0)
+                        int id1 = coin.Find();
+                        int id2 = coin.FindLong();
+                        int id = id1 > 0 ? id1 : id2;
+
+                        if (id > 0)
                         {
-                            int id = cd.Find();
+                            Chain chain = new();
+                            chain.coinId = id;
+                            chain.chainName = netw;
+                            chain.contractAddress = cont;
+                            chain.allowDeposit = adep;
+                            chain.allowWithdraw = awit;
+                            chain.withdrawFee = coin.withdrawFee;
+                            chain.minWithdrawal = 
+                                double.Parse(c.GetProperty("withdraw_minsize").GetString()!,
+                                                                CultureInfo.InvariantCulture);
+                            await chain.Save();
 
-                            Chain ch = new();
-                            ch.coinId = cd.id;
-                            ch.chainName = netw;
-                            ch.contractAddress = cont;
-                            ch.allowDeposit = adep;
-                            ch.allowWithdraw = awit;
-                            ch.withdrawFee = cd.withdrawFee;
-                            await ch.Save();
-
-                            Log.Trace(id, $"SaveChain({cd.asset})", ch.chainName);
+                            Log.Trace(id, $"SaveChain({coin.asset})", chain.chainName);
                         }
                         else
                         {
-                            await cd.Save();
-                            Log.Trace(ID, "SaveCoin", cd.asset);
+                            await coin.Save();
+                            Log.Trace(ID, "SaveCoin", coin.asset);
                         }
                     }
                     catch (Exception ex)
