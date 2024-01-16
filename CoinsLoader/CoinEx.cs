@@ -1,4 +1,5 @@
 ﻿using amLogger;
+using System.Globalization;
 using System.Net;
 using System.Text.Json;
 
@@ -15,68 +16,80 @@ public class CoinEx : AnExchange
         Log.Info(ID, "GetCoins()", "Start");
 
         using HttpClient httpClient = new();
-        var r = await httpClient.GetAsync($"{BASE_URL}{PREFIX}/market/list");
+        var r = await httpClient.GetAsync($"{BASE_URL}{PREFIX}/common/asset/config");
         if (r.StatusCode == HttpStatusCode.OK)
         {
-            var s = r.Content.ReadAsStringAsync().Result;
-            JsonDocument j = JsonDocument.Parse(s);
-            JsonElement e = j.RootElement;
-            foreach (var p in e.EnumerateArray())
+            try { 
+                var s = r.Content.ReadAsStringAsync().Result;
+                JsonDocument j = JsonDocument.Parse(s);
+                JsonElement e = j.RootElement;
+                JsonElement data = e.GetProperty("data");
+
+                string lastAsset = "";
+                foreach (var o in data.EnumerateObject())
+                {
+                    try
+                    {
+                        JsonElement p = o.Value;
+
+                        Coin coin = new();
+                        coin.exchId = ID;
+                        coin.asset = p.GetProperty("asset").GetString() + "";
+                        string fee = p.GetProperty("withdraw_tx_fee").GetString()!;
+
+                        if (lastAsset == coin.asset)
+                        {
+                            try
+                            {
+                                Chain chain = new Chain();
+                                chain.coinId = coin.Find();
+
+                                chain.chainName = p.GetProperty("chain").GetString() + "";
+                                chain.allowDeposit = p.GetProperty("can_deposit").GetBoolean();
+                                chain.allowWithdraw = p.GetProperty("can_withdraw").GetBoolean();
+                                chain.withdrawFee = double.Parse(fee, CultureInfo.InvariantCulture);
+
+                                await chain.Save();
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Error(ID, "GetCoins() - 3", ex.Message);
+                            }
+                        }
+                        else
+                        {
+                            try
+                            {
+                                coin.network = p.GetProperty("chain").GetString() + "";
+                                coin.allowDeposit = p.GetProperty("can_deposit").GetBoolean();
+                                coin.allowWithdraw = p.GetProperty("can_withdraw").GetBoolean();
+                                coin.withdrawFee = double.Parse(fee, CultureInfo.InvariantCulture);
+
+                                await coin.Save();
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Error(ID, "GetCoins() - 4", ex.Message);
+                            }
+                        }
+                        lastAsset = coin.asset;
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ID, "GetCoins() - 2", ex.Message);
+                    }
+                }
+            }
+            catch (Exception ex)
             {
-                Coin coin = new();
-                coin.exchId = ID;
-
-                coin.asset = p.GetProperty("currency").GetString() + "";
-                coin.network = p.GetProperty("chain").GetString() + "";
-                //coin.contract = p.GetProperty("contract").GetString() + "";
-                coin.allowDeposit = !p.GetProperty("deposit_disabled").GetBoolean();
-                coin.allowWithdraw = !p.GetProperty("withdraw_disabled").GetBoolean();
-
-                await coin.Save();
-
-                await GetChains(coin.id, coin.asset);
+                Log.Error(ID, "GetCoins() - 1", ex.Message);
             }
         }
         else
         {
-            Log.Error(ID, $"GetProduct()", r.StatusCode.ToString());
+            Log.Error(ID, $"GetCoins() - 0", r.StatusCode.ToString());
         }
-    }
 
-    public async Task GetChains(int coinId, string asset)
-    {
-        using HttpClient httpClient = new();
-        string uri = $"{BASE_URL}{PREFIX}/wallet/currency_chains?currency={asset}";
-        var req = new HttpRequestMessage(HttpMethod.Get, uri);
-
-        var r = await httpClient.SendAsync(req);
-        if (r.IsSuccessStatusCode)
-        {
-            var s = await r.Content.ReadAsStringAsync();
-            JsonDocument j = JsonDocument.Parse(s);
-            JsonElement e = j.RootElement;
-
-            foreach (var p in e.EnumerateArray())
-            {
-                try
-                {
-                    Chain chain = new();
-                    chain.coinId = coinId;
-
-                    chain.chainName = p.GetProperty("chain").GetString() + "";
-                    chain.allowDeposit = p.GetProperty("is_deposit_disabled").GetInt32() == 0;
-                    chain.allowWithdraw = p.GetProperty("is_withdraw_disabled").GetInt32() == 0;
-                    chain.contractAddress = p.GetProperty("contract_address").GetString() + "";
-
-                    await chain.Save();
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ID, $"GetChains({asset})", ex.Message);
-                }
-            }
-
-            Thread.Sleep(200);
-        }
+        Log.Info(ID, "GetCoins()", "End");
     }
 }
