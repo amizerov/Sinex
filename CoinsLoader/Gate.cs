@@ -1,5 +1,4 @@
 ﻿using amLogger;
-using CaDb;
 using System.Net;
 using System.Text.Json;
 
@@ -13,6 +12,8 @@ public class Gate : AnExchange
 
     public override async Task GetCoins()
     {
+        Log.Info(ID, "GetCoins()", "Start");
+
         using HttpClient httpClient = new();
         var r = await httpClient.GetAsync($"{BASE_URL}{PREFIX}/spot/currencies");
         if (r.StatusCode == HttpStatusCode.OK)
@@ -30,6 +31,8 @@ public class Gate : AnExchange
                 //coin.contract = p.GetProperty("contract").GetString() + "";
                 coin.allowDeposit = !p.GetProperty("deposit_disabled").GetBoolean();
                 coin.allowWithdraw = !p.GetProperty("withdraw_disabled").GetBoolean();
+
+                await coin.Save();
 
                 await GetChains(coin.id, coin.asset);
             }
@@ -53,13 +56,13 @@ public class Gate : AnExchange
             JsonDocument j = JsonDocument.Parse(s);
             JsonElement e = j.RootElement;
 
-            Chain chain = new();
-            chain.coinId = coinId;
-
             foreach (var p in e.EnumerateArray())
             {
                 try
                 {
+                    Chain chain = new();
+                    chain.coinId = coinId; 
+                    
                     chain.chainName = p.GetProperty("chain").GetString() + "";
                     chain.allowDeposit = p.GetProperty("is_deposit_disabled").GetInt32() == 0;
                     chain.allowWithdraw = p.GetProperty("is_withdraw_disabled").GetInt32() == 0;
