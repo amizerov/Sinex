@@ -22,8 +22,9 @@ public partial class FrmMain : Form
         exchanges.Add(new Kucoin());
         exchanges.Add(new Mexc());
         exchanges.Add(new Gate());
+        exchanges.Add(new CoinEx());
 
-        AnExchange exchange = new Gate();
+        AnExchange exchange = new CoinEx();
         exchange.GetCoins();
     }
 

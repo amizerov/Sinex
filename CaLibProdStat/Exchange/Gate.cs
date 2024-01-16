@@ -12,15 +12,13 @@ public class Gate : AnExchange
 
     public override string Name => "Gate";
 
-    const string BASE_URL = "https://api.gateio.ws/api/v4";
-
     protected override List<Kline> GetLastKlines(string symbol)
     {
         List<Kline> klines = new();
 
         using (HttpClient c = new())
         {
-            var r = c.GetAsync($"{BASE_URL}/spot/candlesticks?currency_pair={symbol}&interval=1m").Result;
+            var r = c.GetAsync($"https://api.gateio.ws/api/v4/spot/candlesticks?currency_pair={symbol}&interval=1m").Result;
             if (r.StatusCode == HttpStatusCode.OK)
             {
                 var s = r.Content.ReadAsStringAsync().Result;
@@ -53,7 +51,7 @@ public class Gate : AnExchange
         List<Product> products = new List<Product>();
         using (HttpClient c = new())
         {
-            var r = c.GetAsync($"{BASE_URL}/spot/currency_pairs").Result;
+            var r = c.GetAsync("https://api.gateio.ws/api/v4/spot/currency_pairs").Result;
             if (r.StatusCode == HttpStatusCode.OK)
             {
                 var s = r.Content.ReadAsStringAsync().Result;
@@ -114,7 +112,41 @@ public class Gate : AnExchange
     string baseAssetLast = "";
     public override Coin GetCoinDetails(string baseAsset)
     {
+        if (baseAssetLast == baseAsset) return new Coin();
+        baseAssetLast = baseAsset;
+
+        var host = "https://api.gateio.ws";
+        var prefix = "/api/v4";
+        var url = "/wallet/currency_chains";
+
+        using HttpClient clt = new();
+
+        string uri = $"{host}{prefix}{url}?currency={baseAsset}";
+        var req = new HttpRequestMessage(HttpMethod.Get, uri);
+
         Coin cd = new();
+
+        var r = clt.SendAsync(req).Result;
+        if (r.IsSuccessStatusCode)
+        {
+            var s = r.Content.ReadAsStringAsync().Result;
+            JsonDocument j = JsonDocument.Parse(s);
+            JsonElement e = j.RootElement;
+
+            cd.exchId = ID;
+            cd.asset = baseAsset;
+            int i = 0;
+            foreach (var p in e.EnumerateArray()) 
+            {
+                cd.network = p.GetProperty("chain").GetString() + "";
+                cd.contract = p.GetProperty("contract_address").GetString() + "";
+                cd.longName = (++i) + "";
+            }
+            cd.Save().Wait();
+
+            //Thread.Sleep(200);
+        }
+
         return cd;
     }
 }
