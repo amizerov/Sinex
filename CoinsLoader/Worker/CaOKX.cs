@@ -2,18 +2,17 @@
 using CaSecrets;
 using OKX.Api;
 
-namespace CoinsLoader;
+namespace CoinsLoader.Worker;
 
 public class CaOKX : AnExchange
 {
     public const int ID = 8;
+    string apiKey = Secrets.OKXApiKey;
+    string apiSecret = Secrets.OKXApiSecret;
+    string passPhrase = Secrets.OKXPassPhrase;
 
     public override async Task GetCoins()
     {
-        string apiKey = Secrets.OKXApiKey;
-        string apiSecret = Secrets.OKXApiSecret;
-        string passPhrase = Secrets.OKXPassPhrase;
-
         var api = new OKXRestApiClient(new OKXRestApiClientOptions
         {
             RawResponse = true,
@@ -26,7 +25,7 @@ public class CaOKX : AnExchange
             Log.Info(ID, "GetCoins()", "Start");
 
             string lastAsset = "";
-            foreach(var c in r.Data)
+            foreach (var c in r.Data)
             {
 
                 Coin coin = new();
@@ -34,7 +33,7 @@ public class CaOKX : AnExchange
                 coin.asset = c.Currency;
 
                 try
-                {                    
+                {
                     Chain chain = new Chain();
                     chain.coinId = coin.Find();
                     chain.chainName = c.Chain.Replace(c.Currency + "-", "");

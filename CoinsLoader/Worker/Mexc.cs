@@ -2,7 +2,7 @@
 using MexcDotNet;
 using System.Text.Json;
 
-namespace CoinsLoader;
+namespace CoinsLoader.Worker;
 
 public class Mexc : AnExchange
 {
@@ -32,7 +32,7 @@ public class Mexc : AnExchange
 
                 bool first = true;
                 var nets = p.GetProperty("networkList");
-                foreach (var n in nets.EnumerateArray()) 
+                foreach (var n in nets.EnumerateArray())
                 {
                     try
                     {

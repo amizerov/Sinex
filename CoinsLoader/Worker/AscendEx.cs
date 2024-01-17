@@ -2,11 +2,11 @@
 using System.Globalization;
 using System.Text.Json;
 
-namespace CoinsLoader;
+namespace CoinsLoader.Worker;
 
 public class AscendEx : AnExchange
 {
-    public const int ID = 13;
+    public int ID = 13;
     public const string BASE_URL = "https://ascendex.com";
 
     public override async Task GetCoins()
@@ -35,7 +35,8 @@ public class AscendEx : AnExchange
                     coin.asset = p.GetProperty("assetCode").GetString() + "";
                     coin.longName = p.GetProperty("assetName").GetString() + "";
 
-                    try { 
+                    try
+                    {
                         bool first = true;
                         var bc = p.GetProperty("blockChain");
                         foreach (var c in bc.EnumerateArray())

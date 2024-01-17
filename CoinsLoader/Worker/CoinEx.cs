@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Net;
 using System.Text.Json;
 
-namespace CoinsLoader;
+namespace CoinsLoader.Worker;
 
 public class CoinEx : AnExchange
 {
@@ -19,7 +19,8 @@ public class CoinEx : AnExchange
         var r = await httpClient.GetAsync($"{BASE_URL}{PREFIX}/common/asset/config");
         if (r.StatusCode == HttpStatusCode.OK)
         {
-            try { 
+            try
+            {
                 var s = r.Content.ReadAsStringAsync().Result;
                 JsonDocument j = JsonDocument.Parse(s);
                 JsonElement e = j.RootElement;
@@ -37,41 +38,39 @@ public class CoinEx : AnExchange
                         coin.asset = p.GetProperty("asset").GetString() + "";
                         string fee = p.GetProperty("withdraw_tx_fee").GetString()!;
 
-                        if (lastAsset == coin.asset)
+                        try
                         {
-                            try
-                            {
-                                Chain chain = new Chain();
-                                chain.coinId = coin.Find();
+                            Chain chain = new Chain();
+                            chain.coinId = coin.Find();
 
-                                chain.chainName = p.GetProperty("chain").GetString() + "";
-                                chain.allowDeposit = p.GetProperty("can_deposit").GetBoolean();
-                                chain.allowWithdraw = p.GetProperty("can_withdraw").GetBoolean();
-                                chain.withdrawFee = double.Parse(fee, CultureInfo.InvariantCulture);
+                            chain.chainName = p.GetProperty("chain").GetString() + "";
+                            chain.allowDeposit = p.GetProperty("can_deposit").GetBoolean();
+                            chain.allowWithdraw = p.GetProperty("can_withdraw").GetBoolean();
+                            chain.withdrawFee = double.Parse(fee, CultureInfo.InvariantCulture);
 
-                                await chain.Save();
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Error(ID, "GetCoins() - 3", ex.Message);
-                            }
+                            await chain.Save();
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            try
-                            {
-                                coin.network = p.GetProperty("chain").GetString() + "";
-                                coin.allowDeposit = p.GetProperty("can_deposit").GetBoolean();
-                                coin.allowWithdraw = p.GetProperty("can_withdraw").GetBoolean();
-                                coin.withdrawFee = double.Parse(fee, CultureInfo.InvariantCulture);
-
-                                await coin.Save();
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Error(ID, "GetCoins() - 4", ex.Message);
-                            }
+                            Log.Error(ID, "GetCoins() - 3", ex.Message);
                         }
+
+                        if (lastAsset == coin.asset) continue;
+
+                        try
+                        {
+                            coin.network = p.GetProperty("chain").GetString() + "";
+                            coin.allowDeposit = p.GetProperty("can_deposit").GetBoolean();
+                            coin.allowWithdraw = p.GetProperty("can_withdraw").GetBoolean();
+                            coin.withdrawFee = double.Parse(fee, CultureInfo.InvariantCulture);
+
+                            await coin.Save();
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error(ID, "GetCoins() - 4", ex.Message);
+                        }
+
                         lastAsset = coin.asset;
                     }
                     catch (Exception ex)

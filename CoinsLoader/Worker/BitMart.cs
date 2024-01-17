@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Text.Json;
 
-namespace CoinsLoader;
+namespace CoinsLoader.Worker;
 
 public class BitMart : AnExchange
 {
@@ -29,7 +29,8 @@ public class BitMart : AnExchange
                 JsonElement ccs = data.GetProperty("currencies");
                 foreach (var c in ccs.EnumerateArray())
                 {
-                    try { 
+                    try
+                    {
                         Coin coin = new();
 
                         coin.exchId = ID;
@@ -42,8 +43,8 @@ public class BitMart : AnExchange
                         var awit = coin.allowWithdraw = c.GetProperty("withdraw_enabled").GetBoolean();
 
                         var fee = c.GetProperty("withdraw_minfee").GetString() + "";
-                        if(fee.Length == 0) fee = "0";
-                        coin.withdrawFee = double.Parse(fee, System.Globalization.NumberStyles.Currency);
+                        if (fee.Length == 0) fee = "0";
+                        coin.withdrawFee = double.Parse(fee, NumberStyles.Currency);
 
                         coin.asset = name.Replace("-" + netw, "");
 
@@ -60,7 +61,7 @@ public class BitMart : AnExchange
                             chain.allowDeposit = adep;
                             chain.allowWithdraw = awit;
                             chain.withdrawFee = coin.withdrawFee;
-                            chain.minWithdrawal = 
+                            chain.minWithdrawal =
                                 double.Parse(c.GetProperty("withdraw_minsize").GetString()!,
                                                                 CultureInfo.InvariantCulture);
                             await chain.Save();

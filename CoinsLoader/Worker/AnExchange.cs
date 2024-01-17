@@ -1,4 +1,4 @@
-﻿namespace CoinsLoader;
+﻿namespace CoinsLoader.Worker;
 
 public abstract class AnExchange
 {

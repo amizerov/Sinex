@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.Json;
 
-namespace CoinsLoader;
+namespace CoinsLoader.Worker;
 
 public class Bybit : AnExchange
 {
@@ -27,7 +27,7 @@ public class Bybit : AnExchange
         long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         queryStringBuilder.Append(timestamp).Append(apiKey).Append(recvWindow);
         string signature = SignatureHelper.Sign(queryStringBuilder.ToString(), apiSecret);
-        
+
         request.AddHeader("X-BAPI-TIMESTAMP", timestamp);
         request.AddHeader("X-BAPI-RECV-WINDOW", recvWindow);
         request.AddHeader("X-BAPI-SIGN", signature);
@@ -68,7 +68,7 @@ public class Bybit : AnExchange
                                 cd.contract = n.GetProperty("chain").GetString() + "";
                                 cd.withdrawFee = float.Parse(fee, CultureInfo.InvariantCulture);
                                 await cd.Save();
-                                
+
                                 first = false;
                             }
                             Chain chain = new Chain();

@@ -3,7 +3,7 @@ using MexcDotNet;
 using System.Globalization;
 using System.Text.Json;
 
-namespace CoinsLoader;
+namespace CoinsLoader.Worker;
 
 public class BingX : AnExchange
 {

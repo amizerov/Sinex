@@ -2,7 +2,7 @@
 using System.Net;
 using System.Text.Json;
 
-namespace CoinsLoader;
+namespace CoinsLoader.Worker;
 
 public class Gate : AnExchange
 {
@@ -61,13 +61,13 @@ public class Gate : AnExchange
                 try
                 {
                     Chain chain = new();
-                    chain.coinId = coinId; 
-                    
+                    chain.coinId = coinId;
+
                     chain.chainName = p.GetProperty("chain").GetString() + "";
                     chain.allowDeposit = p.GetProperty("is_deposit_disabled").GetInt32() == 0;
                     chain.allowWithdraw = p.GetProperty("is_withdraw_disabled").GetInt32() == 0;
                     chain.contractAddress = p.GetProperty("contract_address").GetString() + "";
-                    
+
                     await chain.Save();
                 }
                 catch (Exception ex)

@@ -1,7 +1,7 @@
 ﻿using amLogger;
 using System.Text.Json;
 
-namespace CoinsLoader;
+namespace CoinsLoader.Worker;
 
 public class Kucoin : AnExchange
 {
@@ -62,7 +62,7 @@ public class Kucoin : AnExchange
                             await chain.Save();
                         }
                     }
-                    catch(Exception ex) 
+                    catch (Exception ex)
                     {
                         Log.Error(ID, "GetCoins 2", ex.Message);
                     }

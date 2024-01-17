@@ -1,5 +1,6 @@
 using amLogger;
 using CoinsLoader;
+using CoinsLoader.Worker;
 using Microsoft.Extensions.Logging;
 
 namespace bot6;
