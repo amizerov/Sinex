@@ -14,6 +14,7 @@ public partial class FrmMain : Form
     private void btnStart_Click(object sender, EventArgs e)
     {
         List<AnExchange> exchanges = new();
+
         exchanges.Add(new AscendEx());
         exchanges.Add(new BingX());
         exchanges.Add(new BitGet());
@@ -23,8 +24,9 @@ public partial class FrmMain : Form
         exchanges.Add(new Mexc());
         exchanges.Add(new Gate());
         exchanges.Add(new CoinEx());
+        exchanges.Add(new CaOKX());
 
-        AnExchange exchange = new CoinEx();
+        AnExchange exchange = new CaOKX();
         exchange.GetCoins();
     }
 
