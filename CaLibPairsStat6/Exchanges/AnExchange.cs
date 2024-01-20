@@ -6,7 +6,7 @@ namespace caLibPairsStat6;
 public abstract class AnExchange
 {
     public abstract int ID { get; }
-    public virtual string Name GetType().Name;
+    public virtual string Name => GetType().Name;
 
     /// <summary>
     /// Main method of the service.
