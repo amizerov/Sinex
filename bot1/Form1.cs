@@ -1,5 +1,5 @@
 using amLogger;
-using caLibProdStat;
+using caLibPairsStat6;
 using System.IO;
 
 namespace bot1;

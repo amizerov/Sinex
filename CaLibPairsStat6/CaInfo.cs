@@ -14,10 +14,11 @@ public class CaInfo
         //new Bitfinex(),
         //new Kraken(),
         //new OKX(),
-        new CoinEx(),
+        //new CoinEx(),
         //new Mexc(),
         //new Gate(),
-        //new BitMart()
+        //new BitMart(),
+        new AscendEx(),
     };
 
     public static int KlineInterval = 1;

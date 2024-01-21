@@ -11,8 +11,6 @@ public class BitMart : AnExchange
 
     public override int ID => 12;
 
-    public override string Name => "BitMart";
-
     protected override List<Kline> GetLastKlines(string symbol)
     {
         List<Kline> klines = new();
@@ -84,11 +82,6 @@ public class BitMart : AnExchange
         return products;
     }
 
-    protected override Product ToProduct(object p)
-    {
-        throw new NotImplementedException();
-    }
-
     decimal sd(JsonElement j)
     {
         decimal d = 0;
@@ -111,34 +104,5 @@ public class BitMart : AnExchange
         DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
         dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
         return dateTime;
-    }
-
-    public override Coin GetCoinDetails(string baseAsset)
-    {
-        Coin cd = new();
-        using (HttpClient c = new())
-        {
-            string uri = $"{BASE_URL}/account/v1/currencies";
-            var req = new HttpRequestMessage(HttpMethod.Get, uri);
-
-            var r = c.SendAsync(req).Result; 
-            if (r.IsSuccessStatusCode)
-            {
-                var s = r.Content.ReadAsStringAsync().Result;
-                JsonDocument j = JsonDocument.Parse(s);
-                JsonElement e = j.RootElement;
-                JsonElement data = e.GetProperty("data");
-                JsonElement ccs = data.GetProperty("currencies");
-                foreach (var p in ccs.EnumerateArray())
-                {
-                    cd.asset = p.GetProperty("currency").GetString() + "";
-                    cd.exchId = ID;
-                    cd.network = p.GetProperty("network").GetString() + "";
-                    cd.contract = p.GetProperty("contract_address").GetString() + "";
-                    cd.longName = p.GetProperty("name").GetString() + "";
-                }
-            }
-        }
-        return cd;
     }
 }

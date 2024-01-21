@@ -25,7 +25,6 @@ public abstract class AnExchange
                 {
                     klines = GetLastKlines(product.symbol);
 
-                    product.GetDetails();
                     product.CalcStat(klines);
                     product.SaveStatToDb();
 

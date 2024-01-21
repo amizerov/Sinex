@@ -25,7 +25,7 @@ public abstract class AnExchange
                 {
                     klines = GetLastKlines(product.symbol);
 
-                    product.GetDetails();
+                    //product.GetDetails();
                     product.CalcStat(klines);
                     product.SaveStatToDb();
 
@@ -40,7 +40,7 @@ public abstract class AnExchange
                 }
                 catch (Exception e)
                 {
-                    Log.Error(ID, $"GetKlines({product.symbol})", "Error: " + e.Message);
+                    Log.Error(ID, $"ProcessProducts({product.symbol})", "Error: " + e.Message);
                 }
             }
         }
@@ -49,7 +49,7 @@ public abstract class AnExchange
             Log.Error(ID, "ProcessProducts", "Error: " + e.Message);
         }
     }
-    public abstract Coin GetCoinDetails(string baseAsset);
+    public virtual Coin GetCoinDetails(string baseAsset) { throw new NotImplementedException(); }
 
     /// <summary>
     /// Convert cpecific product for each exchange 
@@ -57,7 +57,7 @@ public abstract class AnExchange
     /// </summary>
     /// <param name="p">Object of type product for this exchange</param>
     /// <returns>Product of common type</returns>
-    protected abstract Product ToProduct(Object p);
+    protected virtual Product ToProduct(Object p) { throw new NotImplementedException(); }
 
     /// <summary>
     /// Get list of all products

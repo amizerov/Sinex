@@ -22,7 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\amLogger\amLogger.csproj" />
     <ProjectReference Include="..\amTools\amTools.csproj" />
-    <ProjectReference Include="..\CaLibProdStat\caLibProdStat.csproj" />
+    <ProjectReference Include="..\CaLibPairsStat6\caLibPairsStat6.csproj" />
   </ItemGroup>
 
 </Project>
