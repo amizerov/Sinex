@@ -15,18 +15,18 @@ public class ProductsUpdater
 
         foreach (AnExchange ex in exchas)
             Task.Run(() => {
-                Log.Info($"ProductsUpdater({ex.Name})", "Started");
+                Log.Info(ex.ID, $"ProductsUpdater({ex.Name})", "Started");
                 ex.ProcessProducts();
-                Log.Info($"ProductsUpdater({ex.Name})", "Comleted");
+                Log.Info(ex.ID, $"ProductsUpdater({ex.Name})", "Comleted");
                 cnt++;
-                Log.Info($"ProductsUpdater({ex.Name})", $"cnt = {cnt} of {ecnt}");
+                Log.Info(ex.ID, $"ProductsUpdater({ex.Name})", $"cnt = {cnt} of {ecnt}");
                 if (cnt == ecnt)
                 {
-                    Log.Info($"ProductsUpdater({ex.Name})", "cnt == exs.Count");
+                    Log.Info(ex.ID, $"ProductsUpdater({ex.Name})", "cnt == exs.Count");
                     if (complete != null)
                     {
                         complete();
-                        Log.Info($"ProductsUpdater({ex.Name})", "complete is called!");
+                        Log.Info(ex.ID, $"ProductsUpdater({ex.Name})", "complete is called!");
 
                     }
                 }

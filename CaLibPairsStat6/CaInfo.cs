@@ -6,15 +6,15 @@ public class CaInfo
 
     public static List<AnExchange> Exchanges => new()
     {
-        //new Kucoin(),
-        //new Bybit(),
-        //new OKX(),
-        //new CoinEx(),
-        //new Mexc(),
-        //new Gate(),
-        //new BitMart(),
-        //new AscendEx(),
-        //new BingX(),
+        new Kucoin(),
+        new Bybit(),
+        new CaOKX(),
+        new CoinEx(),
+        new Mexc(),
+        new Gate(),
+        new BitMart(),
+        new AscendEx(),
+        new BingX(),
         new BitGet(),
     };
 
