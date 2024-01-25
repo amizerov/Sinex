@@ -18,7 +18,6 @@ public class CaBitMart : AnExchange
     public override List<string> Intervals => new List<string>()
     { "1m", "3m", "5m", "15m", "30m", "45m", "1h", "2h", "3h", "4h", "1d", "7d", "30d" };
 
-    string _symbol = "";
 
     public override Task<bool> CheckApiKey()
     {

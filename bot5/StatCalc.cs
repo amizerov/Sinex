@@ -1,6 +1,6 @@
 ﻿using amLogger;
 using CaDb;
-using CaExch;
+using CaExch2;
 using Microsoft.EntityFrameworkCore;
 
 namespace bot5;
@@ -85,6 +85,9 @@ class FullStat : List<PriceSt>
                 break;
             case 12:
                 symbol = asset.ToUpper() + "_USDT";
+                break;
+            default:
+                symbol = asset.ToUpper();
                 break;
         }
         var t = await exc.GetTickerAsync(symbol);

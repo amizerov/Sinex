@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CaDb\CaDb.csproj" />
-    <ProjectReference Include="..\CaExch\CaExch.csproj" />
+    <ProjectReference Include="..\CaExch2\CaExch2.csproj" />
   </ItemGroup>
 
   <ItemGroup>

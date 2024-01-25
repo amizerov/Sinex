@@ -111,19 +111,4 @@ public class CaMexc : AnExchange
     {
         throw new NotImplementedException();
     }
-    decimal sd(JsonElement j)
-    {
-        decimal d = 0;
-        string s = j.GetString()!;
-        if (s.Contains("E"))
-        {
-            string[] p = s.Split("E");
-            d = Decimal.Parse(p[0].Replace(".", ",")) * (decimal)Math.Pow(10, int.Parse(p[1]));
-        }
-        else
-        {
-            d = Decimal.Parse(s.Replace(".", ","));
-        }
-        return d;
-    }
 }

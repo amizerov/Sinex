@@ -17,8 +17,6 @@ public class CaMexc : AnExchange
     public override List<string> Intervals => new List<string>()
     { "1m", "5m", "15m", "30m", "60m", "4h", "1d", "1M" };
 
-    string _symbol = "";
-
     public override Task<bool> CheckApiKey()
     {
         throw new NotImplementedException();

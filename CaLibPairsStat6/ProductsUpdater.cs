@@ -27,7 +27,6 @@ public class ProductsUpdater
                     {
                         complete();
                         Log.Info(ex.ID, $"ProductsUpdater({ex.Name})", "complete is called!");
-
                     }
                 }
             });

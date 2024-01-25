@@ -3,6 +3,7 @@ using CryptoExchange.Net.CommonObjects;
 using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Sockets;
+using System.Text.Json;
 
 namespace CaExch2;
 
@@ -21,15 +22,31 @@ public abstract class AnExchange
     protected void TickerUpdated(Ticker t) => OnTickerUpdate?.Invoke(t);
 
     public abstract int ID { get; }
-    public abstract string Name { get; }
+    public virtual string Name => GetType().Name;
 
-    public abstract ISymbolOrderBook OrderBook { get; }
-    public abstract Task<bool> CheckApiKey();
-    public abstract Task<List<Balance>> GetBalances();
+    public virtual ISymbolOrderBook OrderBook {
+        get
+        {
+            throw new NotImplementedException();
+        }
+    }
+    public virtual Task<bool> CheckApiKey()
+    {
+        throw new NotImplementedException();
+    }
+    public virtual Task<List<Balance>> GetBalances()
+    {
+        throw new NotImplementedException();
+    }
     public abstract Task<Ticker> GetTickerAsync(string symbol);
     public abstract Task<List<Kline>> GetKlines(string symbol, string inter, int count = 0);
-    public abstract List<string> Intervals { get; }
-
+    public virtual List<string> Intervals
+    {
+        get
+        {
+            throw new NotImplementedException();
+        }
+    }
     public abstract Task<int> SubsсribeToTicker(string symbol);
     public abstract void UnSubFromTicker(int subsId);
 
@@ -123,14 +140,49 @@ public abstract class AnExchange
     /*
         Trading
      */
-    public abstract Task<bool> PlaceSpotOrderBuy(string symbol, decimal quantity);
-    public abstract Task<bool> PlaceSpotOrderSell(string symbol, decimal quantity);
-    public abstract Task<bool> FutuOrderBuy(string symbol, decimal quantity);
-    public abstract Task<bool> FutuOrderSell(string symbol, decimal quantity);
+    public virtual Task<bool> PlaceSpotOrderBuy(string symbol, decimal quantity) 
+    { 
+        throw new NotImplementedException();
+    }
+    public virtual Task<bool> PlaceSpotOrderSell(string symbol, decimal quantity)
+    {
+        throw new NotImplementedException();
+    }
+    public virtual Task<bool> FutuOrderBuy(string symbol, decimal quantity)
+    {
+        throw new NotImplementedException();
+    }
+    public virtual Task<bool> FutuOrderSell(string symbol, decimal quantity)
+    {
+        throw new NotImplementedException();
+    }
 
     /*
      *  Account 
      */
     public abstract Task<Order> GetLastSpotOrder(string symbol);
     public abstract void SubscribeToSpotAccountUpdates();
+
+    protected decimal sd(JsonElement j)
+    {
+        decimal d = 0;
+        try
+        {
+            string s = j + "";
+            if (s.Contains("E"))
+            {
+                string[] p = s.Split("E");
+                d = Decimal.Parse(p[0].Replace(".", ",")) * (decimal)Math.Pow(10, int.Parse(p[1]));
+            }
+            else
+            {
+                d = Decimal.Parse(s.Replace(".", ","));
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Error(ID, $"{Name} - sd", $"Error: {e.Message}");
+        }
+        return d;
+    }
 }
