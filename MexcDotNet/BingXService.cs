@@ -19,7 +19,7 @@ public sealed class BingXService
         this.httpClient = httpClient;
     }
 
-    private async Task<string> SendAsync(string requestUri, HttpMethod httpMethod, object content = null)
+    private async Task<string> SendAsync(string requestUri, HttpMethod httpMethod, object? content = null)
     {
         using (var request = new HttpRequestMessage(httpMethod, this.baseUrl + requestUri))
         {
@@ -39,7 +39,7 @@ public sealed class BingXService
         }
     }
 
-    public async Task<string> SendPublicAsync(string requestUri, HttpMethod httpMethod, Dictionary<string, object> query = null, object content = null)
+    public async Task<string> SendPublicAsync(string requestUri, HttpMethod httpMethod, Dictionary<string, object>? query = null, object? content = null)
     {
         if (!(query is null))
         {
@@ -54,7 +54,7 @@ public sealed class BingXService
         return await this.SendAsync(requestUri, httpMethod, content);
     }
 
-    public async Task<string> SendSignedAsync(string requestUri, HttpMethod httpMethod, Dictionary<string, object> query = null, object content = null)
+    public async Task<string> SendSignedAsync(string requestUri, HttpMethod httpMethod, Dictionary<string, object>? query = null, object? content = null)
     {
         StringBuilder queryStringBuilder = new StringBuilder();
 
