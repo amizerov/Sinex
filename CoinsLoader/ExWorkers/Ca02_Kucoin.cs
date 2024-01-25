@@ -26,14 +26,14 @@ public class Kucoin : AnExchange
                 JsonElement data = e.GetProperty("data");
                 foreach (var p in data.EnumerateArray())
                 {
-                    Coin cd = new();
+                    Coin coin = new();
 
-                    cd.exchId = ID;
+                    coin.exchId = ID;
 
-                    cd.asset = p.GetProperty("currency").GetString() + "";
-                    cd.longName = p.GetProperty("fullName").GetString() + "";
+                    coin.asset = p.GetProperty("currency").GetString() + "";
+                    coin.longName = p.GetProperty("fullName").GetString() + "";
 
-                    await cd.Save();
+                    await coin.Save();
                     try
                     {
                         JsonElement chains = p.GetProperty("chains");
@@ -41,16 +41,17 @@ public class Kucoin : AnExchange
                         foreach (var c in chains.EnumerateArray())
                         {
                             Chain chain = new Chain();
-                            chain.coinId = cd.id;
+                            chain.coinId = coin.id;
 
                             if (first)
                             {
-                                cd.network = c.GetProperty("chainName").GetString() + "";
-                                cd.contract = c.GetProperty("contractAddress").GetString() + "";
+                                coin.network = c.GetProperty("chainName").GetString() + "";
+                                coin.contract = c.GetProperty("contractAddress").GetString() + "";
 
-                                cd.allowDeposit = c.GetProperty("isDepositEnabled").GetBoolean();
-                                cd.allowWithdraw = c.GetProperty("isWithdrawEnabled").GetBoolean();
+                                coin.allowDeposit = c.GetProperty("isDepositEnabled").GetBoolean();
+                                coin.allowWithdraw = c.GetProperty("isWithdrawEnabled").GetBoolean();
 
+                                await coin.Save();
                                 first = false;
                             }
 
