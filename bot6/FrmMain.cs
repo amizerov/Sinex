@@ -1,7 +1,5 @@
 using amLogger;
 using CoinsLoader;
-using CoinsLoader.Worker;
-using Microsoft.Extensions.Logging;
 
 namespace bot6;
 
@@ -14,21 +12,10 @@ public partial class FrmMain : Form
 
     private void btnStart_Click(object sender, EventArgs e)
     {
-        List<AnExchange> exchanges = new();
-
-        exchanges.Add(new AscendEx());
-        exchanges.Add(new BingX());
-        exchanges.Add(new BitGet());
-        exchanges.Add(new Bybit());
-        exchanges.Add(new BitMart());
-        exchanges.Add(new Kucoin());
-        exchanges.Add(new Mexc());
-        exchanges.Add(new Gate());
-        exchanges.Add(new CoinEx());
-        exchanges.Add(new CaOKX());
-
-        AnExchange exchange = new CaOKX();
-        exchange.GetCoins();
+        foreach (var exchange in Exchanges.List())
+        {
+            exchange.GetCoins();
+        }
     }
 
     private void FrmMain_Load(object sender, EventArgs e)
