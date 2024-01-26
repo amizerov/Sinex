@@ -27,8 +27,11 @@ public class CoinEx : AnExchange
                 JsonElement data = e.GetProperty("data");
 
                 string lastAsset = "";
+                int cnt = 0;
+                int cntCoins = data.EnumerateObject().Count();
                 foreach (var o in data.EnumerateObject())
                 {
+                    cnt++;
                     try
                     {
                         JsonElement p = o.Value;
@@ -40,7 +43,7 @@ public class CoinEx : AnExchange
 
                         try
                         {
-                            Chain chain = new Chain();
+                            CoinChain chain = new CoinChain();
                             chain.coinId = coin.Find();
 
                             chain.chainName = p.GetProperty("chain").GetString() + "";
@@ -65,6 +68,7 @@ public class CoinEx : AnExchange
                             coin.withdrawFee = double.Parse(fee, CultureInfo.InvariantCulture);
 
                             await coin.Save();
+                            Log.Info(ID, $"SaveCoin({coin.asset})", $"{cnt}/{cntCoins}");
                         }
                         catch (Exception ex)
                         {

@@ -10,6 +10,8 @@ public class Kucoin : AnExchange
 
     public override async Task GetCoins()
     {
+        Log.Info(ID, "GetCoins()", "Start");
+
         using HttpClient httpClient = new();
 
         string uri = $"{BASE_URL}/api/v3/currencies";
@@ -37,15 +39,25 @@ public class Kucoin : AnExchange
                     try
                     {
                         JsonElement chains = p.GetProperty("chains");
+                        if(chains.ValueKind == JsonValueKind.Null)
+                        {
+                            continue;
+                        }
                         bool first = true;
                         foreach (var c in chains.EnumerateArray())
                         {
-                            Chain chain = new Chain();
-                            chain.coinId = coin.id;
+                            string net = c.GetProperty("chainName").GetString() + "";
+                            Chain chain = new Chain(net);
+                            await chain.Save();
+
+                            CoinChain coinChain = new CoinChain();
+                            coinChain.coinId = coin.id;
+                            coinChain.chainId = chain.id;
 
                             if (first)
                             {
-                                coin.network = c.GetProperty("chainName").GetString() + "";
+                                coin.network = net;
+                                coin.chainId = chain.id;
                                 coin.contract = c.GetProperty("contractAddress").GetString() + "";
 
                                 coin.allowDeposit = c.GetProperty("isDepositEnabled").GetBoolean();
@@ -55,12 +67,12 @@ public class Kucoin : AnExchange
                                 first = false;
                             }
 
-                            chain.chainName = c.GetProperty("chainName").GetString() + "";
-                            chain.contractAddress = c.GetProperty("contractAddress").GetString() + "";
-                            chain.allowDeposit = c.GetProperty("isDepositEnabled").GetBoolean();
-                            chain.allowWithdraw = c.GetProperty("isWithdrawEnabled").GetBoolean();
+                            coinChain.chainName = net;
+                            coinChain.contractAddress = c.GetProperty("contractAddress").GetString() + "";
+                            coinChain.allowDeposit = c.GetProperty("isDepositEnabled").GetBoolean();
+                            coinChain.allowWithdraw = c.GetProperty("isWithdrawEnabled").GetBoolean();
 
-                            await chain.Save();
+                            await coinChain.Save();
                         }
                     }
                     catch (Exception ex)
@@ -74,5 +86,7 @@ public class Kucoin : AnExchange
                 Log.Error(ID, "GetCoins 1", ex.Message);
             }
         }
+    
+        Log.Info(ID, "GetCoins()", "Done");
     }
 }

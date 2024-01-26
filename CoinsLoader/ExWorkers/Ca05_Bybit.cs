@@ -16,6 +16,7 @@ public class Bybit : AnExchange
 
     public override async Task GetCoins()
     {
+        Log.Info(ID, "GetCoins", "Start");
 
         var client = new RestClient($"{baseUrl}/v5/asset/coin/query-info");
         var request = new RestRequest();
@@ -38,21 +39,26 @@ public class Bybit : AnExchange
         {
             JsonDocument doc = JsonDocument.Parse(response.Content!);
             JsonElement ele = doc.RootElement;
-            JsonElement data = ele.GetProperty("result");
-            JsonElement rows = data.GetProperty("rows");
+            JsonElement res = ele.GetProperty("result");
+            JsonElement coins = res.GetProperty("rows");
 
-            foreach (var p in rows.EnumerateArray())
+            int cnt = 0;
+            int cntCoins = coins.EnumerateArray().Count();
+            foreach (var p in coins.EnumerateArray())
             {
+                cnt++;
                 try
                 {
-                    Coin cd = new();
+                    Coin coin = new();
 
-                    cd.exchId = ID;
-                    cd.asset = p.GetProperty("coin").GetString() + "";
-                    cd.longName = p.GetProperty("name").GetString() + "";
+                    coin.exchId = ID;
+                    coin.asset = p.GetProperty("coin").GetString() + "";
+                    coin.longName = p.GetProperty("name").GetString() + "";
 
                     bool first = true;
                     var nets = p.GetProperty("chains");
+
+                    int cntChains = nets.EnumerateArray().Count();
                     foreach (var n in nets.EnumerateArray())
                     {
                         try
@@ -60,20 +66,27 @@ public class Bybit : AnExchange
                             string fee = n.GetProperty("withdrawFee").GetString()!;
                             if (fee == "") fee = "0";
 
+                            string net = n.GetProperty("chainType").GetString() + "";
+                            int i1 = net.IndexOf('(') + 1;
+                            int i2 = net.IndexOf(')');
+                            if (i1 > 1 && i2 > 0)
+                                net = net.Substring(i1, i2 - i1);
+
                             if (first)
                             {
-                                cd.network = n.GetProperty("chainType").GetString() + "";
-                                cd.allowDeposit = n.GetProperty("chainDeposit").GetString() == "1";
-                                cd.allowWithdraw = n.GetProperty("chainWithdraw").GetString() == "1";
-                                cd.contract = n.GetProperty("chain").GetString() + "";
-                                cd.withdrawFee = float.Parse(fee, CultureInfo.InvariantCulture);
-                                await cd.Save();
+                                coin.network = net;
+                                coin.allowDeposit = n.GetProperty("chainDeposit").GetString() == "1";
+                                coin.allowWithdraw = n.GetProperty("chainWithdraw").GetString() == "1";
+                                coin.contract = n.GetProperty("chain").GetString() + "";
+                                coin.withdrawFee = float.Parse(fee, CultureInfo.InvariantCulture);
+                                await coin.Save();
 
                                 first = false;
+                                Log.Info(ID, $"SaveCoin({coin.asset})", $"{cnt}/{cntCoins}/{cntChains}");
                             }
-                            Chain chain = new Chain();
-                            chain.coinId = cd.id;
-                            chain.chainName = n.GetProperty("chainType").GetString() + "";
+                            CoinChain chain = new CoinChain();
+                            chain.coinId = coin.id;
+                            chain.chainName = net;
                             chain.contractAddress = n.GetProperty("chain").GetString() + "";
                             chain.allowDeposit = n.GetProperty("chainDeposit").GetString() == "1";
                             chain.allowWithdraw = n.GetProperty("chainWithdraw").GetString() == "1";
@@ -96,5 +109,6 @@ public class Bybit : AnExchange
         {
             Log.Error(ID, "GetCoins 1", ex.Message);
         }
+        Log.Info(ID, "GetCoins", "Done");
     }
 }

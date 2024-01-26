@@ -52,7 +52,7 @@ public class BingX : AnExchange
                             await cd.Save();
                             first = false;
                         }
-                        Chain chain = new Chain();
+                        CoinChain chain = new CoinChain();
                         chain.coinId = cd.id;
                         chain.chainName = n.GetProperty("network").GetString() + "";
                         //chain.contractAddress = n.GetProperty("contract").GetString() + "";

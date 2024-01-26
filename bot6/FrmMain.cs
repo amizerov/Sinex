@@ -5,6 +5,7 @@ namespace bot6;
 
 public partial class FrmMain : Form
 {
+    bool logPaused = false;
     public FrmMain()
     {
         InitializeComponent();
@@ -25,14 +26,33 @@ public partial class FrmMain : Form
 
     private void DoLog(Log log)
     {
-        if(IsDisposed) return;
-        Invoke(() => { 
+        if (logPaused) return;
+        if (IsDisposed) return;
+        Invoke(() =>
+        {
             txt.Text =
                 DateTime.Now.ToString("G") + " - " +
                 log.id + " - " +
                 log.src + " - " +
                 log.msg + "\r\n" +
                 txt.Text;
+
+            if (log.lvl == Level.Error)
+                txtErr.Text =
+                    DateTime.Now.ToString("G") + " - " +
+                    log.id + " - " +
+                    log.src + " - " +
+                    log.msg + "\r\n" +
+                    txt.Text;
+
+            if (txt.Text.Length > 5000)
+                txt.Text = txt.Text.Substring(0, 5000);
         });
+    }
+
+    private void btnPause_Click(object sender, EventArgs e)
+    {
+        logPaused = !logPaused;
+        btnPause.Text = logPaused ? "Resume" : "Pause";
     }
 }

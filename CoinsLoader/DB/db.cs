@@ -1,11 +1,14 @@
-﻿using CaDb;
+﻿using amLogger;
+using CaDb;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CoinsLoader;
 
 public class Db : CaDbContext
 {
     public DbSet<Coin> Sinex_Coins { get; set; }
+    public DbSet<CoinChain> Sinex_CoinChains { get; set; }
     public DbSet<Chain> Sinex_Chains { get; set; }
 
     public static async Task SaveCoin(Coin coin)
@@ -26,6 +29,7 @@ public class Db : CaDbContext
                 coin.id = existing.id;
 
                 existing.asset = coin.asset;
+                existing.chainId = coin.chainId;
                 existing.network = coin.network;
                 existing.contract = coin.contract;
                 existing.logoPath = coin.logoPath;
@@ -50,34 +54,35 @@ public class Db : CaDbContext
             Console.WriteLine(ex.Message);
         }
     }
-    public static async Task SaveChain(Chain chain)
+    public static async Task SaveCoinChain(CoinChain coinChain)
     {
         using var db = new Db();
         try
         {
-            var existing = await db.Sinex_Chains
-                .FirstOrDefaultAsync(c => c.coinId == chain.coinId
-                                       && c.chainName == chain.chainName);
+            var existing = await db.Sinex_CoinChains
+                .FirstOrDefaultAsync(c => c.coinId == coinChain.coinId
+                                       && c.chainName == coinChain.chainName);
 
             if (existing == null)
             {
-                await db.Sinex_Chains.AddAsync(chain);
+                await db.Sinex_CoinChains.AddAsync(coinChain);
             }
             else
             {
-                existing.contractAddress = chain.contractAddress;
-                existing.withdrawFee = chain.withdrawFee;
-                existing.allowDeposit = chain.allowDeposit;
-                existing.allowWithdraw = chain.allowWithdraw;
-                existing.minDepositAmt = chain.minDepositAmt;
-                existing.minWithdrawal = chain.minWithdrawal;
-                existing.withdrawFee = chain.withdrawFee;
+                existing.chainId = coinChain.chainId;
+                existing.contractAddress = coinChain.contractAddress;
+                existing.withdrawFee = coinChain.withdrawFee;
+                existing.allowDeposit = coinChain.allowDeposit;
+                existing.allowWithdraw = coinChain.allowWithdraw;
+                existing.minDepositAmt = coinChain.minDepositAmt;
+                existing.minWithdrawal = coinChain.minWithdrawal;
+                existing.withdrawFee = coinChain.withdrawFee;
                 existing.dtu = DateTime.Now;
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            Log.Error($"SaveCoinChain({coinChain.chainName}) - 1", ex.Message);
         }
         try
         {
@@ -85,7 +90,43 @@ public class Db : CaDbContext
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            Log.Error($"SaveCoinChain({coinChain.chainName}) - 2", ex.Message);
+        }
+    }
+    public static async Task SaveChain(Chain chain)
+    {
+        using var db = new Db();
+        try
+        {
+            var existing = await db.Sinex_Chains
+                .FirstOrDefaultAsync(c => c.code == chain.code);
+
+            if (existing == null)
+            {
+                await db.Sinex_Chains.AddAsync(chain);
+            }
+            else
+            {
+                existing.code = chain.code;
+                existing.name = chain.name;
+                existing.name1 = chain.name1;
+                existing.name2 = chain.name2;
+                existing.dtu = DateTime.Now;
+
+                chain.id = existing.id;
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"SaveCoinChain({chain.name}) - 1", ex.Message);
+        }
+        try
+        {
+            var r = await db.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"SaveCoinChain({chain.name}) - 2", ex.Message);
         }
     }
     public static int FindCoinByName(Coin coin)

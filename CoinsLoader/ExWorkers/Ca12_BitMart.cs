@@ -9,6 +9,7 @@ public class BitMart : AnExchange
     public const int ID = 12;
     public const string BASE_URL = "https://api-cloud.bitmart.com";
 
+    // https://developer-pro.bitmart.com/en/spot/#get-currencies
     public override async Task GetCoins()
     {
         using HttpClient clt = new();
@@ -27,6 +28,8 @@ public class BitMart : AnExchange
                 JsonElement e = j.RootElement;
                 JsonElement data = e.GetProperty("data");
                 JsonElement ccs = data.GetProperty("currencies");
+
+                string asset = "", network = "";
                 foreach (var c in ccs.EnumerateArray())
                 {
                     try
@@ -46,15 +49,23 @@ public class BitMart : AnExchange
                         if (fee.Length == 0) fee = "0";
                         coin.withdrawFee = double.Parse(fee, NumberStyles.Currency);
 
-                        coin.asset = name.Replace("-" + netw, "");
+                        coin.asset = name.Replace("-" + netw, "")
+                                         .Replace("_" + netw, "");
 
-                        int id1 = coin.Find();
-                        int id2 = coin.FindLong();
-                        int id = id1 > 0 ? id1 : id2;
+                        // если предыдущий был таким же, то просто новая сеть
+                        if (asset != coin.asset)
+                        {
+                            await coin.Save();
+                            asset = coin.asset;
+                            network = netw;
+                        }
+                        else
+                            Log.Trace(ID, $"More nets for {coin.asset}", network + " -> " + coin.network);
 
+                        int id = coin.Find();
                         if (id > 0)
                         {
-                            Chain chain = new();
+                            CoinChain chain = new();
                             chain.coinId = id;
                             chain.chainName = netw;
                             chain.contractAddress = cont;
@@ -66,12 +77,7 @@ public class BitMart : AnExchange
                                                                 CultureInfo.InvariantCulture);
                             await chain.Save();
 
-                            Log.Trace(id, $"SaveChain({coin.asset})", chain.chainName);
-                        }
-                        else
-                        {
-                            await coin.Save();
-                            Log.Trace(ID, "SaveCoin", coin.asset);
+                            Log.Trace(ID, $"SaveChain({coin.asset})", chain.chainName);
                         }
                     }
                     catch (Exception ex)

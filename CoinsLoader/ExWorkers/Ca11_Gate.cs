@@ -60,7 +60,7 @@ public class Gate : AnExchange
             {
                 try
                 {
-                    Chain chain = new();
+                    CoinChain chain = new();
                     chain.coinId = coinId;
 
                     chain.chainName = p.GetProperty("chain").GetString() + "";

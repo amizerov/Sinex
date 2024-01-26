@@ -5,6 +5,7 @@ public class Coin
     public int id { get; set; }
     public int exchId { get; set; }
     public string? asset { get; set; }
+    public int? chainId { get; set; }
     public string? network { get; set; }
     public string? contract { get; set; }
     public string? logoPath { get; set; }

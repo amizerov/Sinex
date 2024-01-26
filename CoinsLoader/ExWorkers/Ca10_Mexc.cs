@@ -36,9 +36,15 @@ public class Mexc : AnExchange
                 {
                     try
                     {
+                        string net = n.GetProperty("network").GetString() + "";
                         if (first)
                         {
-                            coin.network = n.GetProperty("network").GetString() + "";
+                            int i1 = net.IndexOf('(') + 1;
+                            int i2 = net.IndexOf(')');
+                            if (i1 > 1 && i2 > 0)
+                                net = net.Substring(i1, i2 - i1);
+
+                            coin.network = net;
                             coin.contract = n.GetProperty("contract").GetString() + "";
                             coin.allowDeposit = n.GetProperty("depositEnable").GetBoolean();
                             coin.allowWithdraw = n.GetProperty("withdrawEnable").GetBoolean();
@@ -47,9 +53,9 @@ public class Mexc : AnExchange
                             Log.Info(ID, "SaveCoin", coin.asset);
                             first = false;
                         }
-                        Chain chain = new Chain();
+                        CoinChain chain = new CoinChain();
                         chain.coinId = coin.id;
-                        chain.chainName = n.GetProperty("network").GetString() + "";
+                        chain.chainName = net;
                         chain.contractAddress = n.GetProperty("contract").GetString() + "";
                         chain.allowDeposit = n.GetProperty("depositEnable").GetBoolean();
                         chain.allowWithdraw = n.GetProperty("withdrawEnable").GetBoolean();

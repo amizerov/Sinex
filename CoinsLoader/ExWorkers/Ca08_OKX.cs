@@ -34,7 +34,7 @@ public class CaOKX : AnExchange
 
                 try
                 {
-                    Chain chain = new Chain();
+                    CoinChain chain = new CoinChain();
                     chain.coinId = coin.Find();
                     chain.chainName = c.Chain.Replace(c.Currency + "-", "");
                     chain.allowDeposit = c.AllowDeposit;

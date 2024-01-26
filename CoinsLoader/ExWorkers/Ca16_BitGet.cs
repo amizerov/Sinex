@@ -58,7 +58,7 @@ public class BitGet : AnExchange
                                 first = false;
                             }
 
-                            Chain chain = new Chain();
+                            CoinChain chain = new CoinChain();
 
                             chain.coinId = coin.id;
                             chain.chainName = c.GetProperty("chain").GetString() + "";

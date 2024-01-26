@@ -47,9 +47,14 @@ public class AscendEx : AnExchange
                                 if (sfee == "") sfee = "0";
                                 var fee = float.Parse(sfee, CultureInfo.InvariantCulture);
 
+                                string net = c.GetProperty("chainName").GetString() + "";
+                                int i = net.IndexOf('(');
+                                if (i > 1)
+                                    net = net.Substring(0, i).Trim();
+
                                 if (first)
                                 {
-                                    coin.network = c.GetProperty("chainName").GetString() + "";
+                                    coin.network = net;
                                     coin.allowDeposit = c.GetProperty("allowDeposit").GetBoolean();
                                     coin.allowWithdraw = c.GetProperty("allowWithdraw").GetBoolean();
 
@@ -58,9 +63,9 @@ public class AscendEx : AnExchange
                                     await coin.Save();
                                     first = false;
                                 }
-                                Chain chain = new Chain();
+                                CoinChain chain = new CoinChain();
                                 chain.coinId = coin.id;
-                                chain.chainName = c.GetProperty("chainName").GetString() + "";
+                                chain.chainName = net;
                                 //chain.contractAddress = c.GetProperty("contractAddress").GetString() + "";
                                 chain.allowDeposit = c.GetProperty("allowDeposit").GetBoolean();
                                 chain.allowWithdraw = c.GetProperty("allowWithdraw").GetBoolean();
