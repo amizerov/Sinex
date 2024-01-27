@@ -60,8 +60,9 @@ public class BingX : AnExchange
                             await coin.Save();
                             first = false;
 
-                            Log.Info(ID, $"SaveCoin({coin.asset})", $"{cnt}/{cntCoins}/{cntChains}");
+                            Log.Info(ID, $"SaveCoin({coin.asset})", $"{++cnt}/{cntCoins}/{cntChains}");
                         }
+
                         CoinChain coinChain = new CoinChain();
                         coinChain.coinId = coin.id;
                         coinChain.chainId = chainId;
