@@ -17,81 +17,100 @@ public class AscendEx : AnExchange
         var req = new HttpRequestMessage(HttpMethod.Get, uri);
 
         var r = await httpClient.SendAsync(req);
-        if (r.IsSuccessStatusCode)
+        if (!r.IsSuccessStatusCode)
+        {      
+            Log.Error(ID, "GetCoins", $"httpClient.SendAsync - {r.StatusCode}");
+            return;
+        }
+
+        Log.Info(ID, "GetCoins", "Start");
+
+        try
         {
-            try
+            var s = await r.Content.ReadAsStringAsync();
+            JsonDocument j = JsonDocument.Parse(s);
+            JsonElement e = j.RootElement;
+            JsonElement coins = e.GetProperty("data");
+
+            int cnt = 0;
+            int cntCoins = coins.EnumerateArray().Count();
+            foreach (var p in coins.EnumerateArray())
             {
-                var s = await r.Content.ReadAsStringAsync();
-                JsonDocument j = JsonDocument.Parse(s);
-                JsonElement e = j.RootElement;
-                JsonElement data = e.GetProperty("data");
+                Coin coin = new(ID);
+                coin.asset = p.GetProperty("assetCode").GetString() + "";
+                coin.longName = p.GetProperty("assetName").GetString() + "";
 
-                foreach (var p in data.EnumerateArray())
+                try
                 {
-                    Coin coin = new();
-
-                    coin.exchId = ID;
-
-                    coin.asset = p.GetProperty("assetCode").GetString() + "";
-                    coin.longName = p.GetProperty("assetName").GetString() + "";
-
-                    try
+                    bool first = true;
+                    var bc = p.GetProperty("blockChain");
+                    foreach (var c in bc.EnumerateArray())
                     {
-                        bool first = true;
-                        var bc = p.GetProperty("blockChain");
-                        foreach (var c in bc.EnumerateArray())
+                        try
                         {
-                            try
+                            string sfee = c.GetProperty("withdrawFee").GetString()!;
+                            if (sfee == "") sfee = "0";
+                            var fee = float.Parse(sfee, CultureInfo.InvariantCulture);
+
+                            string chainCode = "";
+                            string chainName = c.GetProperty("chainName").GetString() + "";
+                            int i = chainName.IndexOf('(');
+                            if (i > 1)
+                                chainCode = chainName.Substring(0, i).Trim();
+                            else
+                                chainCode = chainName;
+
+                            Chain chain = new(chainCode);
+                            chain.name = chainName;
+                            chain.name2 = "[" + ID + "]";
+                            int chainId = await chain.Save();
+
+                            if (first)
                             {
-                                string sfee = c.GetProperty("withdrawFee").GetString()!;
-                                if (sfee == "") sfee = "0";
-                                var fee = float.Parse(sfee, CultureInfo.InvariantCulture);
+                                coin.chainId = chainId;
+                                coin.network = chainCode;
+                                coin.allowDeposit = c.GetProperty("allowDeposit").GetBoolean();
+                                coin.allowWithdraw = c.GetProperty("allowWithdraw").GetBoolean();
 
-                                string net = c.GetProperty("chainName").GetString() + "";
-                                int i = net.IndexOf('(');
-                                if (i > 1)
-                                    net = net.Substring(0, i).Trim();
+                                coin.withdrawFee = fee;
 
-                                if (first)
-                                {
-                                    coin.network = net;
-                                    coin.allowDeposit = c.GetProperty("allowDeposit").GetBoolean();
-                                    coin.allowWithdraw = c.GetProperty("allowWithdraw").GetBoolean();
+                                await coin.Save();
+                                first = false;
 
-                                    coin.withdrawFee = fee;
-
-                                    await coin.Save();
-                                    first = false;
-                                }
-                                CoinChain chain = new CoinChain();
-                                chain.coinId = coin.id;
-                                chain.chainName = net;
-                                //chain.contractAddress = c.GetProperty("contractAddress").GetString() + "";
-                                chain.allowDeposit = c.GetProperty("allowDeposit").GetBoolean();
-                                chain.allowWithdraw = c.GetProperty("allowWithdraw").GetBoolean();
-                                chain.minDepositAmt = float.Parse(c.GetProperty("minDepositAmt").GetString()!, CultureInfo.InvariantCulture);
-                                chain.minWithdrawal = float.Parse(c.GetProperty("minWithdrawal").GetString()!, CultureInfo.InvariantCulture);
-
-                                chain.withdrawFee = fee;
-
-                                await chain.Save();
+                                Log.Info(ID, $"SaveCoin({coin.asset})", $"{++cnt}/{cntCoins}");
                             }
-                            catch (Exception ex)
-                            {
-                                Log.Error(ID, "GetCoins 3", ex.Message);
-                            }
+
+                            CoinChain coinChain = new CoinChain();
+                            coinChain.coinId = coin.id;
+                            coinChain.chainId = chainId;
+                            coinChain.chainName = chainCode;
+                            //chain.contractAddress = c.GetProperty("contractAddress").GetString() + "";
+                            coinChain.allowDeposit = c.GetProperty("allowDeposit").GetBoolean();
+                            coinChain.allowWithdraw = c.GetProperty("allowWithdraw").GetBoolean();
+                            coinChain.minDepositAmt = float.Parse(c.GetProperty("minDepositAmt").GetString()!, CultureInfo.InvariantCulture);
+                            coinChain.minWithdrawal = float.Parse(c.GetProperty("minWithdrawal").GetString()!, CultureInfo.InvariantCulture);
+
+                            coinChain.withdrawFee = fee;
+
+                            await coinChain.Save();
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error(ID, "GetCoins 3", ex.Message);
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        Log.Error(ID, "GetCoins 2", ex.Message);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ID, "GetCoins 2", ex.Message);
                 }
             }
-            catch (Exception ex)
-            {
-                Log.Error(ID, "GetCoins 1", ex.Message);
-            }
         }
+        catch (Exception ex)
+        {
+            Log.Error(ID, "GetCoins 1", ex.Message);
+        }
+
+        Log.Info(ID, "GetCoins()", "Done");
     }
 }

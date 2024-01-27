@@ -16,8 +16,8 @@ public class Exchanges: List<AnExchange>
         //_this.Add(new CoinEx());      //  9  
         //_this.Add(new Mexc());        // 10
         //_this.Add(new Gate());        // 11
-        _this.Add(new BitMart());     // 12
-        //_this.Add(new AscendEx());    // 13
+        //_this.Add(new BitMart());     // 12
+        _this.Add(new AscendEx());    // 13
         //_this.Add(new BingX());       // 15
         //_this.Add(new BitGet());      // 16
 
