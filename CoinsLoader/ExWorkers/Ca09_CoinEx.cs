@@ -41,17 +41,23 @@ public class CoinEx : AnExchange
                         coin.asset = p.GetProperty("asset").GetString() + "";
                         string fee = p.GetProperty("withdraw_tx_fee").GetString()!;
 
+                        string chainCode = p.GetProperty("chain").GetString() + "";
+                        int chainId = 0;
                         try
                         {
-                            CoinChain chain = new CoinChain();
-                            chain.coinId = coin.Find();
+                            CoinChain coinChain = new CoinChain();
+                            coinChain.coinId = coin.Find();
 
-                            chain.chainName = p.GetProperty("chain").GetString() + "";
-                            chain.allowDeposit = p.GetProperty("can_deposit").GetBoolean();
-                            chain.allowWithdraw = p.GetProperty("can_withdraw").GetBoolean();
-                            chain.withdrawFee = double.Parse(fee, CultureInfo.InvariantCulture);
+                            coinChain.chainName = chainCode;
+                            coinChain.allowDeposit = p.GetProperty("can_deposit").GetBoolean();
+                            coinChain.allowWithdraw = p.GetProperty("can_withdraw").GetBoolean();
+                            coinChain.withdrawFee = double.Parse(fee, CultureInfo.InvariantCulture);
 
+                            Chain chain = new Chain(chainCode);
                             await chain.Save();
+
+                            coinChain.chainId = chainId = chain.id;
+                            await coinChain.Save();
                         }
                         catch (Exception ex)
                         {
@@ -62,7 +68,8 @@ public class CoinEx : AnExchange
 
                         try
                         {
-                            coin.network = p.GetProperty("chain").GetString() + "";
+                            coin.chainId = chainId;
+                            coin.network = chainCode;
                             coin.allowDeposit = p.GetProperty("can_deposit").GetBoolean();
                             coin.allowWithdraw = p.GetProperty("can_withdraw").GetBoolean();
                             coin.withdrawFee = double.Parse(fee, CultureInfo.InvariantCulture);
