@@ -56,6 +56,7 @@ public class CoinEx : AnExchange
                         coinChain.withdrawFee = double.Parse(fee, CultureInfo.InvariantCulture);
 
                         Chain chain = new Chain(chainCode);
+                        chain.name2 = $"[{ID}]";
                         await chain.Save();
 
                         coinChain.chainId = chainId = chain.id;

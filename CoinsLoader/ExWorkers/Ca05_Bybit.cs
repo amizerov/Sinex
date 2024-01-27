@@ -58,6 +58,7 @@ public class Bybit : AnExchange
 
                             Chain chain = new Chain(net);
                             chain.name = n.GetProperty("chainType") + "";
+                            chain.name2 = $"[{ID}]";
                             await chain.Save();
 
                             if (first)

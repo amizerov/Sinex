@@ -11,19 +11,18 @@ public class Kucoin : AnExchange
 
     public override async Task GetCoins()
     {
-        Log.Info(ID, "GetCoins()", "Start");
-
         using HttpClient httpClient = new();
-
         string uri = $"{BASE_URL}/api/v3/currencies";
         var req = new HttpRequestMessage(HttpMethod.Get, uri);
-
         var r = await httpClient.SendAsync(req);
+
         if (!r.IsSuccessStatusCode)
         {
             Log.Error(ID, "GetCoins", $"httpClient.SendAsync - {r.StatusCode}");
             return;
         }
+
+        Log.Info(ID, "GetCoins()", "Start");
 
         try
         {
@@ -54,6 +53,7 @@ public class Kucoin : AnExchange
                     {
                         string net = c.GetProperty("chainName").GetString() + "";
                         Chain chain = new Chain(net);
+                        chain.name2 = $"[{ID}]";
                         await chain.Save();
 
                         CoinChain coinChain = new CoinChain();

@@ -59,7 +59,7 @@ public class BitMart : AnExchange
                                         .Replace("_" + netw, "");
 
                     Chain chain = new(netw);
-                    chain.name2 = "[" + ID + "]";
+                    chain.name2 = $"[{ID}]";
                     int chainId = await chain.Save();
 
                     // если предыдущий был таким же, то просто новая сеть

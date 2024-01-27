@@ -62,7 +62,7 @@ public class AscendEx : AnExchange
 
                             Chain chain = new(chainCode);
                             chain.name = chainName;
-                            chain.name2 = "[" + ID + "]";
+                            chain.name2 = $"[{ID}]";
                             int chainId = await chain.Save();
 
                             if (first)

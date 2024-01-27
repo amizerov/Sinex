@@ -57,6 +57,7 @@ public class Mexc : AnExchange
 
                         Chain chain = new Chain(chainCode);
                         chain.name = chainName;
+                        chain.name2 = $"[{ID}]";
                         await chain.Save();
 
                         if (first)

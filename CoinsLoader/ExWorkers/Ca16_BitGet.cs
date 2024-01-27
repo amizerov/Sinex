@@ -17,7 +17,7 @@ public class BitGet : AnExchange
         var req = new HttpRequestMessage(HttpMethod.Get, uri);
 
         var r = await httpClient.SendAsync(req);
-        if (r.IsSuccessStatusCode)
+        if (!r.IsSuccessStatusCode)
         {
             Log.Error(ID, "GetCoins", $"httpClient.SendAsync - {r.StatusCode}");
             return;
@@ -92,5 +92,7 @@ public class BitGet : AnExchange
         {
             Log.Error(ID, "GetCoins 1", ex.Message);
         }
+
+        Log.Info(ID, "GetCoins", "End");
     }
 }

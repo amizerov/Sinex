@@ -50,6 +50,7 @@ public class CaOKX : AnExchange
 
                 Chain chain = new Chain(chainCode);
                 chain.name = chainName;
+                chain.name2 = $"[{ID}]";
                 await chain.Save();
 
                 coinChain.chainId = chainId = chain.id;

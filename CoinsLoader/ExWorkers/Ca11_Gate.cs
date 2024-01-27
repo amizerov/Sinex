@@ -39,6 +39,7 @@ public class Gate : AnExchange
             coin.allowWithdraw = !p.GetProperty("withdraw_disabled").GetBoolean();
 
             Chain chain = new(coin.network);
+            chain.name2 = $"[{ID}]";
             await chain.Save();
 
             coin.chainId = chain.id;
