@@ -24,23 +24,35 @@ public class CaOKX : AnExchange
         {
             Log.Info(ID, "GetCoins()", "Start");
 
+            int cnt = 0;
+            int cntCoins = r.Data.Count();
             string lastAsset = "";
             foreach (var c in r.Data)
             {
+                cnt++;
 
                 Coin coin = new();
                 coin.exchId = ID;
                 coin.asset = c.Currency;
 
+                int chainId = 0;
+                string chainName = c.Chain;
+                string chainCode = c.Chain.Replace(c.Currency + "-", "");
                 try
                 {
-                    CoinChain chain = new CoinChain();
-                    chain.coinId = coin.Find();
-                    chain.chainName = c.Chain.Replace(c.Currency + "-", "");
-                    chain.allowDeposit = c.AllowDeposit;
-                    chain.allowWithdraw = c.AllowWithdrawal;
-                    chain.withdrawFee = (double)c.MaximumWithdrawalFeeForNormalAddress;
+                    CoinChain coinChain = new CoinChain();
+                    coinChain.coinId = coin.Find();
+                    coinChain.chainName = chainCode;
+                    coinChain.allowDeposit = c.AllowDeposit;
+                    coinChain.allowWithdraw = c.AllowWithdrawal;
+                    coinChain.withdrawFee = (double)c.MaximumWithdrawalFeeForNormalAddress;
+
+                    Chain chain = new Chain(chainCode);
+                    chain.name = chainName;
                     await chain.Save();
+
+                    coinChain.chainId = chainId = chain.id;
+                    await coinChain.Save();
                 }
                 catch (Exception ex)
                 {
@@ -51,13 +63,17 @@ public class CaOKX : AnExchange
                 try
                 {
                     coin.longName = c.Name;
-                    coin.network = c.Chain.Replace(c.Currency + "-", "");
+                    coin.chainId = chainId;
+                    coin.network = chainCode;
                     coin.logoPath = c.LogoLink;
                     coin.allowDeposit = c.AllowDeposit;
                     coin.allowWithdraw = c.AllowWithdrawal;
                     //cd.withdrawFee = c.;
 
                     await coin.Save();
+
+                    Log.Info(ID, $"SaveCoin({coin.asset})", $"{cnt}/{cntCoins}");
+
                 }
                 catch (Exception ex)
                 {
