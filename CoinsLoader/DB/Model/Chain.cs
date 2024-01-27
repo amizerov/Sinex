@@ -10,14 +10,15 @@ public class Chain
     public string? name2 { get; set; }
     public DateTime? dtu { get; set; }
 
-    public int exchId = 0;
-
-    public Chain(string code)
+    public Chain()
     {
-        this.code = code;
     }
-    public async Task Save()
+    public Chain(string chainCode)
     {
-        await Db.SaveChain(this);
+        this.code = chainCode;
+    }
+    public async Task<int> Save()
+    {
+        return await Db.SaveChain(this);
     }
 }

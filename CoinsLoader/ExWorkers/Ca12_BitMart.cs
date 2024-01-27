@@ -21,69 +21,79 @@ public class BitMart : AnExchange
         try
         {
             var r = await clt.SendAsync(req);
-            if (r.IsSuccessStatusCode)
+            if (!r.IsSuccessStatusCode)
             {
-                var s = await r.Content.ReadAsStringAsync();
-                JsonDocument j = JsonDocument.Parse(s);
-                JsonElement e = j.RootElement;
-                JsonElement data = e.GetProperty("data");
-                JsonElement ccs = data.GetProperty("currencies");
+                Log.Error(ID, "GetCoins", $"httpClient.SendAsync - {r.StatusCode}");
+            }
 
-                string asset = "", network = "";
-                foreach (var c in ccs.EnumerateArray())
+            Log.Info(ID, "GetCoins", "Start");
+
+            var s = await r.Content.ReadAsStringAsync();
+            JsonDocument j = JsonDocument.Parse(s);
+            JsonElement e = j.RootElement;
+            JsonElement data = e.GetProperty("data");
+            JsonElement coins = data.GetProperty("currencies");
+
+            int cnt = 0;
+            int cntCoins = coins.EnumerateArray().Count();
+            string asset = "", network = "";
+            foreach (var c in coins.EnumerateArray())
+            {
+                try
                 {
-                    try
+                    Coin coin = new(ID);
+
+                    var name = coin.asset = c.GetProperty("currency").GetString() + "";
+                    coin.longName = c.GetProperty("name").GetString() + "";
+                    var netw = coin.network = c.GetProperty("network").GetString() + "";
+                    var cont = coin.contract = c.GetProperty("contract_address").GetString() + "";
+                    var adep = coin.allowDeposit = c.GetProperty("deposit_enabled").GetBoolean();
+                    var awit = coin.allowWithdraw = c.GetProperty("withdraw_enabled").GetBoolean();
+
+                    var fee = c.GetProperty("withdraw_minfee").GetString() + "";
+                    if (fee.Length == 0) fee = "0";
+                    coin.withdrawFee = double.Parse(fee, NumberStyles.Currency);
+
+                    coin.asset = name.Replace("-" + netw, "")
+                                        .Replace("_" + netw, "");
+
+                    Chain chain = new(netw);
+                    chain.name2 = "[" + ID + "]";
+                    int chainId = await chain.Save();
+
+                    // если предыдущий был таким же, то просто новая сеть
+                    if (asset != coin.asset)
                     {
-                        Coin coin = new();
+                        coin.chainId = chainId;
 
-                        coin.exchId = ID;
+                        await coin.Save();
+                        asset = coin.asset;
+                        network = netw;
 
-                        var name = coin.asset = c.GetProperty("currency").GetString() + "";
-                        coin.longName = c.GetProperty("name").GetString() + "";
-                        var netw = coin.network = c.GetProperty("network").GetString() + "";
-                        var cont = coin.contract = c.GetProperty("contract_address").GetString() + "";
-                        var adep = coin.allowDeposit = c.GetProperty("deposit_enabled").GetBoolean();
-                        var awit = coin.allowWithdraw = c.GetProperty("withdraw_enabled").GetBoolean();
-
-                        var fee = c.GetProperty("withdraw_minfee").GetString() + "";
-                        if (fee.Length == 0) fee = "0";
-                        coin.withdrawFee = double.Parse(fee, NumberStyles.Currency);
-
-                        coin.asset = name.Replace("-" + netw, "")
-                                         .Replace("_" + netw, "");
-
-                        // если предыдущий был таким же, то просто новая сеть
-                        if (asset != coin.asset)
-                        {
-                            await coin.Save();
-                            asset = coin.asset;
-                            network = netw;
-                        }
-                        else
-                            Log.Trace(ID, $"More nets for {coin.asset}", network + " -> " + coin.network);
-
-                        int id = coin.Find();
-                        if (id > 0)
-                        {
-                            CoinChain chain = new();
-                            chain.coinId = id;
-                            chain.chainName = netw;
-                            chain.contractAddress = cont;
-                            chain.allowDeposit = adep;
-                            chain.allowWithdraw = awit;
-                            chain.withdrawFee = coin.withdrawFee;
-                            chain.minWithdrawal =
-                                double.Parse(c.GetProperty("withdraw_minsize").GetString()!,
-                                                                CultureInfo.InvariantCulture);
-                            await chain.Save();
-
-                            Log.Trace(ID, $"SaveChain({coin.asset})", chain.chainName);
-                        }
+                        Log.Info(ID, $"SaveCoin({coin.asset})", $"{++cnt}/{cntCoins}");
                     }
-                    catch (Exception ex)
+
+                    int id = coin.Find();
+                    if (id > 0)
                     {
-                        Log.Error(ID, "GetCoins 2", ex.Message);
+                        CoinChain coinChain = new();
+                        coinChain.coinId = id;
+                        coinChain.chainId = chainId;
+                        coinChain.chainName = netw;
+                        coinChain.contractAddress = cont;
+                        coinChain.allowDeposit = adep;
+                        coinChain.allowWithdraw = awit;
+                        coinChain.withdrawFee = coin.withdrawFee;
+                        coinChain.minWithdrawal =
+                            double.Parse(c.GetProperty("withdraw_minsize").GetString()!,
+                                                            CultureInfo.InvariantCulture);
+                        await coinChain.Save();
+                        Log.Trace(ID, $"More nets for {coin.asset}", netw);
                     }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ID, "GetCoins 2", ex.Message);
                 }
             }
         }
@@ -91,5 +101,7 @@ public class BitMart : AnExchange
         {
             Log.Error(ID, "GetCoins 1", ex.Message);
         }
+
+        Log.Info(ID, "GetCoins", "Done");
     }
 }

@@ -93,7 +93,7 @@ public class Db : CaDbContext
             Log.Error($"SaveCoinChain({coinChain.chainName}) - 2", ex.Message);
         }
     }
-    public static async Task SaveChain(Chain chain)
+    public static async Task<int> SaveChain(Chain chain)
     {
         using var db = new Db();
         try
@@ -124,9 +124,19 @@ public class Db : CaDbContext
                         }
                     }
                 }
-                if(!existing.name2!.Contains($"[{chain.exchId}]"))
-                    existing.name2 += $"[{chain.exchId}]";
 
+                if (!chain.name2.IsNullOrEmpty())
+                {
+                    if (existing.name2.IsNullOrEmpty())
+                    {
+                        existing.name2 = chain.name2;
+                    }
+                    else
+                    {
+                        if (!existing.name2!.Contains(chain.name2!))
+                            existing.name2 += chain.name2;
+                    }
+                }
                 chain.id = existing.id;
             }
         }
@@ -142,6 +152,8 @@ public class Db : CaDbContext
         {
             Log.Error($"SaveChain({chain.name}) - 2", ex.Message);
         }
+
+        return chain.id;
     }
     public static int FindCoinByName(Coin coin)
     {
