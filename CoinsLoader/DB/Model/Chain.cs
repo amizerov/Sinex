@@ -10,6 +10,8 @@ public class Chain
     public string? name2 { get; set; }
     public DateTime? dtu { get; set; }
 
+    public int exchId = 0;
+
     public Chain(string code)
     {
         this.code = code;

@@ -122,25 +122,10 @@ public class Db : CaDbContext
                         {
                             existing.name1 = chain.name;
                         }
-                        else
-                        {
-                            if (existing.name1 != chain.name)
-                            {
-                                if (existing.name2.IsNullOrEmpty())
-                                {
-                                    existing.name2 = chain.name;
-                                }
-                                else
-                                {
-                                    if (!existing!.name2!.Contains(chain.name!))
-                                    {
-                                        existing.name2 += " " + chain.name;
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
+                if(!existing.name2!.Contains($"[{chain.exchId}]"))
+                    existing.name2 += $"[{chain.exchId}]";
 
                 chain.id = existing.id;
             }

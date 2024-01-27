@@ -31,7 +31,6 @@ public class Mexc : AnExchange
 
             foreach (var p in coins.EnumerateArray())
             {
-                cnt++;
                 Coin coin = new();
 
                 coin.exchId = ID;
@@ -71,7 +70,7 @@ public class Mexc : AnExchange
                             await coin.Save();
                             first = false;
 
-                            Log.Info(ID, $"SaveCoin({coin.asset})", $"{cnt}/{cntCoins}/{cntChains}");
+                            Log.Info(ID, $"SaveCoin({coin.asset})", $"{++cnt}/{cntCoins}/{cntChains}");
                         }
                         CoinChain coinChain = new CoinChain();
                         coinChain.coinId = coin.id;
@@ -80,7 +79,9 @@ public class Mexc : AnExchange
                         coinChain.contractAddress = n.GetProperty("contract").GetString() + "";
                         coinChain.allowDeposit = n.GetProperty("depositEnable").GetBoolean();
                         coinChain.allowWithdraw = n.GetProperty("withdrawEnable").GetBoolean();
-                        coinChain.withdrawFee = float.Parse(n.GetProperty("withdrawFee").GetString()!, CultureInfo.InvariantCulture);
+                        coinChain.withdrawFee = 
+                            float.Parse(n.GetProperty("withdrawFee").GetString()!, CultureInfo.InvariantCulture);
+                        
                         await coinChain.Save();
                     }
                     catch (Exception ex)
