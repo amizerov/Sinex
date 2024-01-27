@@ -18,26 +18,11 @@ public class Bybit : AnExchange
     {
         Log.Info(ID, "GetCoins", "Start");
 
-        var client = new RestClient($"{baseUrl}/v5/asset/coin/query-info");
-        var request = new RestRequest();
-
-        request.AddHeader("X-BAPI-API-KEY", apiKey);
-
-        string recvWindow = "5000"; //server_time - recv_window <= timestamp < server_time + 1000
-        StringBuilder queryStringBuilder = new StringBuilder();
-        long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        queryStringBuilder.Append(timestamp).Append(apiKey).Append(recvWindow);
-        string signature = SignatureHelper.Sign(queryStringBuilder.ToString(), apiSecret);
-
-        request.AddHeader("X-BAPI-TIMESTAMP", timestamp);
-        request.AddHeader("X-BAPI-RECV-WINDOW", recvWindow);
-        request.AddHeader("X-BAPI-SIGN", signature);
-
-        RestResponse response = client.Execute(request);
+        string coinsData = GetCoinsDataFromExchange();
 
         try
         {
-            JsonDocument doc = JsonDocument.Parse(response.Content!);
+            JsonDocument doc = JsonDocument.Parse(coinsData);
             JsonElement ele = doc.RootElement;
             JsonElement res = ele.GetProperty("result");
             JsonElement coins = res.GetProperty("rows");
@@ -72,8 +57,13 @@ public class Bybit : AnExchange
                             if (i1 > 1 && i2 > 0)
                                 net = net.Substring(i1, i2 - i1);
 
+                            Chain chain = new Chain(net);
+                            chain.name = n.GetProperty("chainType") + "";
+                            await chain.Save();
+
                             if (first)
                             {
+                                coin.chainId = chain.id;
                                 coin.network = net;
                                 coin.allowDeposit = n.GetProperty("chainDeposit").GetString() == "1";
                                 coin.allowWithdraw = n.GetProperty("chainWithdraw").GetString() == "1";
@@ -84,14 +74,14 @@ public class Bybit : AnExchange
                                 first = false;
                                 Log.Info(ID, $"SaveCoin({coin.asset})", $"{cnt}/{cntCoins}/{cntChains}");
                             }
-                            CoinChain chain = new CoinChain();
-                            chain.coinId = coin.id;
-                            chain.chainName = net;
-                            chain.contractAddress = n.GetProperty("chain").GetString() + "";
-                            chain.allowDeposit = n.GetProperty("chainDeposit").GetString() == "1";
-                            chain.allowWithdraw = n.GetProperty("chainWithdraw").GetString() == "1";
-                            chain.withdrawFee = float.Parse(fee, CultureInfo.InvariantCulture);
-                            await chain.Save();
+                            CoinChain cChain = new CoinChain();
+                            cChain.coinId = coin.id;
+                            cChain.chainName = net;
+                            cChain.contractAddress = n.GetProperty("chain").GetString() + "";
+                            cChain.allowDeposit = n.GetProperty("chainDeposit").GetString() == "1";
+                            cChain.allowWithdraw = n.GetProperty("chainWithdraw").GetString() == "1";
+                            cChain.withdrawFee = float.Parse(fee, CultureInfo.InvariantCulture);
+                            await cChain.Save();
                         }
                         catch (Exception ex)
                         {
@@ -110,5 +100,36 @@ public class Bybit : AnExchange
             Log.Error(ID, "GetCoins 1", ex.Message);
         }
         Log.Info(ID, "GetCoins", "Done");
+    }
+
+    string GetCoinsDataFromExchange()
+    {
+        string responseString = "";
+        try
+        {
+            var client = new RestClient($"{baseUrl}/v5/asset/coin/query-info");
+            var request = new RestRequest();
+
+            request.AddHeader("X-BAPI-API-KEY", apiKey);
+
+            string recvWindow = "5000"; //server_time - recv_window <= timestamp < server_time + 1000
+            StringBuilder queryStringBuilder = new StringBuilder();
+            long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            queryStringBuilder.Append(timestamp).Append(apiKey).Append(recvWindow);
+            string signature = SignatureHelper.Sign(queryStringBuilder.ToString(), apiSecret);
+
+            request.AddHeader("X-BAPI-TIMESTAMP", timestamp);
+            request.AddHeader("X-BAPI-RECV-WINDOW", recvWindow);
+            request.AddHeader("X-BAPI-SIGN", signature);
+
+            RestResponse response = client.Execute(request);
+            responseString = response.Content!;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ID, "GetCoinsDataFromExchange", ex.Message);
+        }
+
+        return responseString;
     }
 }

@@ -41,6 +41,7 @@ public class Kucoin : AnExchange
                         JsonElement chains = p.GetProperty("chains");
                         if(chains.ValueKind == JsonValueKind.Null)
                         {
+                            //coin.Delete();
                             continue;
                         }
                         bool first = true;
