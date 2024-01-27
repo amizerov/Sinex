@@ -108,10 +108,39 @@ public class Db : CaDbContext
             else
             {
                 existing.code = chain.code;
-                existing.name = chain.name;
-                existing.name1 = chain.name1;
-                existing.name2 = chain.name2;
                 existing.dtu = DateTime.Now;
+
+                if (existing.name.IsNullOrEmpty())
+                {
+                    existing.name = chain.name;
+                }
+                else
+                {
+                    if (existing.name != chain.name)
+                    {
+                        if (existing.name1.IsNullOrEmpty())
+                        {
+                            existing.name1 = chain.name;
+                        }
+                        else
+                        {
+                            if (existing.name1 != chain.name)
+                            {
+                                if (existing.name2.IsNullOrEmpty())
+                                {
+                                    existing.name2 = chain.name;
+                                }
+                                else
+                                {
+                                    if (existing.name2 != chain.name)
+                                    {
+                                        existing.name2 += " " + chain.name;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
 
                 chain.id = existing.id;
             }
