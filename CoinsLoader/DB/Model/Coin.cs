@@ -18,6 +18,13 @@ public class Coin
     
     //public DateTime dtc { get; set; }
 
+    public Coin()
+    {
+    }
+    public Coin(int exchId)
+    {
+        this.exchId = exchId;
+    }
     public async Task Save()
     {
         await Db.SaveCoin(this);

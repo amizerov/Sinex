@@ -76,6 +76,7 @@ public class Bybit : AnExchange
                             }
                             CoinChain cChain = new CoinChain();
                             cChain.coinId = coin.id;
+                            cChain.chainId = chain.id;
                             cChain.chainName = net;
                             cChain.contractAddress = n.GetProperty("chain").GetString() + "";
                             cChain.allowDeposit = n.GetProperty("chainDeposit").GetString() == "1";

@@ -1,6 +1,7 @@
 ﻿using amLogger;
 using MexcDotNet;
 using System.Drawing;
+using System.Globalization;
 using System.Text.Json;
 
 namespace CoinsLoader.Worker;
@@ -79,6 +80,7 @@ public class Mexc : AnExchange
                         coinChain.contractAddress = n.GetProperty("contract").GetString() + "";
                         coinChain.allowDeposit = n.GetProperty("depositEnable").GetBoolean();
                         coinChain.allowWithdraw = n.GetProperty("withdrawEnable").GetBoolean();
+                        coinChain.withdrawFee = float.Parse(n.GetProperty("withdrawFee").GetString()!, CultureInfo.InvariantCulture);
                         await coinChain.Save();
                     }
                     catch (Exception ex)
