@@ -132,7 +132,7 @@ public class Db : CaDbContext
                                 }
                                 else
                                 {
-                                    if (existing.name2 != chain.name)
+                                    if (!existing!.name2!.Contains(chain.name!))
                                     {
                                         existing.name2 += " " + chain.name;
                                     }
@@ -147,7 +147,7 @@ public class Db : CaDbContext
         }
         catch (Exception ex)
         {
-            Log.Error($"SaveCoinChain({chain.name}) - 1", ex.Message);
+            Log.Error($"SaveChain({chain.name}) - 1", ex.Message);
         }
         try
         {
@@ -155,7 +155,7 @@ public class Db : CaDbContext
         }
         catch (Exception ex)
         {
-            Log.Error($"SaveCoinChain({chain.name}) - 2", ex.Message);
+            Log.Error($"SaveChain({chain.name}) - 2", ex.Message);
         }
     }
     public static int FindCoinByName(Coin coin)
