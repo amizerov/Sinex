@@ -24,6 +24,7 @@ public class BitMart : AnExchange
             if (!r.IsSuccessStatusCode)
             {
                 Log.Error(ID, "GetCoins", $"httpClient.SendAsync - {r.StatusCode}");
+                return;
             }
 
             Log.Info(ID, "GetCoins", "Start");

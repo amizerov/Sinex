@@ -33,10 +33,7 @@ public class CaOKX : AnExchange
         string lastAsset = "";
         foreach (var c in r.Data)
         {
-            cnt++;
-
-            Coin coin = new();
-            coin.exchId = ID;
+            Coin coin = new(ID);
             coin.asset = c.Currency;
 
             int chainId = 0;
@@ -76,7 +73,7 @@ public class CaOKX : AnExchange
 
                 await coin.Save();
 
-                Log.Info(ID, $"SaveCoin({coin.asset})", $"{cnt}/{cntCoins}");
+                Log.Info(ID, $"SaveCoin({coin.asset})", $"{++cnt}/{cntCoins}");
             }
             catch (Exception ex)
             {

@@ -12,8 +12,6 @@ public class Gate : AnExchange
 
     public override async Task GetCoins()
     {
-        Log.Info(ID, "GetCoins()", "Start");
-
         using HttpClient httpClient = new();
         var r = await httpClient.GetAsync($"{BASE_URL}{PREFIX}/spot/currencies");
         if (!r.IsSuccessStatusCode)
@@ -21,6 +19,8 @@ public class Gate : AnExchange
             Log.Error(ID, "GetCoins", $"httpClient.SendAsync - {r.StatusCode}");
             return;
         }
+
+        Log.Info(ID, "GetCoins()", "Start");
 
         var s = r.Content.ReadAsStringAsync().Result;
         JsonDocument j = JsonDocument.Parse(s);
@@ -42,13 +42,11 @@ public class Gate : AnExchange
             await chain.Save();
 
             coin.chainId = chain.id;
-
             await coin.Save();
-            cnt++;
 
             int cntChains = await GetChains(coin.id, coin.asset);
 
-            Log.Info(ID, $"SaveCoin({coin.asset})", $"{cnt}/{cntCoins}/{cntChains}");
+            Log.Info(ID, $"SaveCoin({coin.asset})", $"{++cnt}/{cntCoins}/{cntChains}");
         }
 
         Log.Info(ID, "GetCoins()", "End");

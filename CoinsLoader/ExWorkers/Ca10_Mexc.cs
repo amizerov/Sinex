@@ -15,11 +15,11 @@ public class Mexc : AnExchange
 
     public override async Task GetCoins()
     {
-        Log.Info(ID, "GetCoins", "Start");
-
         using HttpClient httpClient = new();
         var mexcService = new MexcService(apiKey, apiSecret, spotBaseUrl, httpClient);
         var res = await mexcService.SendSignedAsync("/api/v3/capital/config/getall", HttpMethod.Get);
+
+        Log.Info(ID, "GetCoins", "Start");
 
         try
         {

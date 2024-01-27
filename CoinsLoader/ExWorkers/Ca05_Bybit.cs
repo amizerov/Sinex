@@ -31,7 +31,6 @@ public class Bybit : AnExchange
             int cntCoins = coins.EnumerateArray().Count();
             foreach (var p in coins.EnumerateArray())
             {
-                cnt++;
                 try
                 {
                     Coin coin = new();
@@ -72,7 +71,7 @@ public class Bybit : AnExchange
                                 await coin.Save();
 
                                 first = false;
-                                Log.Info(ID, $"SaveCoin({coin.asset})", $"{cnt}/{cntCoins}/{cntChains}");
+                                Log.Info(ID, $"SaveCoin({coin.asset})", $"{++cnt}/{cntCoins}/{cntChains}");
                             }
                             CoinChain cChain = new CoinChain();
                             cChain.coinId = coin.id;
