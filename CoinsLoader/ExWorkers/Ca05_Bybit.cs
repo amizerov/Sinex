@@ -50,14 +50,17 @@ public class Bybit : AnExchange
                             string fee = n.GetProperty("withdrawFee").GetString()!;
                             if (fee == "") fee = "0";
 
-                            string net = n.GetProperty("chainType").GetString() + "";
+                            string netName = n.GetProperty("chainType") + "";
+                            string net = netName;
                             int i1 = net.IndexOf('(') + 1;
                             int i2 = net.IndexOf(')');
                             if (i1 > 1 && i2 > 0)
                                 net = net.Substring(i1, i2 - i1);
 
+                            net = ValidateChainCode(net);
+
                             Chain chain = new Chain(net);
-                            chain.name = n.GetProperty("chainType") + "";
+                            chain.name = netName;
                             chain.name2 = $"[{ID}]";
                             await chain.Save();
 

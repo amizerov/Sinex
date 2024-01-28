@@ -55,6 +55,8 @@ public class Mexc : AnExchange
                         else
                             chainCode = chainName;
 
+                        chainCode = ValidateChainCode(chainCode);
+
                         Chain chain = new Chain(chainCode);
                         chain.name = chainName;
                         chain.name2 = $"[{ID}]";

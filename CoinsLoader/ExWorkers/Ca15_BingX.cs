@@ -44,8 +44,11 @@ public class BingX : AnExchange
                         string fee = n.GetProperty("withdrawFee").GetString()!;
                         if (fee == "") fee = "0";
 
-                        coin.network = n.GetProperty("network").GetString() + "";
-                        Chain chain = new Chain(coin.network);
+                        string chainName = n.GetProperty("network").GetString() + "";
+                        string chainCode = ValidateChainCode(chainName);
+                        coin.network = chainCode;
+                        Chain chain = new Chain(chainCode);
+                        chain.name = chainName;
                         chain.name2 = $"[{ID}]";
                         int chainId = await chain.Save();
 
@@ -66,7 +69,7 @@ public class BingX : AnExchange
                         CoinChain coinChain = new CoinChain();
                         coinChain.coinId = coin.id;
                         coinChain.chainId = chainId;
-                        coinChain.chainName = n.GetProperty("network").GetString() + "";
+                        coinChain.chainName = chainCode;
                         //chain.contractAddress = n.GetProperty("contract").GetString() + "";
                         coinChain.allowDeposit = n.GetProperty("depositEnable").GetBoolean();
                         coinChain.allowWithdraw = n.GetProperty("withdrawEnable").GetBoolean();

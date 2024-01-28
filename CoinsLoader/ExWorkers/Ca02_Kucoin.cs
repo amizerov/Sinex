@@ -51,8 +51,11 @@ public class Kucoin : AnExchange
                     int cntChains = chains.EnumerateArray().Count();
                     foreach (var c in chains.EnumerateArray())
                     {
-                        string net = c.GetProperty("chainName").GetString() + "";
+                        string netName = c.GetProperty("chainName").GetString() + "";
+                        string net = ValidateChainCode(netName);
+
                         Chain chain = new Chain(net);
+                        chain.name = netName;
                         chain.name2 = $"[{ID}]";
                         await chain.Save();
 

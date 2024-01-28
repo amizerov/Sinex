@@ -43,7 +43,8 @@ public class CoinEx : AnExchange
                     coin.asset = p.GetProperty("asset").GetString() + "";
                     string fee = p.GetProperty("withdraw_tx_fee").GetString()!;
 
-                    string chainCode = p.GetProperty("chain").GetString() + "";
+                    string chainName = p.GetProperty("chain").GetString() + "";
+                    string chainCode = ValidateChainCode(chainName);
                     int chainId = 0;
                     try
                     {
@@ -56,6 +57,7 @@ public class CoinEx : AnExchange
                         coinChain.withdrawFee = double.Parse(fee, CultureInfo.InvariantCulture);
 
                         Chain chain = new Chain(chainCode);
+                        chain.name = chainName;
                         chain.name2 = $"[{ID}]";
                         await chain.Save();
 

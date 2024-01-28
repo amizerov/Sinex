@@ -39,6 +39,7 @@ public class CaOKX : AnExchange
             int chainId = 0;
             string chainName = c.Chain;
             string chainCode = c.Chain.Replace(c.Currency + "-", "");
+            chainCode = ValidateChainCode(chainCode);
             try
             {
                 CoinChain coinChain = new CoinChain();

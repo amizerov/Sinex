@@ -60,6 +60,8 @@ public class AscendEx : AnExchange
                             else
                                 chainCode = chainName;
 
+                            chainCode = ValidateChainCode(chainCode);
+
                             Chain chain = new(chainCode);
                             chain.name = chainName;
                             chain.name2 = $"[{ID}]";

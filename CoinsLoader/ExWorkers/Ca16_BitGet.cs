@@ -50,8 +50,12 @@ public class BitGet : AnExchange
                         string fee = c.GetProperty("withdrawFee").GetString()!;
                         if (fee == "") fee = "0";
 
-                        coin.network = c.GetProperty("chain").GetString() + "";
-                        Chain chain = new(coin.network);
+                        string chainName = c.GetProperty("chain").GetString() + "";
+                        string chainCode = ValidateChainCode(chainName);
+
+                        coin.network = chainCode;
+                        Chain chain = new(chainCode);
+                        chain.name = chainName;
                         chain.name2 = $"[{ID}]";
                         int chainId = await chain.Save();
 
@@ -73,7 +77,7 @@ public class BitGet : AnExchange
 
                         coinChain.coinId = coin.id;
                         coinChain.chainId = chainId;
-                        coinChain.chainName = c.GetProperty("chain").GetString() + "";
+                        coinChain.chainName = chainCode;
                         coinChain.contractAddress = c.GetProperty("browserUrl").GetString() + "";
                         coinChain.allowDeposit = c.GetProperty("rechargeable").GetString() == "true";
                         coinChain.allowWithdraw = c.GetProperty("withdrawable").GetString() == "true";

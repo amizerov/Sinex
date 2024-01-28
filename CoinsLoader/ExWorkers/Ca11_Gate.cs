@@ -33,12 +33,20 @@ public class Gate : AnExchange
             coin.exchId = ID;
 
             coin.asset = p.GetProperty("currency").GetString() + "";
-            coin.network = p.GetProperty("chain").GetString() + "";
+
+            string net = "";
+            string net1 = p.GetProperty("chain").GetString() + "";
+
+            net = ValidateChainCode(net1);
+
+            coin.network = net;
+
             //coin.contract = p.GetProperty("contract").GetString() + "";
             coin.allowDeposit = !p.GetProperty("deposit_disabled").GetBoolean();
             coin.allowWithdraw = !p.GetProperty("withdraw_disabled").GetBoolean();
 
             Chain chain = new(coin.network);
+            chain.name = net1;
             chain.name2 = $"[{ID}]";
             await chain.Save();
 
@@ -47,7 +55,8 @@ public class Gate : AnExchange
 
             int cntChains = await GetChains(coin.id, coin.asset);
 
-            Log.Info(ID, $"SaveCoin({coin.asset})", $"{++cnt}/{cntCoins}/{cntChains}");
+            Log.Info(ID, $"SaveCoin({coin.asset})", 
+                $"{++cnt}/{cntCoins}/{cntChains}/{net}/{net1}");
         }
 
         Log.Info(ID, "GetCoins()", "End");
@@ -78,17 +87,28 @@ public class Gate : AnExchange
                 CoinChain coinChain = new();
                 coinChain.coinId = coinId;
 
-                coinChain.chainName = p.GetProperty("chain").GetString() + "";
+                string net = "";
+                string net1 = p.GetProperty("chain").GetString() + "";
+                string net2 = p.GetProperty("name_en").GetString() + "";
+
+                net = ValidateChainCode(net1);
+                
+                coinChain.chainName = net;
+
                 coinChain.allowDeposit = p.GetProperty("is_deposit_disabled").GetInt32() == 0;
                 coinChain.allowWithdraw = p.GetProperty("is_withdraw_disabled").GetInt32() == 0;
                 coinChain.contractAddress = p.GetProperty("contract_address").GetString() + "";
 
-                Chain chain = new(coinChain.chainName);
+                Chain chain = new(net);
+                chain.name = net2;
+                chain.name2 = $"[{ID}]";
                 await chain.Save();
 
                 coinChain.chainId = chain.id;
                 await coinChain.Save();
                 cntChains++;
+
+                Log.Info(ID, "SaveChain", $"{net}/{net1}/{net2}");
             }
             catch (Exception ex)
             {
