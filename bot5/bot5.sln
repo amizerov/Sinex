@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CaDb", "..\CaDb\CaDb.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CaSecrets", "..\CaSecrets\CaSecrets.csproj", "{84F213E1-9B8B-4691-B309-748288C50818}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CaExch", "..\CaExch\CaExch.csproj", "{1EDAA096-E91D-4409-B5D5-CE93926D2787}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "amLogger", "..\amLogger\amLogger.csproj", "{AD0E6C5E-41D0-4739-B72D-EF36FED7CAF9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CaExch2", "..\CaExch2\CaExch2.csproj", "{344DB10D-401A-453A-A155-3E096A5022B2}"

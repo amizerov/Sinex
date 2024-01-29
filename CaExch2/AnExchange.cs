@@ -23,7 +23,7 @@ public abstract class AnExchange
 
     public abstract int ID { get; }
     public virtual string Name => GetType().Name;
-
+    public abstract string ValidateSymbol(string baseAsset, string quoteAsset);
     public virtual ISymbolOrderBook OrderBook {
         get
         {

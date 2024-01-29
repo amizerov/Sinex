@@ -1,7 +1,5 @@
 ﻿using amLogger;
-using CaDb;
 using CaExch2;
-using Microsoft.EntityFrameworkCore;
 
 namespace bot5;
 
@@ -33,7 +31,7 @@ class FullStat : List<PriceSt>
         for (int i = 0; i < aex.Length; i++)
             arrExchangeIds[i] = Convert.ToInt32(aex[i]);
 
-        CaExchanges _exs = new();
+        CaExchanges _exs = CaExchanges.List();
         foreach (var ex in arrExchangeIds)
         {
             AnExchange exch = _exs.Find(x => x.ID == ex)!;
@@ -44,52 +42,10 @@ class FullStat : List<PriceSt>
         st.Calc();
         return st;
     }
-    static async Task<PriceSt> GetPriceVolum(AnExchange exc, string asset)
+    static async Task<PriceSt> GetPriceVolum(AnExchange exc, string baseAsset)
     {
-        PriceSt pv = new() { exchange = exc, asset = asset };
-        string symbol = "";
-        switch (exc.ID)
-        {
-            case 1:
-                symbol = asset.ToUpper() + "USDT";
-                break;
-            case 2:
-                symbol = asset.ToUpper() + "-USDT";
-                break;
-            case 3:
-                symbol = asset.ToLower() + "usdt";
-                break;
-            case 4:
-                symbol = asset.ToUpper() + "-USDT";
-                break;
-            case 5:
-                symbol = asset.ToUpper() + "USDT";
-                break;
-            case 6:
-                symbol = asset.ToLower() + "usdt";
-                break;
-            case 7:
-                symbol = asset.ToUpper() + "USDT";
-                break;
-            case 8:
-                symbol = asset.ToUpper() + "-USDT";
-                break;
-            case 9:
-                symbol = asset.ToUpper() + "USDT";
-                break;
-            case 10:
-                symbol = asset.ToUpper() + "USDT";
-                break;
-            case 11:
-                symbol = asset.ToUpper() + "_USDT";
-                break;
-            case 12:
-                symbol = asset.ToUpper() + "_USDT";
-                break;
-            default:
-                symbol = asset.ToUpper();
-                break;
-        }
+        PriceSt pv = new() { exchange = exc, asset = baseAsset };
+        string symbol = exc.ValidateSymbol(baseAsset, "USDT");
         var t = await exc.GetTickerAsync(symbol);
         if (t == null) return pv;
 

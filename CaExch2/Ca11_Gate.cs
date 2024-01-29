@@ -12,7 +12,10 @@ public class CaGate : AnExchange
 {
     public override int ID => 11;
     public override string Name => "Gate";
-
+    public override string ValidateSymbol(string baseAsset, string quoteAsset)
+    {
+        return baseAsset + "_" + quoteAsset;
+    }
     public override ISymbolOrderBook OrderBook => throw new NotImplementedException();
 
     public override List<string> Intervals => new List<string>()

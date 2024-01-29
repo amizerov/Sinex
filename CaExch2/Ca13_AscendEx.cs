@@ -12,10 +12,12 @@ public class CaAscendEx : AnExchange
 {
     public override int ID => 13;
     public const string BASE_URL = "https://ascendex.com";
-
+    public override string ValidateSymbol(string baseAsset, string quoteAsset)
+    {
+        return baseAsset + "/" + quoteAsset;
+    }
     public override async Task<Ticker> GetTickerAsync(string symbol)
     {
-        symbol = symbol + "/USDT";
         Ticker t = new();
         using (HttpClient c = new())
         {

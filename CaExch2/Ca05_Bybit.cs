@@ -13,7 +13,10 @@ public class CaBybit : AnExchange
 {
     public override int ID => 5;
     public override string Name => "Bybit";
-
+    public override string ValidateSymbol(string baseAsset, string quoteAsset)
+    {
+        return baseAsset + quoteAsset;
+    }
     public override ISymbolOrderBook OrderBook => new BybitSymbolOrderBook(_symbol, Category.Spot);
     string _symbol = "";
     public override List<string> Intervals => new List<string>()

@@ -13,7 +13,10 @@ public class CaKucoin : AnExchange
 {
     public override int ID => 2;
     public override string Name => "Kucoin";
-
+    public override string ValidateSymbol(string baseAsset, string quoteAsset)
+    {
+        return baseAsset + "-" + quoteAsset;
+    }
     public override ISymbolOrderBook OrderBook => new KucoinSpotSymbolOrderBook(_symbol);
     string _symbol = "";
     public override List<string> Intervals => new List<string>()

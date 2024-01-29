@@ -12,10 +12,12 @@ public class CaBitGet : AnExchange
 {
     public override int ID => 16;
     public const string BASE_URL = "https://api.bitget.com";
-
+    public override string ValidateSymbol(string baseAsset, string quoteAsset)
+    {
+        return baseAsset + quoteAsset + "_SPBL";
+    }
     public override async Task<Ticker> GetTickerAsync(string symbol)
     {
-        symbol = symbol + "USDT_SPBL";
         Ticker t = new();
         using (HttpClient c = new())
         {

@@ -18,7 +18,10 @@ public class CaOKX : AnExchange
 {
     public override int ID => 8;
     public override string Name => "OKX";
-
+    public override string ValidateSymbol(string baseAsset, string quoteAsset)
+    {
+        return baseAsset + "-" + quoteAsset;
+    }
     public override ISymbolOrderBook OrderBook => new OKXSymbolOrderBook(_symbol);
     string _symbol = "";
 

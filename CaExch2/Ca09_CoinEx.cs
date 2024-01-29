@@ -17,7 +17,10 @@ public class CaCoinEx : AnExchange
 {
     public override int ID => 9;
     public override string Name => "CoinEx";
-
+    public override string ValidateSymbol(string baseAsset, string quoteAsset)
+    {
+        return baseAsset + quoteAsset;
+    }
     public override ISymbolOrderBook OrderBook => new CoinExSpotSymbolOrderBook(_symbol);
     string _symbol = "";
 

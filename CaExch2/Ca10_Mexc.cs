@@ -11,7 +11,10 @@ public class CaMexc : AnExchange
 {
     public override int ID => 10;
     public override string Name => "Mexc";
-
+    public override string ValidateSymbol(string baseAsset, string quoteAsset)
+    {
+        return baseAsset + quoteAsset;
+    }
     public override ISymbolOrderBook OrderBook => throw new NotImplementedException();
 
     public override List<string> Intervals => new List<string>()
