@@ -90,7 +90,7 @@ class Data
     }
     public static async Task SaveFullStat(FullStat ss) {
 
-        if (ss.exc1 == null || ss.exc2 == null) return;
+        if (ss.excSell == null || ss.excBuy == null) return;
 
         using (CaDbContext db = new())
         {
@@ -102,10 +102,10 @@ class Data
 
                     update Sinex_Arbitrage 
                         set procDiffer={ss.proc},
-                            exch1={ss.exc1.Name}, 
-                            exch2={ss.exc2.Name},
-                            vol1={ss.vol1},
-                            vol2={ss.vol2},
+                            exch1={ss.excSell.Name}, 
+                            exch2={ss.excBuy.Name},
+                            vol1={ss.volSell},
+                            vol2={ss.volBuy},
                             dtu=getdate()
                     where 
                         shotNumber=@n 
@@ -114,8 +114,8 @@ class Data
                 ");
 
                 if (ss.proc < 3/2) return;
-                string q1 = $"[{ss.exc1.ID}|{ss.exc2.ID}]";
-                string q2 = $"[{ss.exc2.ID}|{ss.exc1.ID}]";
+                string q1 = $"[{ss.excSell.ID}|{ss.excBuy.ID}]";
+                string q2 = $"[{ss.excBuy.ID}|{ss.excSell.ID}]";
                 string w = q1 + q2;
                 foreach (PriceSt s1 in ss)
                 {
@@ -159,7 +159,7 @@ class Data
             {
                 Log.Error(
                     @$"Stat Save 
-                        {ss.asset} {ss.proc} {ss.exc1.Name} {ss.exc2.Name} {ss.vol1} {ss.vol2}"
+                        {ss.asset} {ss.proc} {ss.excSell.Name} {ss.excBuy.Name} {ss.volSell} {ss.volBuy}"
                     , e.Message);
             }
         }
@@ -167,7 +167,7 @@ class Data
     public static async Task UpdateFullStat(FullStat ss)
     {
 
-        if (ss.exc1 == null || ss.exc2 == null) return;
+        if (ss.excSell == null || ss.excBuy == null) return;
 
         using (CaDbContext db = new())
         {
@@ -179,10 +179,10 @@ class Data
 
                     update Sinex_Arbitrage 
                         set procDiffer={ss.proc},
-                            exch1={ss.exc1.Name}, 
-                            exch2={ss.exc2.Name},
-                            vol1={ss.vol1},
-                            vol2={ss.vol2},
+                            exch1={ss.excSell.Name}, 
+                            exch2={ss.excBuy.Name},
+                            vol1={ss.volSell},
+                            vol2={ss.volBuy},
                             dtu=getdate()
                     where 
                         shotNumber=@n 
@@ -194,7 +194,7 @@ class Data
             {
                 Log.Error(
                     @$"Stat Update 
-                        {ss.asset} {ss.proc} {ss.exc1.Name} {ss.exc2.Name} {ss.vol1} {ss.vol2}"
+                        {ss.asset} {ss.proc} {ss.excSell.Name} {ss.excBuy.Name} {ss.volSell} {ss.volBuy}"
                     , e.Message);
             }
         }

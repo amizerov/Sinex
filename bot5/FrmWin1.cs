@@ -57,10 +57,10 @@ public partial class FrmWin1 : Form
         if (ens == null || ass == null) return;
 
         lblSym.Text = ass;
-        FullStat st = await FullStat.Init(ens, ass, s => AddLabel(s));
+        FullStat st = await FullStat.Calculate(ens, ass, s => AddLabel(s));
         dgvProds.CurrentRow.Cells[2].Value = st.proc.ToString();
 
-        if (st == null || st.exc1 == null || st.exc2 == null)
+        if (st == null || st.excSell == null || st.excBuy == null)
         {
             Log.Warn(ass, "sciped");
             return;
@@ -68,8 +68,8 @@ public partial class FrmWin1 : Form
 
         await st.Update();
 
-        lblExc1.Text = st.exc1.Name;
-        lblExc2.Text = st.exc2.Name;
+        lblExc1.Text = st.excBuy.Name;
+        lblExc2.Text = st.excSell.Name;
         lblMaxProc.Text = st.proc + "%";
     
         _loaded = true;
@@ -139,8 +139,8 @@ public partial class FrmWin1 : Form
                     continue;
                 }
 
-                FullStat st = await FullStat.Init(exchs, asset);
-                if (st == null || st.exc1 == null || st.exc2 == null)
+                FullStat st = await FullStat.Calculate(exchs, asset);
+                if (st == null || st.excSell == null || st.excBuy == null)
                 {
                     Log.Warn(asset, "sciped 2");
                     continue; 
@@ -150,31 +150,35 @@ public partial class FrmWin1 : Form
 
                 await st.Save();
 
-                if (st.vol1 > 0 && st.vol2 > 0)
+                ColorizeRow(r, st.proc);
+                if (st.volSell > 0 && st.volBuy > 0)
                 {
                     if(frmArbitrage.Visible)
                         Invoke(() => frmArbitrage.btnUpdate_Click(this, new EventArgs()));
                 }
 
-                var Num = st.proc;
-                int red, green, blue;
-                if (Num < 50)
-                {
-                    red = (int)(2 * 255 * Num / 100);
-                    green = 255;
-                    blue = 0;
-                }
-                else
-                {
-                    red = 255;
-                    green = (int)((2 - 2 * Num / 100) * 255);
-                    blue = 0;
-                }
-                r.DefaultCellStyle.BackColor = Color.FromArgb(red, green, blue);
             }
 
             OnComplete?.Invoke();
         });
+    }
+    void ColorizeRow(DataGridViewRow r, decimal proc)
+    {
+        var Num = proc;
+        int red, green, blue;
+        if (Num < 50)
+        {
+            red = (int)(2 * 255 * Num / 100);
+            green = 255;
+            blue = 0;
+        }
+        else
+        {
+            red = 255;
+            green = (int)((2 - 2 * Num / 100) * 255);
+            blue = 0;
+        }
+        r.DefaultCellStyle.BackColor = Color.FromArgb(red, green, blue);
     }
 
     private void dgvProds_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)

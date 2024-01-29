@@ -80,6 +80,7 @@ public class CaOKX : AnExchange
     {
         var r = await restClient.UnifiedApi.ExchangeData.GetTickerAsync(symbol);
         Ticker t = new();
+        if(!r.Success) return t;
         t.HighPrice = r.Data.HighPrice;
         t.LowPrice = r.Data.LowPrice;
         t.LastPrice = r.Data.LastPrice;

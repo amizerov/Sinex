@@ -13,13 +13,13 @@ class PriceSt
 class FullStat : List<PriceSt>
 {
     public string? asset { get; set; }
-    public AnExchange? exc1 { get; set; }
-    public AnExchange? exc2 { get; set; }
+    public AnExchange? excSell { get; set; }
+    public AnExchange? excBuy { get; set; }
     public decimal proc { get; set; } = 0;
-    public decimal vol1 { get; set; }
-    public decimal vol2 { get; set; }
+    public decimal volSell { get; set; }
+    public decimal volBuy { get; set; }
 
-    public static async Task<FullStat> Init(
+    public static async Task<FullStat> Calculate(
         string exchengesString, string baseAsset,
         Action<PriceSt>? onStep = null
     )
@@ -49,9 +49,6 @@ class FullStat : List<PriceSt>
         var t = await exc.GetTickerAsync(symbol);
         if (t == null) return pv;
 
-        //var k = await exc.GetKlines(symbol, "1m", 10);
-        //Task.Delay(1000).Wait();
-
         pv.price = t.LastPrice;
         pv.volum = t.Volume;
 
@@ -59,46 +56,36 @@ class FullStat : List<PriceSt>
     }
     private void Calc()
     {
-        foreach (var i in
-            this.Where(e => 1 == 1
-                         //&& e.exchange!.ID != 3
-                         //&& e.exchange!.ID != 4
-                         //&& e.exchange!.ID != 1
-                      ))
+        foreach (var st in this)
         {
-            foreach (var j in
-                this.Where(e => e.exchange!.ID != i.exchange!.ID
-                             //&& e.exchange!.ID != 3
-                             //&& e.exchange!.ID != 4
-                             //&& e.exchange!.ID != 1
-                          ))
+            foreach (var j in this.Where(s => s.exchange!.ID != st.exchange!.ID))
             {
-                if (i.price == null || j.price == null)
+                if (st.price == null || j.price == null)
                 { 
                     Log.Warn("Calc", 
-                        @$"{i.asset}({i.exchange!.ID}).price == null 
-                        || {j.asset}({j.exchange!.ID}).price == null");
+                        $"{st.asset}({st.exchange!.ID}).price is null OR" + 
+                        $"{j.asset}({j.exchange!.ID}).price is null");
                     continue; 
                 }
 
-                var d = (decimal)(i.price - j.price)!;
-                if (proc < Math.Abs(d) && i.volum > 0 && j.volum > 0)
+                var d = (decimal)(st.price - j.price)!;
+                if (proc < Math.Abs(d) && st.volum > 0 && j.volum > 0)
                 {
                     proc = d;
-                    if (i.price > j.price)
+                    if (st.price > j.price)
                     {
-                        exc1 = i.exchange; vol1 = (decimal)i.volum!;
-                        exc2 = j.exchange; vol2 = (decimal)j.volum!;
+                        excSell = st.exchange; volSell = (decimal)st.volum!;
+                        excBuy = j.exchange; volBuy = (decimal)j.volum!;
                     }
                     else
                     {
-                        exc2 = i.exchange; vol2 = (decimal)j.volum!;
-                        exc1 = j.exchange; vol1 = (decimal)i.volum!;
+                        excBuy = st.exchange; volBuy = (decimal)j.volum!;
+                        excSell = j.exchange; volSell = (decimal)st.volum!;
                     }
                 }
             }
         }
-        proc = 100 * proc / (decimal)this.Max(a => a.price)!;
+        proc = 100 * proc / (decimal)this.Max(s => s.price)!;
         proc = Math.Round(proc, 2);
     }
     public async Task Save()

@@ -50,7 +50,11 @@ public partial class FrmWin2 : Form
         string filterExc = ("'" + txtExch.Text + "'").Replace(" ", "").Replace(",", "','");
         string filterMon = ("'" + txtMon.Text + "'").Replace(" ", "").Replace(",", "','");
 
-        dgvProds.DataSource = Data.GetArbitrages(filterExc, filterMon);
+        List<Arbitrage> arbis = Data.GetArbitrages(filterExc, filterMon);
+
+
+
+        dgvProds.DataSource = arbis;
         dgvProds.Columns[0].Visible = false;
         dgvProds.Columns[1].Visible = false;
         dgvProds.Columns[3].Visible = false;
