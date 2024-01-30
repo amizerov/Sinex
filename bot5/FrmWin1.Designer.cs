@@ -62,7 +62,7 @@
             dgvProds.RowHeadersVisible = false;
             dgvProds.RowHeadersWidth = 72;
             dgvProds.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvProds.Size = new Size(392, 776);
+            dgvProds.Size = new Size(459, 942);
             dgvProds.TabIndex = 0;
             dgvProds.CellMouseClick += dgvProds_CellMouseClick;
             // 
@@ -79,16 +79,16 @@
             // 
             panel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             panel.BackColor = SystemColors.ControlLight;
-            panel.Location = new Point(430, 250);
+            panel.Location = new Point(486, 250);
             panel.Name = "panel";
-            panel.Size = new Size(630, 626);
+            panel.Size = new Size(1011, 792);
             panel.TabIndex = 2;
             // 
             // lblSym
             // 
             lblSym.AutoSize = true;
             lblSym.Font = new Font("Segoe UI", 36F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            lblSym.Location = new Point(443, 35);
+            lblSym.Location = new Point(499, 38);
             lblSym.Name = "lblSym";
             lblSym.Size = new Size(268, 112);
             lblSym.TabIndex = 3;
@@ -98,7 +98,7 @@
             // 
             lblExc1.AutoSize = true;
             lblExc1.Font = new Font("Segoe UI", 15.8571434F);
-            lblExc1.Location = new Point(430, 184);
+            lblExc1.Location = new Point(486, 187);
             lblExc1.Name = "lblExc1";
             lblExc1.Size = new Size(120, 50);
             lblExc1.TabIndex = 3;
@@ -108,7 +108,7 @@
             // 
             lblExc2.AutoSize = true;
             lblExc2.Font = new Font("Segoe UI", 15.8571434F);
-            lblExc2.Location = new Point(556, 184);
+            lblExc2.Location = new Point(612, 187);
             lblExc2.Name = "lblExc2";
             lblExc2.Size = new Size(120, 50);
             lblExc2.TabIndex = 3;
@@ -118,7 +118,7 @@
             // 
             lblMaxProc.AutoSize = true;
             lblMaxProc.Font = new Font("Segoe UI", 15.8571434F);
-            lblMaxProc.Location = new Point(690, 184);
+            lblMaxProc.Location = new Point(746, 187);
             lblMaxProc.Name = "lblMaxProc";
             lblMaxProc.Size = new Size(120, 50);
             lblMaxProc.TabIndex = 3;
@@ -127,7 +127,7 @@
             // btnReload
             // 
             btnReload.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnReload.Location = new Point(927, 26);
+            btnReload.Location = new Point(1364, 26);
             btnReload.Name = "btnReload";
             btnReload.Size = new Size(131, 54);
             btnReload.TabIndex = 4;
@@ -138,7 +138,7 @@
             // btnArbit
             // 
             btnArbit.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnArbit.Location = new Point(927, 83);
+            btnArbit.Location = new Point(1364, 83);
             btnArbit.Name = "btnArbit";
             btnArbit.Size = new Size(131, 54);
             btnArbit.TabIndex = 4;
@@ -149,7 +149,7 @@
             // button3
             // 
             button3.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            button3.Location = new Point(927, 140);
+            button3.Location = new Point(1364, 140);
             button3.Name = "button3";
             button3.Size = new Size(131, 54);
             button3.TabIndex = 4;
@@ -159,7 +159,7 @@
             // btnScan
             // 
             btnScan.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnScan.Location = new Point(775, 26);
+            btnScan.Location = new Point(1212, 26);
             btnScan.Name = "btnScan";
             btnScan.Size = new Size(131, 54);
             btnScan.TabIndex = 4;
@@ -171,9 +171,9 @@
             // 
             statusStrip1.ImageScalingSize = new Size(28, 28);
             statusStrip1.Items.AddRange(new ToolStripItem[] { statusCount });
-            statusStrip1.Location = new Point(0, 896);
+            statusStrip1.Location = new Point(0, 1062);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(1086, 39);
+            statusStrip1.Size = new Size(1523, 39);
             statusStrip1.TabIndex = 5;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -187,7 +187,7 @@
             // 
             AutoScaleDimensions = new SizeF(12F, 30F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1086, 935);
+            ClientSize = new Size(1523, 1101);
             Controls.Add(statusStrip1);
             Controls.Add(btnScan);
             Controls.Add(button3);

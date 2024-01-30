@@ -21,7 +21,22 @@ public class CaCoinEx : AnExchange
     {
         return baseAsset + quoteAsset;
     }
-    public override ISymbolOrderBook OrderBook => new CoinExSpotSymbolOrderBook(_symbol);
+    public override CaOrderBook GetOrderBook(string symbol)
+    {
+        CaOrderBook orderBook = new(symbol);
+        var ob = new CoinExSpotSymbolOrderBook(_symbol);
+
+        foreach (var b in ob.Asks)
+        {
+            orderBook.Asks.Add(new OrderBookEntry() { Price = b.Price, Quantity = b.Quantity });
+        }
+        foreach (var b in ob.Bids)
+        {
+            orderBook.Bids.Add(new OrderBookEntry() { Price = b.Price, Quantity = b.Quantity });
+        }
+
+        return orderBook;
+    }
     string _symbol = "";
 
     public override List<string> Intervals => new List<string>() 

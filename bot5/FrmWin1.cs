@@ -20,7 +20,7 @@ public partial class FrmWin1 : Form
 
         dgvProds.DataSource = null;
 
-        dgvProds.DataSource = Data.GetProdsWithExchanges(txtSearch.Text);
+        dgvProds.DataSource = Db.GetProdsWithExchanges(txtSearch.Text);
 
         dgvProds.Columns[3].Visible = false;
         dgvProds.Columns[4].Visible = false;
@@ -75,7 +75,7 @@ public partial class FrmWin1 : Form
         _loaded = true;
     }
 
-    void AddLabel(PriceSt s)
+    void AddLabel(CoinExchStat s)
     {
         int c = panel.Controls.Count + 3;
         Label lblEx = new();

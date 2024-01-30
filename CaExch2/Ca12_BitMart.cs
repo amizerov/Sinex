@@ -16,8 +16,31 @@ public class CaBitMart : AnExchange
     {
         return baseAsset + "_" + quoteAsset;
     }
-    public override ISymbolOrderBook OrderBook => throw new NotImplementedException();
+    public override CaOrderBook GetOrderBook(string symbol)
+    {
+        CaOrderBook orderBook = new(symbol);
+        using HttpClient c = new();
+        var r = c.GetAsync($"https://api-cloud.bitmart.com/spot/quotation/v3/books?symbol={symbol}").Result;
+        var s = r.Content.ReadAsStringAsync().Result;
+        JsonDocument j = JsonDocument.Parse(s);
+        JsonElement e = j.RootElement;
+        var asks = e.GetProperty("asks");
+        var bids = e.GetProperty("bids");
+        foreach (var a in asks.EnumerateArray())
+        {
+            decimal p = sd(a[0]);
+            decimal q = sd(a[1]);
+            orderBook.Asks.Add(new OrderBookEntry() { Price = p, Quantity = q });
+        }
+        foreach (var b in bids.EnumerateArray())
+        {
+            decimal p = sd(b[0]);
+            decimal q = sd(b[1]);
+            orderBook.Bids.Add(new OrderBookEntry() { Price = p, Quantity = q });
+        }
 
+        return orderBook;
+    }
     public override List<string> Intervals => new List<string>()
     { "1m", "3m", "5m", "15m", "30m", "45m", "1h", "2h", "3h", "4h", "1d", "7d", "30d" };
 

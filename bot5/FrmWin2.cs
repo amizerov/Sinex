@@ -50,7 +50,7 @@ public partial class FrmWin2 : Form
         string filterExc = ("'" + txtExch.Text + "'").Replace(" ", "").Replace(",", "','");
         string filterMon = ("'" + txtMon.Text + "'").Replace(" ", "").Replace(",", "','");
 
-        List<Arbitrage> arbis = Data.GetArbitrages(filterExc, filterMon);
+        List<Arbitrage> arbis = Db.GetArbitrages(filterExc, filterMon);
 
 
 
@@ -78,7 +78,7 @@ public partial class FrmWin2 : Form
             return;
 
         var chatId = message.Chat.Id;
-        await Data.AddCaTeleBotUser(chatId);
+        await Db.AddCaTeleBotUser(chatId);
     }
 
     Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
@@ -102,17 +102,17 @@ public partial class FrmWin2 : Form
         string filterExc = ("'" + txtExch.Text + "'").Replace(" ", "").Replace(",", "','");
         string filterMon = ("'" + txtMon.Text + "'").Replace(" ", "").Replace(",", "','");
 
-        var prods = Data.GetArbitrages(filterExc, filterMon, true);
+        var prods = Db.GetArbitrages(filterExc, filterMon, true);
         foreach (var p in prods)
         {
             msg += $"{p.baseAsset} - {p.exch1}/{p.exch2} - {p.procDiffer}% - {p.vol1}/{p.vol2}\n\r";
-            Data.SetSentFlagForArbitrage(p.ID);
+            Db.SetSentFlagForArbitrage(p.ID);
         }
         return msg;
     }
     async Task SendMessage(string msg)
     {
-        List<long> chatIds = Data.GetCaTeleBotUsers();
+        List<long> chatIds = Db.GetCaTeleBotUsers();
         foreach (var chId in chatIds)
         {
             try

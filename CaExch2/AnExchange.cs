@@ -7,6 +7,16 @@ using System.Text.Json;
 
 namespace CaExch2;
 
+public class CaOrderBook
+{
+    public string Symbol { get; set; } = "";
+    public List<OrderBookEntry> Bids { get; set; } = new();
+    public List<OrderBookEntry> Asks { get; set; } = new();
+    public CaOrderBook(string symbol)
+    {
+        Symbol = symbol;
+    }
+}
 public abstract class AnExchange
 {
     public event Action<List<Balance>>? OnAccPositionUpdate;
@@ -24,11 +34,8 @@ public abstract class AnExchange
     public abstract int ID { get; }
     public virtual string Name => GetType().Name;
     public abstract string ValidateSymbol(string baseAsset, string quoteAsset);
-    public virtual ISymbolOrderBook OrderBook {
-        get
-        {
-            throw new NotImplementedException();
-        }
+    public virtual CaOrderBook GetOrderBook(string symbol) {
+        return new CaOrderBook(symbol);
     }
     public virtual Task<bool> CheckApiKey()
     {

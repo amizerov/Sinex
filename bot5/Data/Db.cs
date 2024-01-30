@@ -1,11 +1,12 @@
 ﻿using amLogger;
+using Azure.Identity;
 using CaDb;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
 
 namespace bot5;
 
-class Data
+class Db
 {
     public static List<ProdEx> GetProdsWithExchanges(string seatch)
     {
@@ -102,29 +103,41 @@ class Data
 
                     update Sinex_Arbitrage 
                         set procDiffer={ss.proc},
-                            exch1={ss.excSell.Name}, 
-                            exch2={ss.excBuy.Name},
-                            vol1={ss.volSell},
-                            vol2={ss.volBuy},
+                            exch1={ss.excBuy.Name}, 
+                            exch2={ss.excSell.Name},
+                            vol1={ss.volBuy},
+                            vol2={ss.volSell},
                             dtu=getdate()
                     where 
                         shotNumber=@n 
-                        and baseAsset={ss.asset}
+                        and baseAsset={ss.coin}
                         and quoteAsset='USDT'
                 ");
 
                 if (ss.proc < 3/2) return;
+
+                // Кроме максимального процента разницы цен
+                // сохраняем все остальные варианты между биржами
                 string q1 = $"[{ss.excSell.ID}|{ss.excBuy.ID}]";
                 string q2 = $"[{ss.excBuy.ID}|{ss.excSell.ID}]";
-                string w = q1 + q2;
-                foreach (PriceSt s1 in ss)
+                string w = q1 + q2;// эти пары бирж уже сохранены
+                foreach (CoinExchStat s1 in ss)
                 {
-                    foreach (PriceSt s2 in ss.Where(s => s.exchange != s1.exchange))
+                    foreach (CoinExchStat s2 in ss.Where(s => s.exchange != s1.exchange))
                     {
                         q1 = $"[{s1.exchange!.ID}|{s2.exchange!.ID}]";
                         q2 = $"[{s2.exchange!.ID}|{s1.exchange!.ID}]";
+                        // если эта пара бирж уже сохранена, пропускаем
                         if (w.Contains(q1) || w.Contains(q2)) continue;
-                        w += q1 + q2;
+                        w += q1 + q2;// добавляем пару в список сохраненных
+
+                        decimal proc = Math.Abs(
+                            100 * (decimal)(s1.price - s2.price)!
+                                / Math.Max((decimal)s1.price!, (decimal)s2.price!));
+                        string excBuy = s1.price < s2.price ? s1.exchange!.Name : s2.exchange!.Name;
+                        string excSell = s1.price < s2.price ? s2.exchange!.Name : s1.exchange!.Name;
+                        decimal? volBuy = s1.price < s2.price ? s1.volum : s2.volum;
+                        decimal? volSell = s1.price < s2.price ? s2.volum : s1.volum;
 
                         await db.Database.ExecuteSqlAsync(@$"
                             declare @n int
@@ -139,17 +152,11 @@ class Data
                                 exch2, 
                                 vol1, 
                                 vol2
-                            ) values(
-                                @n, 
-                                {s1.asset}, 
-                                'USDT', 
-                                {Math.Abs(
-                                    100*(decimal)(s1.price - s2.price)!)
-                                       / Math.Max((decimal)s1.price!, (decimal)s2.price!)},
-                                {(s1.price > s2.price ? s1.exchange!.Name : s2.exchange!.Name)}, 
-                                {(s1.price > s2.price ? s2.exchange!.Name : s1.exchange!.Name)}, 
-                                {(s1.price > s2.price ? s1.volum : s2.volum)}, 
-                                {(s1.price > s2.price ? s2.volum : s1.volum)} 
+                            ) values(@n, {s1.coin}, 'USDT', {proc},
+                                {excBuy}, 
+                                {excSell}, 
+                                {volBuy}, 
+                                {volSell} 
                             )"
                         );
                     }
@@ -159,7 +166,7 @@ class Data
             {
                 Log.Error(
                     @$"Stat Save 
-                        {ss.asset} {ss.proc} {ss.excSell.Name} {ss.excBuy.Name} {ss.volSell} {ss.volBuy}"
+                        {ss.coin} {ss.proc} {ss.excSell.Name} {ss.excBuy.Name} {ss.volSell} {ss.volBuy}"
                     , e.Message);
             }
         }
@@ -186,7 +193,7 @@ class Data
                             dtu=getdate()
                     where 
                         shotNumber=@n 
-                        and baseAsset={ss.asset}
+                        and baseAsset={ss.coin}
                         and quoteAsset='USDT'
                 ");
             }
@@ -194,10 +201,57 @@ class Data
             {
                 Log.Error(
                     @$"Stat Update 
-                        {ss.asset} {ss.proc} {ss.excSell.Name} {ss.excBuy.Name} {ss.volSell} {ss.volBuy}"
+                        {ss.coin} {ss.proc} {ss.excSell.Name} {ss.excBuy.Name} {ss.volSell} {ss.volBuy}"
                     , e.Message);
             }
         }
+    }
+    public static async Task<bool> GetAllowDeposit(int exchId, string coin)
+    {
+        using CaDbContext db = new();
+        var res = await db.Database
+            .SqlQuery<bool>($@"
+                select allowDeposit Value
+                from Sinex_Coins where exchId={exchId} and asset={coin}"
+            ).FirstOrDefaultAsync();
+
+        return res;
+    }
+    public static async Task<bool> GetAllowWithdra(int exchId, string coin)
+    {
+        using CaDbContext db = new();
+        var res = await db.Database
+            .SqlQuery<bool>($@"
+                select allowWithdraw Value
+                from Sinex_Coins where exchId={exchId} and asset={coin}"
+            ).FirstOrDefaultAsync();
+
+        return res;
+    }
+    public static async Task<Double?> GetWithdrawaFee(int exchId, string coin)
+    {
+        using CaDbContext db = new();
+        var res = await db.Database
+            .SqlQuery<Double?>($@"
+                select withdrawFee Value
+                from Sinex_Coins where exchId={exchId} and asset={coin}"
+            ).FirstOrDefaultAsync();
+
+        return res;
+    }
+    public static async Task<List<CoinChain>> GetCoinChains(int exchId, string coin)
+    {
+        using CaDbContext db = new();
+        var res = await db.Database
+            .SqlQuery<CoinChain>($@"
+                declare @cid int
+                select @cid=id from Sinex_Coins where exchId={exchId} and asset={coin}
+
+                select * from Sinex_CoinChains 
+                where coinId=@cid"
+            ).ToListAsync();
+
+        return res;
     }
 }
 

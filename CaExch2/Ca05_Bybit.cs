@@ -4,7 +4,6 @@ using CryptoExchange.Net.CommonObjects;
 using Bybit.Net.Enums;
 using Bybit.Net.Objects.Models.Socket.Spot;
 using Bybit.Net.SymbolOrderBooks;
-using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.Sockets;
 using CryptoExchange.Net.Objects;
 
@@ -17,7 +16,22 @@ public class CaBybit : AnExchange
     {
         return baseAsset + quoteAsset;
     }
-    public override ISymbolOrderBook OrderBook => new BybitSymbolOrderBook(_symbol, Category.Spot);
+    public override CaOrderBook GetOrderBook(string symbol)
+    {
+        CaOrderBook orderBook = new(symbol);
+        var ob = new BybitSymbolOrderBook(symbol, Category.Spot);
+
+        foreach (var b in ob.Asks)
+        {
+            orderBook.Asks.Add(new OrderBookEntry() { Price = b.Price, Quantity = b.Quantity });
+        }
+        foreach (var b in ob.Bids)
+        {
+            orderBook.Bids.Add(new OrderBookEntry() { Price = b.Price, Quantity = b.Quantity });
+        }
+
+        return orderBook;
+    }
     string _symbol = "";
     public override List<string> Intervals => new List<string>()
         { "1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "12h", "1d", "1w", "1M" };

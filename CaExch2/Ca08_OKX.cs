@@ -9,7 +9,6 @@ using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Sockets;
 using CaSecrets;
-using CryptoExchange.Net.Authentication;
 using OKX.Net.Objects.Account;
 using OKX.Net.Objects.Market;
 
@@ -22,7 +21,22 @@ public class CaOKX : AnExchange
     {
         return baseAsset + "-" + quoteAsset;
     }
-    public override ISymbolOrderBook OrderBook => new OKXSymbolOrderBook(_symbol);
+    public override CaOrderBook GetOrderBook(string symbol)
+    {
+        CaOrderBook orderBook = new(symbol);
+        var ob = new OKXSymbolOrderBook(symbol);
+
+        foreach (var b in ob.Asks)
+        {
+            orderBook.Asks.Add(new OrderBookEntry() { Price = b.Price, Quantity = b.Quantity });
+        }
+        foreach (var b in ob.Bids)
+        {
+            orderBook.Bids.Add(new OrderBookEntry() { Price = b.Price, Quantity = b.Quantity });
+        }
+
+        return orderBook;
+    }
     string _symbol = "";
 
     public override List<string> Intervals => new List<string>() 

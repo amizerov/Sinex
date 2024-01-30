@@ -16,6 +16,31 @@ public class CaBitGet : AnExchange
     {
         return baseAsset + quoteAsset + "_SPBL";
     }
+    public override CaOrderBook GetOrderBook(string symbol)
+    {
+        CaOrderBook orderBook = new(symbol);
+        using HttpClient c = new();
+        var r = c.GetAsync($"{BASE_URL}/api/spot/v1/market/depth?symbol={symbol}&type=step0").Result;
+        var s = r.Content.ReadAsStringAsync().Result;
+        JsonDocument j = JsonDocument.Parse(s);
+        JsonElement e = j.RootElement;
+        var asks = e.GetProperty("asks");
+        var bids = e.GetProperty("bids");
+        foreach (var a in asks.EnumerateArray())
+        {
+            decimal p = sd(a[0]);
+            decimal q = sd(a[1]);
+            orderBook.Asks.Add(new OrderBookEntry() { Price = p, Quantity = q });
+        }
+        foreach (var b in bids.EnumerateArray())
+        {
+            decimal p = sd(b[0]);
+            decimal q = sd(b[1]);
+            orderBook.Bids.Add(new OrderBookEntry() { Price = p, Quantity = q });
+        }
+
+        return orderBook;
+    }
     public override async Task<Ticker> GetTickerAsync(string symbol)
     {
         Ticker t = new();
