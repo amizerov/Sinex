@@ -7,6 +7,8 @@ using Kucoin.Net.SymbolOrderBooks;
 using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Sockets;
+using CryptoExchange.Net.Authentication;
+using CaSecrets;
 
 namespace CaExch2;
 public class CaKucoin : AnExchange
@@ -17,9 +19,17 @@ public class CaKucoin : AnExchange
     {
         return baseAsset + "-" + quoteAsset;
     }
-    public override CaOrderBook GetOrderBook(string symbol) {
+    public override async Task<CaOrderBook> GetOrderBook(string symbol) 
+    {
         CaOrderBook orderBook = new(symbol);
-        var ob = new KucoinSpotSymbolOrderBook(symbol);
+        var ob = new KucoinSpotSymbolOrderBook(symbol, (options) =>
+        {
+            options.ApiCredentials = new ApiCredentials(
+                Secrets.KucoinApiKey, Secrets.KucoinApiSecret
+            );
+        });
+        var r = await ob.StartAsync();
+        if(!r.Success) return orderBook;
 
         foreach (var b in ob.Asks)
         {

@@ -1,4 +1,4 @@
-﻿namespace bot5;
+﻿namespace TelegramBot1;
 
 public class Bandle
 {

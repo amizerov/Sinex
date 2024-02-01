@@ -1,6 +1,7 @@
 ﻿using amLogger;
 using CaExch2;
 using CryptoExchange.Net.CommonObjects;
+using TelegramBot1;
 
 namespace bot5;
 
@@ -20,12 +21,20 @@ class CoinExchStat
     }
     public async Task Init()
     {
-        string symbol = exchange!.ValidateSymbol(coin!, "USDT");
-        var t = await exchange.GetTickerAsync(symbol);
-        if (t == null) return;
+        if(coin == null || exchange == null) return;
+        string symbol = exchange.ValidateSymbol(coin, "USDT");
+        //var t = await exchange.GetTickerAsync(symbol);
+        //if (t == null) return;
 
-        price = t.LastPrice;
-        volum = t.Volume;
+
+        //price = t.LastPrice;
+        //volum = t.Volume;
+        var ob = await exchange.GetOrderBook(symbol);
+        var pa = (decimal)ob.Asks.Min(a => a.Price);
+        var pb = (decimal)ob.Bids.Max(b => b.Price);
+        price = (pa + pb) / 2;
+        volum = ob.Asks.Sum(a => a.Quantity * a.Price) +
+            ob.Bids.Sum(b => b.Quantity * b.Price);
     }
     public async Task LoadData()
     {
@@ -128,27 +137,45 @@ class FullStat : List<CoinExchStat>
                 if (chBuy.chainId == null) continue;
                 if (chBuy.chainId == 0) continue;
 
-                Ticker tBuy = await excBuy.GetTickerAsync(coin);
-                Ticker tSell = await excSell.GetTickerAsync(coin);
-                float 
+                Log.Trace("TryAddMeToBundles", coin);
+                string symbolBuy = excBuy.ValidateSymbol(coin, "USDT");
+                string symbolSell = excSell.ValidateSymbol(coin, "USDT");
 
-                if(tBuy.LastPrice - tSell.LastPrice)
+                Ticker tBuy = await excBuy.GetTickerAsync(symbolBuy);
+                Ticker tSell = await excSell.GetTickerAsync(symbolSell);
+                if (tBuy.LastPrice == null || tSell.LastPrice == null) return;
+
+                decimal pb = (decimal)tBuy.LastPrice;
+                decimal ps = (decimal)tSell.LastPrice;
+                decimal proc = 100 * (ps - pb) / Math.Max(ps, pb);
+
+                if ((float)proc < minProc) return;
+
+                CaOrderBook obBuy = await excBuy.GetOrderBook(symbolBuy);
+                CaOrderBook obSell = await excSell.GetOrderBook(symbolSell);
+                if (obBuy == null || obSell == null) return;
+
+                volBuy = obBuy.Asks.Sum(a => a.Quantity*a.Price);
+                volSell = obSell.Bids.Sum(b => b.Quantity*b.Price);
+
+                if(volSell < 100 || volBuy < 100) return;
 
                 Bandle b = new()
                 {
-                    coin = coin!,
+                    coin = coin,
                     exchBuy = excBuy.Name,
                     exchSell = excSell.Name,
-                    priceBuyBid = t.,
-                    priceBuyAsk = (float)excBuy!.GetAskPrice(coin!),
-                    priceSellBid = (float)excSell!.GetBidPrice(coin!),
-                    priceSellAsk = (float)excSell!.GetAskPrice(coin!),
+                    priceBuyBid = (float)obBuy.Bids.Max(b => b.Price),
+                    priceBuyAsk = (float)obBuy.Asks.Min(b => b.Price),
+                    priceSellBid = (float)obSell.Bids.Max(b => b.Price),
+                    priceSellAsk = (float)obSell.Asks.Min(b => b.Price),
                     volBuy = (float)volBuy,
                     volSell = (float)volSell,
                     chain = chBuy.chainName!,
-                    withdrawFee = (float)chBuy.withdrawFee!,
+                    withdrawFee = (float)(chBuy.withdrawFee ?? 0),
                 };
                 Bandles.Add(b);
+                await Telega.ProcessBundle(b);
             }
         }
 

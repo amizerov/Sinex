@@ -5,23 +5,26 @@ using CryptoExchange.Net.Sockets;
 using static System.Text.Json.JsonElement;
 using System.Net;
 using System.Text.Json;
+using amLogger;
 
 namespace CaExch2;
 
 public class CaBitMart : AnExchange
 {
     public override int ID => 12;
+    public const string BASE_URL = "https://api-cloud.bitmart.com";
     public override string Name => "BitMart";
     public override string ValidateSymbol(string baseAsset, string quoteAsset)
     {
         return baseAsset + "_" + quoteAsset;
     }
-    public override CaOrderBook GetOrderBook(string symbol)
+    public override async Task<CaOrderBook> GetOrderBook(string symbol)
     {
         CaOrderBook orderBook = new(symbol);
         using HttpClient c = new();
-        var r = c.GetAsync($"https://api-cloud.bitmart.com/spot/quotation/v3/books?symbol={symbol}").Result;
-        var s = r.Content.ReadAsStringAsync().Result;
+        var r = await c.GetAsync($"{BASE_URL}/spot/quotation/v3/books?symbol={symbol}");
+        var s = await r.Content.ReadAsStringAsync();
+
         JsonDocument j = JsonDocument.Parse(s);
         JsonElement e = j.RootElement;
         var asks = e.GetProperty("asks");
@@ -79,16 +82,18 @@ public class CaBitMart : AnExchange
     public override async Task<Ticker> GetTickerAsync(string symbol)
     {
         Ticker t = new();
-        using (HttpClient c = new())
+        using HttpClient c = new();
+        
+        var res = await c.GetAsync($"https://api-cloud.bitmart.com/spot/quotation/v3/ticker?symbol={symbol}");
+
+        if (res.StatusCode == HttpStatusCode.OK)
         {
-            var res = await c.GetAsync($"https://api-cloud.bitmart.com/spot/quotation/v3/ticker?symbol={symbol}");
+            var s = res.Content.ReadAsStringAsync().Result;
+            JsonDocument j = JsonDocument.Parse(s);
+            JsonElement r = j.RootElement.GetProperty("data");
 
-            if (res.StatusCode == HttpStatusCode.OK)
+            try
             {
-                var s = res.Content.ReadAsStringAsync().Result;
-                JsonDocument j = JsonDocument.Parse(s);
-                JsonElement r = j.RootElement.GetProperty("data");
-
                 t.Symbol = r.GetProperty("symbol").GetString()!;
 
                 decimal last = sd(r.GetProperty("last"));
@@ -104,7 +109,12 @@ public class CaBitMart : AnExchange
                 t.LastPrice = last;
                 t.Volume = (ask_sz + bid_sz) * last / 2;
             }
+            catch (Exception ex)
+            {
+                Log.Error(ID, "GetTicker", ex.Message);
+            }
         }
+        
         return t;
     }
 

@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CaDb\CaDb.csproj" />
     <ProjectReference Include="..\CaExch2\CaExch2.csproj" />
+    <ProjectReference Include="..\TelegramBot1\TelegramBot1.csproj" />
   </ItemGroup>
 
   <ItemGroup>

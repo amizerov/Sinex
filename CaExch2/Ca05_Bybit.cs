@@ -16,10 +16,11 @@ public class CaBybit : AnExchange
     {
         return baseAsset + quoteAsset;
     }
-    public override CaOrderBook GetOrderBook(string symbol)
+    public override async Task<CaOrderBook> GetOrderBook(string symbol)
     {
         CaOrderBook orderBook = new(symbol);
         var ob = new BybitSymbolOrderBook(symbol, Category.Spot);
+        await ob.StartAsync();
 
         foreach (var b in ob.Asks)
         {

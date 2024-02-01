@@ -21,10 +21,11 @@ public class CaCoinEx : AnExchange
     {
         return baseAsset + quoteAsset;
     }
-    public override CaOrderBook GetOrderBook(string symbol)
+    public override async Task<CaOrderBook> GetOrderBook(string symbol)
     {
         CaOrderBook orderBook = new(symbol);
         var ob = new CoinExSpotSymbolOrderBook(_symbol);
+        await ob.StartAsync();
 
         foreach (var b in ob.Asks)
         {
@@ -91,8 +92,16 @@ public class CaCoinEx : AnExchange
     }
     public override async Task<Ticker> GetTickerAsync(string symbol)
     {
-        var r = await restClient.SpotApi.CommonSpotClient.GetTickerAsync(symbol);
-        return r.Data;
+        try
+        {
+            var r = await restClient.SpotApi.CommonSpotClient.GetTickerAsync(symbol);
+            return r.Data;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ID, $"GetTicker({symbol})", ex.Message);
+            return new Ticker();
+        }
     }
 
     public async override Task<List<Kline>> GetKlines(string symbol, string inter, int count)

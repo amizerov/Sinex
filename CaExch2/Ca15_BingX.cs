@@ -16,12 +16,13 @@ public class CaBingX : AnExchange
     {
         return baseAsset + "-" + quoteAsset;
     }
-    public override CaOrderBook GetOrderBook(string symbol)
+    public override async Task<CaOrderBook> GetOrderBook(string symbol)
     {
         CaOrderBook orderBook = new(symbol);
         using HttpClient c = new();
-        var r = c.GetAsync($"{BASE_URL}/openApi/spot/v1/market/depth?symbol={symbol}").Result;
-        var s = r.Content.ReadAsStringAsync().Result;
+        var r = await c.GetAsync($"{BASE_URL}/openApi/spot/v1/market/depth?symbol={symbol}");
+        var s = await r.Content.ReadAsStringAsync();
+
         JsonDocument j = JsonDocument.Parse(s);
         JsonElement e = j.RootElement;
         var asks = e.GetProperty("asks");
@@ -44,7 +45,8 @@ public class CaBingX : AnExchange
     public override async Task<Ticker> GetTickerAsync(string symbol)
     {
         Ticker t = new();
-        using (HttpClient c = new())
+        using HttpClient c = new();
+        try
         {
             long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             var res = await c.GetAsync(
@@ -69,6 +71,10 @@ public class CaBingX : AnExchange
                 t.LastPrice = last;
                 t.Volume = lastQty;
             }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ID, $"GetTicker({symbol})", ex.Message);
         }
         return t;
 

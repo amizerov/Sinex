@@ -16,16 +16,18 @@ public class CaAscendEx : AnExchange
     {
         return baseAsset + "/" + quoteAsset;
     }
-    public override CaOrderBook GetOrderBook(string symbol)
+    public override async Task<CaOrderBook> GetOrderBook(string symbol)
     {
         CaOrderBook orderBook = new(symbol);
         using HttpClient c = new();
-        var r = c.GetAsync($"{BASE_URL}/api/pro/v1/depth?symbol={symbol}").Result;
-        var s = r.Content.ReadAsStringAsync().Result;
+        var r = await c.GetAsync($"{BASE_URL}/api/pro/v1/depth?symbol={symbol}");
+        var s = await r.Content.ReadAsStringAsync();
+
         JsonDocument j = JsonDocument.Parse(s);
         JsonElement e = j.RootElement;
-        var asks = e.GetProperty("asks");
-        var bids = e.GetProperty("bids");
+        var data = e.GetProperty("data");
+        var asks = data.GetProperty("asks");
+        var bids = data.GetProperty("bids");
         foreach (var a in asks.EnumerateArray())
         {
             decimal p = sd(a[0]);
@@ -48,7 +50,8 @@ public class CaAscendEx : AnExchange
         {
             var res = await c.GetAsync($"{BASE_URL}/api/pro/v1/spot/ticker?symbol={symbol}");
 
-            if (res.StatusCode == HttpStatusCode.OK)
+            if (!res.IsSuccessStatusCode) return t;
+            try
             {
                 var s = res.Content.ReadAsStringAsync().Result;
                 JsonDocument j = JsonDocument.Parse(s);
@@ -68,6 +71,10 @@ public class CaAscendEx : AnExchange
                 t.LowPrice = ask_px;
                 t.LastPrice = last;
                 t.Volume = (ask_sz + bid_sz) * last / 2;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ID, "GetTicker", ex.Message);
             }
         }
         return t;

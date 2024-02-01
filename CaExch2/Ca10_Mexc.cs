@@ -10,17 +10,19 @@ namespace CaExch2;
 public class CaMexc : AnExchange
 {
     public override int ID => 10;
+    public const string BASE_URL = "https://api.mexc.com";
     public override string Name => "Mexc";
     public override string ValidateSymbol(string baseAsset, string quoteAsset)
     {
         return baseAsset + quoteAsset;
     }
-    public override CaOrderBook GetOrderBook(string symbol)
+    public override async Task<CaOrderBook> GetOrderBook(string symbol)
     {
-        CaOrderBook orderBook = new(symbol);
+        CaOrderBook orderBook = new(    symbol);
         using HttpClient c = new();
-        var r = c.GetAsync($"https://api.mexc.com/api/v3/depth?symbol={symbol}").Result;
-        var s = r.Content.ReadAsStringAsync().Result;
+        var r = await c.GetAsync($"{BASE_URL}/api/v3/depth?symbol={symbol}");
+        var s = await r.Content.ReadAsStringAsync();
+
         JsonDocument j = JsonDocument.Parse(s);
         JsonElement e = j.RootElement;
         var asks = e.GetProperty("asks");

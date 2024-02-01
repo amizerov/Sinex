@@ -34,7 +34,8 @@ public abstract class AnExchange
     public abstract int ID { get; }
     public virtual string Name => GetType().Name;
     public abstract string ValidateSymbol(string baseAsset, string quoteAsset);
-    public virtual CaOrderBook GetOrderBook(string symbol) {
+    public virtual async Task<CaOrderBook> GetOrderBook(string symbol) {
+        await Task.Delay(0);
         return new CaOrderBook(symbol);
     }
     public virtual Task<bool> CheckApiKey()
@@ -188,7 +189,7 @@ public abstract class AnExchange
         }
         catch (Exception e)
         {
-            Log.Error(ID, $"{Name} - sd", $"Error: {e.Message}");
+            Log.Error(ID, $"{Name} - sd({j+""})", $"Error: {e.Message}");
         }
         return d;
     }

@@ -16,12 +16,13 @@ public class CaBitGet : AnExchange
     {
         return baseAsset + quoteAsset + "_SPBL";
     }
-    public override CaOrderBook GetOrderBook(string symbol)
+    public override async Task<CaOrderBook> GetOrderBook(string symbol)
     {
         CaOrderBook orderBook = new(symbol);
         using HttpClient c = new();
-        var r = c.GetAsync($"{BASE_URL}/api/spot/v1/market/depth?symbol={symbol}&type=step0").Result;
-        var s = r.Content.ReadAsStringAsync().Result;
+        var r = await c.GetAsync($"{BASE_URL}/api/spot/v1/market/depth?symbol={symbol}&type=step0");
+        var s = await r.Content.ReadAsStringAsync();
+
         JsonDocument j = JsonDocument.Parse(s);
         JsonElement e = j.RootElement;
         var asks = e.GetProperty("asks");

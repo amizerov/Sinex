@@ -11,17 +11,19 @@ namespace CaExch2;
 public class CaGate : AnExchange
 {
     public override int ID => 11;
+    public const string BASE_URL = "https://api.gatemt.com";
     public override string Name => "Gate";
     public override string ValidateSymbol(string baseAsset, string quoteAsset)
     {
         return baseAsset + "_" + quoteAsset;
     }
-    public override CaOrderBook GetOrderBook(string symbol)
+    public override async Task<CaOrderBook> GetOrderBook(string symbol)
     {
         CaOrderBook orderBook = new(symbol);
         using HttpClient c = new();
-        var r = c.GetAsync($"https://api.gatemt.com/api/v4/spot/order_book?currency_pair={symbol}").Result;
-        var s = r.Content.ReadAsStringAsync().Result;
+        var r = await c.GetAsync($"{BASE_URL}/api/v4/spot/order_book?currency_pair={symbol}");
+        var s = await r.Content.ReadAsStringAsync();
+
         JsonDocument j = JsonDocument.Parse(s);
         JsonElement e = j.RootElement;
         var asks = e.GetProperty("asks");
