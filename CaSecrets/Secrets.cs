@@ -26,6 +26,37 @@ public static class Secrets
                 return "";
         }
     }
+    public static string KucoinApiKey
+    {
+        get
+        {
+            _keys = ReadKeysFromFile("Kucoin");
+            if (_keys.Count >= 2)
+                return _keys[0];
+            else
+                return "";
+        }
+    }
+    public static string KucoinApiSecret
+    {
+        get
+        {
+            if (_keys.Count >= 2)
+                return _keys[1];
+            else
+                return "";
+        }
+    }
+    public static string KucoinPassPhrase
+    {
+        get
+        {
+            if (_keys.Count >= 3)
+                return _keys[2];
+            else
+                return "";
+        }
+    }
     public static string KrakenApiKey
     {
         get

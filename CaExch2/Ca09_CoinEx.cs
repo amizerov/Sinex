@@ -24,7 +24,7 @@ public class CaCoinEx : AnExchange
     public override async Task<CaOrderBook> GetOrderBook(string symbol)
     {
         CaOrderBook orderBook = new(symbol);
-        var ob = new CoinExSpotSymbolOrderBook(_symbol);
+        var ob = new CoinExSpotSymbolOrderBook(symbol);
         await ob.StartAsync();
 
         foreach (var b in ob.Asks)

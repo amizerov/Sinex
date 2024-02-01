@@ -12,6 +12,7 @@ public class CaAscendEx : AnExchange
 {
     public override int ID => 13;
     public const string BASE_URL = "https://ascendex.com";
+    public override string Name => "AscendEx";
     public override string ValidateSymbol(string baseAsset, string quoteAsset)
     {
         return baseAsset + "/" + quoteAsset;
@@ -26,8 +27,9 @@ public class CaAscendEx : AnExchange
         JsonDocument j = JsonDocument.Parse(s);
         JsonElement e = j.RootElement;
         var data = e.GetProperty("data");
-        var asks = data.GetProperty("asks");
-        var bids = data.GetProperty("bids");
+        var d = data.GetProperty("data");
+        var asks = d.GetProperty("asks");
+        var bids = d.GetProperty("bids");
         foreach (var a in asks.EnumerateArray())
         {
             decimal p = sd(a[0]);

@@ -12,6 +12,7 @@ public class CaBitGet : AnExchange
 {
     public override int ID => 16;
     public const string BASE_URL = "https://api.bitget.com";
+    public override string Name => "BitGet";
     public override string ValidateSymbol(string baseAsset, string quoteAsset)
     {
         return baseAsset + quoteAsset + "_SPBL";
@@ -25,8 +26,11 @@ public class CaBitGet : AnExchange
 
         JsonDocument j = JsonDocument.Parse(s);
         JsonElement e = j.RootElement;
-        var asks = e.GetProperty("asks");
-        var bids = e.GetProperty("bids");
+
+        var data = e.GetProperty("data");
+        var asks = data.GetProperty("asks");
+        var bids = data.GetProperty("bids");
+
         foreach (var a in asks.EnumerateArray())
         {
             decimal p = sd(a[0]);

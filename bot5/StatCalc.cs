@@ -23,18 +23,19 @@ class CoinExchStat
     {
         if(coin == null || exchange == null) return;
         string symbol = exchange.ValidateSymbol(coin, "USDT");
-        //var t = await exchange.GetTickerAsync(symbol);
-        //if (t == null) return;
+        var t = await exchange.GetTickerAsync(symbol);
+        if (t == null) return;
 
 
-        //price = t.LastPrice;
-        //volum = t.Volume;
-        var ob = await exchange.GetOrderBook(symbol);
-        var pa = (decimal)ob.Asks.Min(a => a.Price);
-        var pb = (decimal)ob.Bids.Max(b => b.Price);
-        price = (pa + pb) / 2;
-        volum = ob.Asks.Sum(a => a.Quantity * a.Price) +
-            ob.Bids.Sum(b => b.Quantity * b.Price);
+        price = t.LastPrice;
+        volum = t.Volume;
+
+        //var ob = await exchange.GetOrderBook(symbol);
+        //var pa = (decimal)ob.Asks.Min(a => a.Price);
+        //var pb = (decimal)ob.Bids.Max(b => b.Price);
+        //price = (pa + pb) / 2;
+        //volum = ob.Asks.Sum(a => a.Quantity * a.Price) +
+        //    ob.Bids.Sum(b => b.Quantity * b.Price);
     }
     public async Task LoadData()
     {

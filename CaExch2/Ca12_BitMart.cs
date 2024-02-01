@@ -27,8 +27,9 @@ public class CaBitMart : AnExchange
 
         JsonDocument j = JsonDocument.Parse(s);
         JsonElement e = j.RootElement;
-        var asks = e.GetProperty("asks");
-        var bids = e.GetProperty("bids");
+        var data = e.GetProperty("data");
+        var asks = data.GetProperty("asks");
+        var bids = data.GetProperty("bids");
         foreach (var a in asks.EnumerateArray())
         {
             decimal p = sd(a[0]);

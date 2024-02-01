@@ -9,6 +9,7 @@ using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Sockets;
 using CryptoExchange.Net.Authentication;
 using CaSecrets;
+using Kucoin.Net.Objects;
 
 namespace CaExch2;
 public class CaKucoin : AnExchange
@@ -24,8 +25,8 @@ public class CaKucoin : AnExchange
         CaOrderBook orderBook = new(symbol);
         var ob = new KucoinSpotSymbolOrderBook(symbol, (options) =>
         {
-            options.ApiCredentials = new ApiCredentials(
-                Secrets.KucoinApiKey, Secrets.KucoinApiSecret
+            options.ApiCredentials = new KucoinApiCredentials(
+                Secrets.KucoinApiKey, Secrets.KucoinApiSecret, Secrets.KucoinPassPhrase
             );
         });
         var r = await ob.StartAsync();

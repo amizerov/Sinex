@@ -77,20 +77,38 @@ public class Telega
     public static async Task ProcessBundle(Bandle b)
     {
         if(_this == null) _this = new Telega();
-        await _this.SendMessage(CreateMessage(b));
+
+        var (profit, msg) = CreateMessage(b);
+
+        if (profit > 10)
+            await _this.SendMessage(msg);
     }
-    static string CreateMessage(Bandle b)
+    static (double, string) CreateMessage(Bandle b)
     {
-        string msg = b.coin + "/USDT";
+        var pbb = b.priceBuyBid;
+        var pba = b.priceBuyAsk;
+        var pbm = (pbb + pba) / 2;
+        var psb = b.priceSellBid;
+        var psa = b.priceSellAsk;
+        var psm = (psb + psa) / 2;
+        var proc = Math.Round(100 * (psm - pbm) / pbm, 2);
+        var recVol = Math.Round(Math.Min(b.volBuy, b.volSell)/3, 2);
+        var commis = Math.Round(b.withdrawFee * pbm, 2);
+        var profit = Math.Round(recVol * proc / 100 - commis, 2);
+
+        string msg = b.coin + "/USDT\n\r";
         msg += $"{b.exchBuy} вывод \n\r";
-        msg += $"Цена: {(b.priceBuyBid + b.priceBuyAsk)/2} [{b.priceBuyBid}-{b.priceBuyAsk}]\n\r";
+        msg += $"Цена: {pbm} [{pbb}-{pba}]\n\r";
         msg += $"Объем: {b.volBuy}$\n\r";
         msg += $"{b.exchSell} ввод \n\r";
-        msg += $"Цена: {(b.priceSellBid + b.priceSellAsk) / 2} [{b.priceSellBid}-{b.priceSellAsk}]\n\r";
+        msg += $"Цена: {psm} [{psb}-{psa}]\n\r";
         msg += $"Объем: {b.volSell}$\n\r";
-        msg += $"Комиссия: {b.withdrawFee}\n\r";
+        msg += $"Комиссия за вывод: {commis}$\n\r";
         msg += "Сеть: " + b.chain + "\n\r";
+        msg += $"Процент прибыли: {proc}%\n\r";
+        msg += $"Рекомендуемая сумма вложения: {recVol}$\n\r";
+        msg += $"Прибыль с учетом комиссии: {profit}$";
 
-        return msg;
+        return (profit, msg);
     }
 }

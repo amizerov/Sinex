@@ -1,4 +1,5 @@
-﻿using CryptoExchange.Net.CommonObjects;
+﻿using amLogger;
+using CryptoExchange.Net.CommonObjects;
 using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Sockets;
@@ -22,25 +23,27 @@ public class CaGate : AnExchange
         CaOrderBook orderBook = new(symbol);
         using HttpClient c = new();
         var r = await c.GetAsync($"{BASE_URL}/api/v4/spot/order_book?currency_pair={symbol}");
-        var s = await r.Content.ReadAsStringAsync();
-
-        JsonDocument j = JsonDocument.Parse(s);
-        JsonElement e = j.RootElement;
-        var asks = e.GetProperty("asks");
-        var bids = e.GetProperty("bids");
-        foreach (var a in asks.EnumerateArray())
+        if(!r.IsSuccessStatusCode) return orderBook;
+        try
         {
-            decimal p = sd(a[0]);
-            decimal q = sd(a[1]);
-            orderBook.Asks.Add(new OrderBookEntry() { Price = p, Quantity = q });
-        }
-        foreach (var b in bids.EnumerateArray())
-        {
-            decimal p = sd(b[0]);
-            decimal q = sd(b[1]);
-            orderBook.Bids.Add(new OrderBookEntry() { Price = p, Quantity = q });
-        }
-
+            var s = await r.Content.ReadAsStringAsync();
+            JsonDocument j = JsonDocument.Parse(s);
+            JsonElement e = j.RootElement;
+            var asks = e.GetProperty("asks");
+            var bids = e.GetProperty("bids");
+            foreach (var a in asks.EnumerateArray())
+            {
+                decimal p = sd(a[0]);
+                decimal q = sd(a[1]);
+                orderBook.Asks.Add(new OrderBookEntry() { Price = p, Quantity = q });
+            }
+            foreach (var b in bids.EnumerateArray())
+            {
+                decimal p = sd(b[0]);
+                decimal q = sd(b[1]);
+                orderBook.Bids.Add(new OrderBookEntry() { Price = p, Quantity = q });
+            }
+        } catch (Exception ex) { Log.Error(ID, "GetOrderBook", ex.Message); }
         return orderBook;
     }
     public override List<string> Intervals => new List<string>()
