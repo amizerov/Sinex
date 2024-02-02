@@ -80,8 +80,11 @@ public class Telega
 
         var (profit, msg) = CreateMessage(b);
 
-        if (profit > 10)
+        if (profit > 100)
+        {
             await _this.SendMessage(msg);
+            await b.Save();
+        }
     }
     static (double, string) CreateMessage(Bandle b)
     {
@@ -96,15 +99,17 @@ public class Telega
         var commis = Math.Round(b.withdrawFee * pbm, 2);
         var profit = Math.Round(recVol * proc / 100 - commis, 2);
 
-        string msg = b.coin + "/USDT\n\r";
-        msg += $"{b.exchBuy} вывод \n\r";
-        msg += $"Цена: {pbm} [{pbb}-{pba}]\n\r";
-        msg += $"Объем: {b.volBuy}$\n\r";
-        msg += $"{b.exchSell} ввод \n\r";
-        msg += $"Цена: {psm} [{psb}-{psa}]\n\r";
-        msg += $"Объем: {b.volSell}$\n\r";
+        string msg = $"{b.coin}/USDT\n\r";
+        msg += $"{b.exchBuy} вывод (тут покупаем) \n\r";
+        msg += $"Цена в стакане: {pbm} [{pbb}-{pba}]\n\r";
+        msg += $"Цена последней сделки: {b.lastBuy}\n\r";
+        msg += $"Объем в стакане на продажу: {b.volBuy}$\n\r";
+        msg += $"{b.exchSell} ввод (тут продаем)\n\r";
+        msg += $"Цена в стакане: {psm} [{psb}-{psa}]\n\r";
+        msg += $"Цена последней сделки: {b.lastSell}\n\r";
+        msg += $"Объем в стакане на покупку: {b.volSell}$\n\r";
         msg += $"Комиссия за вывод: {commis}$\n\r";
-        msg += "Сеть: " + b.chain + "\n\r";
+        msg += $"Сеть: {b.chain}\n\r";
         msg += $"Процент прибыли: {proc}%\n\r";
         msg += $"Рекомендуемая сумма вложения: {recVol}$\n\r";
         msg += $"Прибыль с учетом комиссии: {profit}$";

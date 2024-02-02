@@ -12,8 +12,16 @@ public class Bandle
     public float priceSellAsk { get; set; }
     public float volBuy { get; set; }
     public float volSell { get; set; }
+    public float lastBuy { get; set; }
+    public float lastSell { get; set; }
+    public float lastVolBuy { get; set; }
+    public float lastVolSell { get; set; }
     public string chain { get; set; } = "";
     public float withdrawFee { get; set; }
     public DateTime? dtu { get; set; }
+    public async Task Save()
+    {
+        await Db.SaveBandle(this);
+    }
 }
 

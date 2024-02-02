@@ -54,7 +54,6 @@ class FullStat : List<CoinExchStat>
     public decimal proc { get; set; } = 0;
     public decimal volSell { get; set; }
     public decimal volBuy { get; set; }
-    public List<Bandle> Bandles { get; set; } = new();
 
     public static async Task<FullStat> Calculate(
         string exchengesString, string baseAsset,
@@ -144,22 +143,33 @@ class FullStat : List<CoinExchStat>
 
                 Ticker tBuy = await excBuy.GetTickerAsync(symbolBuy);
                 Ticker tSell = await excSell.GetTickerAsync(symbolSell);
-                if (tBuy.LastPrice == null || tSell.LastPrice == null) return;
+                if (tBuy.LastPrice == null || tSell.LastPrice == null) continue;
 
                 decimal pb = (decimal)tBuy.LastPrice;
                 decimal ps = (decimal)tSell.LastPrice;
                 decimal proc = 100 * (ps - pb) / Math.Max(ps, pb);
 
-                if ((float)proc < minProc) return;
+                if ((float)proc < minProc) continue;
 
                 CaOrderBook obBuy = await excBuy.GetOrderBook(symbolBuy);
                 CaOrderBook obSell = await excSell.GetOrderBook(symbolSell);
-                if (obBuy == null || obSell == null) return;
+                if (obBuy == null || obSell == null) continue;
+
+                Ticker tb = await excBuy.GetTickerAsync(symbolBuy);
+                Ticker ts = await excSell.GetTickerAsync(symbolSell);
+                var lastBuy = tb.LastPrice ?? 0;
+                var lastSell = ts.LastPrice ?? 0;
+                var lastVolBuy = tb.Volume ?? 0;
+                var lastVolSell = ts.Volume ?? 0;
+                if(lastBuy == 0 || lastSell == 0) continue;
+                if(lastVolBuy == 0 || lastVolSell == 0) continue;
 
                 volBuy = obBuy.Asks.Sum(a => a.Quantity*a.Price);
                 volSell = obSell.Bids.Sum(b => b.Quantity*b.Price);
+                volBuy = Math.Round(volBuy, 2);
+                volSell = Math.Round(volSell, 2);
 
-                if(volSell < 100 || volBuy < 100) return;
+                if (volSell < 100 || volBuy < 100) continue;
 
                 Bandle b = new()
                 {
@@ -172,10 +182,13 @@ class FullStat : List<CoinExchStat>
                     priceSellAsk = (float)obSell.Asks.Min(b => b.Price),
                     volBuy = (float)volBuy,
                     volSell = (float)volSell,
+                    lastBuy = (float)lastBuy,
+                    lastSell = (float)lastSell,
+                    lastVolBuy = (float)lastVolBuy,
+                    lastVolSell = (float)lastVolSell,
                     chain = chBuy.chainName!,
                     withdrawFee = (float)(chBuy.withdrawFee ?? 0),
                 };
-                Bandles.Add(b);
                 await Telega.ProcessBundle(b);
             }
         }
