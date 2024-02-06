@@ -65,7 +65,8 @@ public class Telega
             {
                 await botClient.SendTextMessageAsync(
                     chatId: chId,
-                    text: msg
+                    text: msg,
+                    parseMode: ParseMode.Html
                 );
             }
             catch (Exception ex)
@@ -76,17 +77,22 @@ public class Telega
     }
     public static async Task ProcessBundle(Bandle b)
     {
-        if(_this == null) _this = new Telega();
+        if (_this == null) _this = new Telega();
 
-        var (profit, msg) = CreateMessage(b);
+        var (profit, proc, msg) = CreateMessage(b);
 
-        if (profit > 100)
+        if (profit > 99 && proc > 1.2 && proc < 15)
         {
             await _this.SendMessage(msg);
             await b.Save();
+            return;
         }
+        if (profit < 99) Log.Trace("Telega", $"profit {profit} < 99");
+        if (proc < 1.2) Log.Trace("Telega", $"proc {proc} < 1.2%");
+        if (proc > 15) Log.Trace("Telega", $"proc {proc} > 15%");
+
     }
-    static (double, string) CreateMessage(Bandle b)
+    static (double, double, string) CreateMessage(Bandle b)
     {
         var pbb = b.priceBuyBid;
         var pba = b.priceBuyAsk;
@@ -99,21 +105,21 @@ public class Telega
         var commis = Math.Round(b.withdrawFee * pbm, 2);
         var profit = Math.Round(recVol * proc / 100 - commis, 2);
 
-        string msg = $"{b.coin}/USDT\n\r";
-        msg += $"{b.exchBuy} вывод (тут покупаем) \n\r";
+        string msg = $"<b>{b.coin}/USDT {b.exchBuy}->({b.chain})->{b.exchSell}</b>\n\r";
+        msg += $"<b>{b.exchBuy}</b> вывод (тут покупаем) \n\r";
         msg += $"Цена в стакане: {pbm} [{pbb}-{pba}]\n\r";
         msg += $"Цена последней сделки: {b.lastBuy}\n\r";
         msg += $"Объем в стакане на продажу: {b.volBuy}$\n\r";
-        msg += $"{b.exchSell} ввод (тут продаем)\n\r";
+        msg += $"<b>{b.exchSell}</b> ввод (тут продаем)\n\r";
         msg += $"Цена в стакане: {psm} [{psb}-{psa}]\n\r";
         msg += $"Цена последней сделки: {b.lastSell}\n\r";
         msg += $"Объем в стакане на покупку: {b.volSell}$\n\r";
         msg += $"Комиссия за вывод: {commis}$\n\r";
-        msg += $"Сеть: {b.chain}\n\r";
-        msg += $"Процент прибыли: {proc}%\n\r";
-        msg += $"Рекомендуемая сумма вложения: {recVol}$\n\r";
-        msg += $"Прибыль с учетом комиссии: {profit}$";
+        msg += $"Сеть: <b>{b.chain}</b>\n\r";
+        msg += $"Процент прибыли: <b>{proc}%</b>\n\r";
+        msg += $"Рекомендуемая сумма вложения: <b>{recVol}</b>$\n\r";
+        msg += $"Прибыль с учетом комиссии: <b>{profit}</b>$";
 
-        return (profit, msg);
+        return (profit, proc, msg);
     }
 }

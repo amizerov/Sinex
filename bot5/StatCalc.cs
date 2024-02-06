@@ -78,8 +78,14 @@ class FullStat : List<CoinExchStat>
             onStep?.Invoke(coinStat);
         }
         st.Calc();
-        await st.TryAddMeToBundles();
-
+        try
+        {
+            await st.TryAddMeToBundles();
+        }
+        catch (Exception ex)
+        {
+            Log.Trace("TryAddMeToBundles", "Error: " + ex.Message);
+        }
         return st;
     }
     private void Calc()
@@ -121,10 +127,10 @@ class FullStat : List<CoinExchStat>
         if (coin == null || excSell == null || excBuy == null) return;
         if ((float)proc < minProc) return;
 
-        bool allowDeposit = await Db.GetAllowDeposit(excSell.ID, coin!);
+        bool allowDeposit = await Db.GetAllowDeposit(excSell.ID, coin);
         if (!allowDeposit) return;
 
-        bool allowWithraw = await Db.GetAllowWithdra(excBuy!.ID, coin!);
+        bool allowWithraw = await Db.GetAllowWithdra(excBuy.ID, coin);
         if (!allowWithraw) return;
 
         List<CoinChain> chainsBuy = await Db.GetCoinChains(excBuy.ID, coin!);
@@ -137,39 +143,63 @@ class FullStat : List<CoinExchStat>
                 if (chBuy.chainId == null) continue;
                 if (chBuy.chainId == 0) continue;
 
-                Log.Trace("TryAddMeToBundles", coin);
+                Log.Trace("TryAddMeToBundles", 
+                    $"{coin} {excBuy.Name}->({chBuy.chainName}|{chSell.chainName})->{excSell.Name}");
+
                 string symbolBuy = excBuy.ValidateSymbol(coin, "USDT");
                 string symbolSell = excSell.ValidateSymbol(coin, "USDT");
 
                 Ticker tBuy = await excBuy.GetTickerAsync(symbolBuy);
                 Ticker tSell = await excSell.GetTickerAsync(symbolSell);
-                if (tBuy.LastPrice == null || tSell.LastPrice == null) continue;
-
+                if (tBuy.LastPrice == null || tSell.LastPrice == null)
+                {
+                    Log.Trace("1", "Ticker.LastPrice is null");
+                    continue;
+                }
                 decimal pb = (decimal)tBuy.LastPrice;
                 decimal ps = (decimal)tSell.LastPrice;
                 decimal proc = 100 * (ps - pb) / Math.Max(ps, pb);
 
-                if ((float)proc < minProc) continue;
+                if ((float)proc < minProc)
+                {
+                    Log.Trace("2", $"proc({proc}) < minProc({minProc})");
+                    continue;
+                }
 
                 CaOrderBook obBuy = await excBuy.GetOrderBook(symbolBuy);
                 CaOrderBook obSell = await excSell.GetOrderBook(symbolSell);
-                if (obBuy == null || obSell == null) continue;
-
+                if (obBuy == null || obSell == null)
+                {
+                    Log.Trace("3", $"obBuy null or obSell null");
+                    continue;
+                }
                 Ticker tb = await excBuy.GetTickerAsync(symbolBuy);
                 Ticker ts = await excSell.GetTickerAsync(symbolSell);
                 var lastBuy = tb.LastPrice ?? 0;
                 var lastSell = ts.LastPrice ?? 0;
                 var lastVolBuy = tb.Volume ?? 0;
                 var lastVolSell = ts.Volume ?? 0;
-                if(lastBuy == 0 || lastSell == 0) continue;
-                if(lastVolBuy == 0 || lastVolSell == 0) continue;
+                if(lastBuy == 0 || lastSell == 0)
+                {
+                    Log.Trace("4", $"lastBuy 0 or lastSell 0");
+                    continue;
+                }
+                if (lastVolBuy == 0 || lastVolSell == 0)
+                {
+                    Log.Trace("5", $"lastVolBuy 0 or lastVolSell  0");
+                    continue;
+                }
 
                 volBuy = obBuy.Asks.Sum(a => a.Quantity*a.Price);
                 volSell = obSell.Bids.Sum(b => b.Quantity*b.Price);
                 volBuy = Math.Round(volBuy, 2);
                 volSell = Math.Round(volSell, 2);
 
-                if (volSell < 100 || volBuy < 100) continue;
+                if (volSell < 100 || volBuy < 100)
+                {
+                    Log.Trace("6", $"volSell or volBuy < 100");
+                    continue;
+                }
 
                 Bandle b = new()
                 {
@@ -193,12 +223,10 @@ class FullStat : List<CoinExchStat>
             }
         }
 
-        double? withdrawaFee = await Db.GetWithdrawaFee(excBuy!.ID, coin!);
+        double withdrawaFee = await Db.GetWithdrawaFee(excBuy.ID, coin) ?? 0;
     }
     void FindMoreBundles()
     {
-
-
         // Кроме максимального процента разницы цен
         // сохраняем все остальные варианты между биржами
         string q1 = $"[{excSell!.ID}|{excBuy!.ID}]";
