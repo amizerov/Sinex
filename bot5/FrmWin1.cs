@@ -12,6 +12,7 @@ public partial class FrmWin1 : Form
     {
         InitializeComponent();
         (new FrmLog()).Show();
+        TelegramBot1.Telega.Init();
     }
 
     void LoadProducts()

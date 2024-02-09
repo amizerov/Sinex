@@ -18,20 +18,23 @@ public class Db
         }
 
     }
-    public static async Task AddCaTeleBotUser(long chatId)
+    public static async Task AddCaTeleBotUser(long chatId, string userName="")
     {
         using (CaDbContext db = new())
         {
             await db.Database
                 .ExecuteSqlAsync(
                     @$"
-                        if not exists(
-                            select * from 
-                            Sinex_CaTeleBotUsers 
-                            where chatId={chatId}
-                        )
-                            insert Sinex_CaTeleBotUsers(chatId) 
-                            values({chatId})"
+                        declare @id int
+                        select @id=ID from Sinex_CaTeleBotUsers where chatId={chatId}
+
+                        if @id is null
+                            insert Sinex_CaTeleBotUsers(chatId,userName) 
+                            values({chatId},{userName})
+                        else
+                            update Sinex_CaTeleBotUsers 
+                            set userName={userName}, dtu=getdate() where ID=@id
+                    "
                  );
         }
     }
@@ -43,22 +46,22 @@ public class Db
             .ExecuteSqlAsync(@$"
 
                 INSERT Sinex_Bundles
-                    (   coin
-                        ,exchBuy
-                        ,exchSell
-                        ,priceBuyBid
-                        ,priceBuyAsk
-                        ,priceSellBid
-                        ,priceSellAsk
-                        ,volBuy
-                        ,volSell
-                        ,lastBuy
-                        ,lastSell
-                        ,lastVolBuy
-                        ,lastVolSell
-                        ,chain
-                        ,withdrawFee
-                    )
+                (   coin
+                    ,exchBuy
+                    ,exchSell
+                    ,priceBuyBid
+                    ,priceBuyAsk
+                    ,priceSellBid
+                    ,priceSellAsk
+                    ,volBuy
+                    ,volSell
+                    ,lastBuy
+                    ,lastSell
+                    ,lastVolBuy
+                    ,lastVolSell
+                    ,chain
+                    ,withdrawFee
+                )
                 VALUES(
                     {b.coin},
                     {b.exchBuy},{b.exchSell},

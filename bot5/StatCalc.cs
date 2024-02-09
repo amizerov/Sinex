@@ -1,6 +1,7 @@
 ﻿using amLogger;
 using CaExch2;
 using CryptoExchange.Net.CommonObjects;
+using System.Runtime.CompilerServices;
 using TelegramBot1;
 
 namespace bot5;
@@ -81,6 +82,7 @@ class FullStat : List<CoinExchStat>
         try
         {
             await st.TryAddMeToBundles();
+            await st.FindMoreBundles();
         }
         catch (Exception ex)
         {
@@ -219,13 +221,13 @@ class FullStat : List<CoinExchStat>
                     chain = chBuy.chainName!,
                     withdrawFee = (float)(chBuy.withdrawFee ?? 0),
                 };
-                await Telega.ProcessBundle(b);
+                await b.TryToPublish();
             }
         }
 
         double withdrawaFee = await Db.GetWithdrawaFee(excBuy.ID, coin) ?? 0;
     }
-    void FindMoreBundles()
+    async Task FindMoreBundles()
     {
         // Кроме максимального процента разницы цен
         // сохраняем все остальные варианты между биржами
@@ -242,15 +244,19 @@ class FullStat : List<CoinExchStat>
                 if (w.Contains(q1) || w.Contains(q2)) continue;
                 w += q1 + q2;// добавляем пару в список сохраненных
 
-                decimal proc = Math.Abs(
-                    100 * (decimal)(s1.price - s2.price)!
-                        / Math.Max((decimal)s1.price!, (decimal)s2.price!));
-                string excBuy = s1.price < s2.price ? s1.exchange!.Name : s2.exchange!.Name;
-                string excSell = s1.price < s2.price ? s2.exchange!.Name : s1.exchange!.Name;
-                decimal? volBuy = s1.price < s2.price ? s1.volum : s2.volum;
-                decimal? volSell = s1.price < s2.price ? s2.volum : s1.volum;
+                decimal p1 = s1.price ?? 0;
+                decimal p2 = s2.price ?? 0;
+                decimal v1 = s1.volum ?? 0;
+                decimal v2 = s2.volum ?? 0;
+                if(p1 == 0 || p2 == 0 || v1 == 0 || v2 == 0) continue;
 
+                proc = Math.Abs(100 * (p1 - p2) / Math.Max(p1, p2));
+                excBuy = p1 < p2 ? s1.exchange : s2.exchange;
+                excSell = p1 < p2 ? s2.exchange : s1.exchange;
+                volBuy = p1 < p2 ? v1 : v2;
+                volSell = p1 < p2 ? v2 : v1;
 
+                await TryAddMeToBundles();
             }
         }
 
