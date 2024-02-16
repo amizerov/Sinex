@@ -231,6 +231,7 @@ class FullStat : List<CoinExchStat>
     {
         // Кроме максимального процента разницы цен
         // сохраняем все остальные варианты между биржами
+        if (excBuy == null || excSell == null) return;
         string q1 = $"[{excSell!.ID}|{excBuy!.ID}]";
         string q2 = $"[{excBuy.ID}|{excSell.ID}]";
         string w = q1 + q2;// эти пары бирж уже сохранены

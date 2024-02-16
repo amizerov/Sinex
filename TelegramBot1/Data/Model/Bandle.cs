@@ -28,7 +28,7 @@ public class Bandle
 
         if (profit > 99 && proc > 1.2 && proc < 15)
         {
-            await Telega.SendMessage(msg);
+            await Telega.SendMessageToAll(msg);
             await Db.SaveBandle(this);
             return;
         }

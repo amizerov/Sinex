@@ -5,6 +5,7 @@ using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 using Update = Telegram.Bot.Types.Update;
 
 namespace TelegramBot1;
@@ -13,10 +14,20 @@ namespace TelegramBot1;
 public class Telega
 {
     public static event Action? RequestStart;
-    static Telega? _this;
+    public static event Action? RequestReStart;
+    public static bool IsRunning { get => _isRunning; 
+        set
+        {
+            _isRunning = value;
+            string msg = _isRunning ? "Сканирование запущено" : "Сканирование остановлено";
+            SendMessageToAll(msg);
+        } 
+    }
+    static bool _isRunning = false;
 
-    TelegramBotClient botClient = new(Secrets.Sinex_CaTelegramBotToken);
-    CancellationTokenSource cts = new();
+    static Telega? _this;
+    TelegramBotClient _botClient;
+    CancellationTokenSource _cts;
 
     public static void Init()
     {
@@ -25,19 +36,13 @@ public class Telega
 
     Telega()
     {
-        // StartReceiving does not block the caller thread. Receiving is done on the ThreadPool.
+        _cts = new();
+        _botClient = new(Secrets.Sinex_CaTelegramBotToken);
         ReceiverOptions receiverOptions = new()
         {
-            // receive all update types except ChatMember related updates
-            AllowedUpdates = [
-                UpdateType.Message,         // Сообщения
-                UpdateType.InlineQuery,     // Команды
-                UpdateType.CallbackQuery    // Кнопки
-            ],
-            ThrowPendingUpdates = true
+            AllowedUpdates = [UpdateType.Message, UpdateType.CallbackQuery, UpdateType.InlineQuery]
         };
-
-        botClient.StartReceiving(UpdateHandler, ErrorHandler, receiverOptions, cts.Token);
+        _botClient.StartReceiving(UpdateHandler, ErrorHandler, receiverOptions, _cts.Token);
     }
 
     Task ErrorHandler(ITelegramBotClient client, Exception exception, CancellationToken token)
@@ -55,19 +60,50 @@ public class Telega
 
     async Task UpdateHandler(ITelegramBotClient client, Update update, CancellationToken token)
     {
-        switch(update.Type)
+        var message = update.Message;
+        if (message == null || message.Type != MessageType.Text) return;
+        var chatId = message.Chat.Id;
+        string userName = message.From == null ? "" : message.From.Username ?? "";
+
+        await Db.AddCaTeleBotUser(chatId, userName);
+
+        switch (message.Text)
         {
-            case UpdateType.Message:
-                if (update.Message is not { } message) return;
-                await OnMessage(update.Message);
+            case "/status":
+                string msg = IsRunning ? "Сканирование запущено" : "Сканирование остановлено";
+                await SendMessageToOne(chatId, msg);
                 break;
-            case UpdateType.InlineQuery:
+            case "/stscan":
+                if (_isRunning) { 
+                    await SendMessageToOne(chatId, "Уже запущено");
+                }
+                else
+                {
+                    await SendMessageToAll("Начинаю сканить");
+                    RequestStart?.Invoke();
+                }
+                break;
+            case "/restart":
+                RequestReStart?.Invoke();
                 break;
             default:
                 break;
         }
     }
-    async Task OnMessage(Message message)
+    private static InlineKeyboardMarkup GetInlineKeyboardMarkup()
+    {
+        var keyboardButtons = new[]
+        {
+            new[]
+            {
+                InlineKeyboardButton.WithCallbackData("Button 1"),
+                InlineKeyboardButton.WithCallbackData("Button 2")
+            },
+        };
+
+        return new InlineKeyboardMarkup(keyboardButtons);
+    }
+    async Task RegisterUser(Message message)
     {
         var user = message.From;
         var chatId = message.Chat.Id;
@@ -75,16 +111,32 @@ public class Telega
 
         await Db.AddCaTeleBotUser(chatId, userName);
     }
-    public static async Task SendMessage(string msg)
+    private async Task SendMessageToOne(long chatId, string msg)
+    {
+        try
+        {
+            await _botClient.SendTextMessageAsync(
+                chatId: chatId,
+                text: msg,
+                parseMode: ParseMode.Html
+            );
+        }
+        catch (Exception ex)
+        {
+            Log.Error("Send", ex.Message);
+        }
+    }
+
+    public static async Task SendMessageToAll(string msg)
     {
         List<long> chatIds = Db.GetCaTeleBotUsers();
         foreach (var chId in chatIds)
         {
             try
             {
-                if(_this == null) _this = new();
+                if (_this == null) _this = new();
 
-                await _this.botClient.SendTextMessageAsync(
+                await _this._botClient.SendTextMessageAsync(
                     chatId: chId,
                     text: msg,
                     parseMode: ParseMode.Html
@@ -97,3 +149,4 @@ public class Telega
         }
     }
 }
+

@@ -1,4 +1,6 @@
 ﻿using amLogger;
+using System.Diagnostics;
+using TelegramBot1;
 
 namespace bot5;
 
@@ -12,7 +14,6 @@ public partial class FrmWin1 : Form
     {
         InitializeComponent();
         (new FrmLog()).Show();
-        TelegramBot1.Telega.Init();
     }
 
     void LoadProducts()
@@ -33,6 +34,27 @@ public partial class FrmWin1 : Form
 
         _loaded = true;
         statusCount.Text = dgvProds.Rows.Count.ToString();
+
+        Telega.Init();
+        Telega.RequestStart += () 
+            => Invoke(() => { 
+                btnReload_Click(this, new EventArgs()); 
+                btnScan_Click(this, new EventArgs());
+        });
+        Telega.RequestReStart += () 
+            => Invoke(() => {
+                try
+                {
+                    Process process = new Process();
+                    process.StartInfo.FileName = "bot5.exe";
+                    process.Start();
+                    this.Close();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Telega", ex.Message);
+                }
+        });
     }
 
     private void FrmWin1_Load(object sender, EventArgs e)
@@ -72,7 +94,7 @@ public partial class FrmWin1 : Form
         lblExc1.Text = st.excBuy.Name;
         lblExc2.Text = st.excSell.Name;
         lblMaxProc.Text = st.proc + "%";
-    
+
         _loaded = true;
     }
 
@@ -99,7 +121,8 @@ public partial class FrmWin1 : Form
         int rowIndex = -1;
         var rs = dgvProds.Rows
             .Cast<DataGridViewRow>()
-                .Where(r => {
+                .Where(r =>
+                {
                     var c = r.Cells[0];
                     if (c == null) return false;
                     var v = c.Value;
@@ -144,7 +167,7 @@ public partial class FrmWin1 : Form
                 if (st == null || st.excSell == null || st.excBuy == null)
                 {
                     Log.Warn(asset, "sciped 2");
-                    continue; 
+                    continue;
                 }
 
                 r.Cells[2].Value = st.proc.ToString();
@@ -154,7 +177,7 @@ public partial class FrmWin1 : Form
                 ColorizeRow(r, st.proc);
                 if (st.volSell > 0 && st.volBuy > 0)
                 {
-                    if(frmArbitrage.Visible)
+                    if (frmArbitrage.Visible)
                         Invoke(() => frmArbitrage.btnUpdate_Click(this, new EventArgs()));
                 }
 
@@ -193,14 +216,17 @@ public partial class FrmWin1 : Form
         {
             btnScan.Text = "Stop scan";
             btnReload.Enabled = false;
-            //txtSearch.Enabled = false;
+            Telega.IsRunning = true;
 
-            StartScan(() => {
-                Invoke(() =>
+            StartScan(() =>
+            {
+                Invoke(async () =>
                 {
                     btnScan.Text = "Scan";
                     btnReload.Enabled = true;
                     txtSearch.Enabled = true;
+                    Telega.IsRunning = false;
+                    await Telega.SendMessageToAll("Сканирование завершено");
                 });
             });
         }
@@ -208,8 +234,36 @@ public partial class FrmWin1 : Form
         {
             btnScan.Text = "Scan";
             btnReload.Enabled = true;
-            //txtSearch.Enabled = true;
+            Telega.IsRunning = false;
         }
 
+    }
+
+    private void btnBot1_Click(object sender, EventArgs e)
+    {
+        // Укажите путь к исполняемому файлу
+        string pathToExe = "D:\\Projects\\CryptoTrading\\Sinex\\bot1\\bin\\Debug\\net8.0-windows\\bot1.exe";
+
+        // Создаем новый процесс
+        Process process = new Process();
+
+        try
+        {
+            // Устанавливаем свойства процесса
+            process.StartInfo.FileName = pathToExe;
+
+            // Запускаем процесс
+            process.Start();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Ошибка при запуске приложения: " + ex.Message);
+        }
+        finally
+        {
+            // Важно закрыть процесс после использования
+            process.Close();
+            process.Dispose();
+        }
     }
 }
