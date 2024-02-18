@@ -10,11 +10,11 @@ using Update = Telegram.Bot.Types.Update;
 
 namespace TelegramBot1;
 
-
-public class Telega
+public partial class Telega
 {
-    public static event Action? RequestStart;
-    public static event Action? RequestReStart;
+    public static event Action? cmdStart; void CmdStart() => cmdStart?.Invoke();
+    public static event Action? cmdReset; void CmdReset() => cmdReset?.Invoke();
+
     public static bool IsRunning { get => _isRunning; 
         set
         {
@@ -40,7 +40,8 @@ public class Telega
         _botClient = new(Secrets.Sinex_CaTelegramBotToken);
         ReceiverOptions receiverOptions = new()
         {
-            AllowedUpdates = [UpdateType.Message, UpdateType.CallbackQuery, UpdateType.InlineQuery]
+            AllowedUpdates = [UpdateType.Message, UpdateType.CallbackQuery, UpdateType.InlineQuery],
+            ThrowPendingUpdates = true,
         };
         _botClient.StartReceiving(UpdateHandler, ErrorHandler, receiverOptions, _cts.Token);
     }
@@ -57,61 +58,26 @@ public class Telega
         Log.Error("Telega", ErrorMessage);
         return Task.CompletedTask;
     }
-
     async Task UpdateHandler(ITelegramBotClient client, Update update, CancellationToken token)
     {
+        if (update.CallbackQuery != null)
+        {
+            var cid = update.CallbackQuery.From.Id;
+            var data = update.CallbackQuery.Data ?? "пусто";
+            await SendMessageToOne(cid, data);
+        }
+
         var message = update.Message;
-        if (message == null || message.Type != MessageType.Text) return;
+        if(message == null) return;
         var chatId = message.Chat.Id;
+        if (message.Type != MessageType.Text) return;
         string userName = message.From == null ? "" : message.From.Username ?? "";
 
         await Db.AddCaTeleBotUser(chatId, userName);
 
-        switch (message.Text)
-        {
-            case "/status":
-                string msg = IsRunning ? "Сканирование запущено" : "Сканирование остановлено";
-                await SendMessageToOne(chatId, msg);
-                break;
-            case "/stscan":
-                if (_isRunning) { 
-                    await SendMessageToOne(chatId, "Уже запущено");
-                }
-                else
-                {
-                    await SendMessageToAll("Начинаю сканить");
-                    RequestStart?.Invoke();
-                }
-                break;
-            case "/restart":
-                RequestReStart?.Invoke();
-                break;
-            default:
-                break;
-        }
+        await OnMessage(message.Text, chatId);
     }
-    private static InlineKeyboardMarkup GetInlineKeyboardMarkup()
-    {
-        var keyboardButtons = new[]
-        {
-            new[]
-            {
-                InlineKeyboardButton.WithCallbackData("Button 1"),
-                InlineKeyboardButton.WithCallbackData("Button 2")
-            },
-        };
-
-        return new InlineKeyboardMarkup(keyboardButtons);
-    }
-    async Task RegisterUser(Message message)
-    {
-        var user = message.From;
-        var chatId = message.Chat.Id;
-        string userName = user == null ? "" : user.Username ?? "";
-
-        await Db.AddCaTeleBotUser(chatId, userName);
-    }
-    private async Task SendMessageToOne(long chatId, string msg)
+    async Task SendMessageToOne(long chatId, string msg)
     {
         try
         {
@@ -126,7 +92,6 @@ public class Telega
             Log.Error("Send", ex.Message);
         }
     }
-
     public static async Task SendMessageToAll(string msg)
     {
         List<long> chatIds = Db.GetCaTeleBotUsers();
@@ -149,4 +114,3 @@ public class Telega
         }
     }
 }
-

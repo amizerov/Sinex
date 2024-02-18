@@ -16,7 +16,16 @@ public class Db
 
             return chatIds;
         }
-
+    }
+    public static Params LoadParams()
+    {
+        using CaDbContext db = new();
+        Params? p = db.Database
+            .SqlQuery<Params>(@$"
+                select top 1 minProc, minProf, minVolu, maxVolu 
+                from Sinex_Params order by dtc desc
+            ").FirstOrDefault();
+        return p ?? new Params();
     }
     public static async Task AddCaTeleBotUser(long chatId, string userName="")
     {
@@ -73,5 +82,57 @@ public class Db
                 )
 
             ");
+    }
+    public static List<string> GetCurBandles()
+    {
+        using CaDbContext db = new();
+
+        List<string> bandles = db.Database
+            .SqlQuery<string>(@$"	
+                    SELECT distinct coin FROM Sinex_Bundles 
+	                where datediff(HOUR, dtc, getdate()) < 5"
+                ).ToList();
+
+        return bandles;
+    }
+    public static async Task UpdateSpread(double val)
+    {
+        using CaDbContext db = new();
+
+        await db.Database
+            .ExecuteSqlAsync(@$"
+                declare @id int
+                select top 1 @id=ID from Sinex_Params order by dtc desc
+                update Sinex_Params set minProc={val} where id = @id");
+    }
+    public static async Task UpdateMinvol(double val)
+    {
+        using CaDbContext db = new();
+
+        await db.Database
+            .ExecuteSqlAsync(@$"
+                declare @id int
+                select top 1 @id=ID from Sinex_Params order by dtc desc
+                update Sinex_Params set minVolu={val} where id = @id");
+    }
+    public static async Task UpdateMaxvol(double val)
+    {
+        using CaDbContext db = new();
+
+        await db.Database
+            .ExecuteSqlAsync(@$"
+                declare @id int
+                select top 1 @id=ID from Sinex_Params order by dtc desc
+                update Sinex_Params set maxVolu={val} where id = @id");
+    }
+    public static async Task UpdateMinpro(double val)
+    {
+        using CaDbContext db = new();
+
+        await db.Database
+            .ExecuteSqlAsync(@$"
+                declare @id int
+                select top 1 @id=ID from Sinex_Params order by dtc desc
+                update Sinex_Params set minProf={val} where id = @id");
     }
 }

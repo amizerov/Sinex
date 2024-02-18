@@ -48,7 +48,7 @@ class CoinExchStat
 }
 class FullStat : List<CoinExchStat>
 {
-    const float minProc = 1;
+    TelegramBot1.Params pars = TelegramBot1.Db.LoadParams();
     public string? coin { get; set; }
     public AnExchange? excSell { get; set; }
     public AnExchange? excBuy { get; set; }
@@ -127,7 +127,7 @@ class FullStat : List<CoinExchStat>
     async Task TryAddMeToBundles()
     {
         if (coin == null || excSell == null || excBuy == null) return;
-        if ((float)proc < minProc) return;
+        if ((float)proc < pars.minProc) return;
 
         bool allowDeposit = await Db.GetAllowDeposit(excSell.ID, coin);
         if (!allowDeposit) return;
@@ -162,9 +162,9 @@ class FullStat : List<CoinExchStat>
                 decimal ps = (decimal)tSell.LastPrice;
                 decimal proc = 100 * (ps - pb) / Math.Max(ps, pb);
 
-                if ((float)proc < minProc)
+                if ((float)proc < pars.minProc)
                 {
-                    Log.Trace("2", $"proc({proc}) < minProc({minProc})");
+                    Log.Trace("2", $"proc({proc}) < minProc({pars.minProc})");
                     continue;
                 }
 
@@ -197,9 +197,9 @@ class FullStat : List<CoinExchStat>
                 volBuy = Math.Round(volBuy, 2);
                 volSell = Math.Round(volSell, 2);
 
-                if (volSell < 100 || volBuy < 100)
+                if (volSell < (decimal)pars.minVolu || volBuy < (decimal)pars.minVolu)
                 {
-                    Log.Trace("6", $"volSell or volBuy < 100");
+                    Log.Trace("6", $"volSell or volBuy < {pars.minVolu}");
                     continue;
                 }
 

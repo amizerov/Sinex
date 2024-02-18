@@ -36,12 +36,12 @@ public partial class FrmWin1 : Form
         statusCount.Text = dgvProds.Rows.Count.ToString();
 
         Telega.Init();
-        Telega.RequestStart += () 
+        Telega.cmdStart += () 
             => Invoke(() => { 
                 btnReload_Click(this, new EventArgs()); 
                 btnScan_Click(this, new EventArgs());
         });
-        Telega.RequestReStart += () 
+        Telega.cmdReset += () 
             => Invoke(() => {
                 try
                 {
@@ -227,6 +227,7 @@ public partial class FrmWin1 : Form
                     txtSearch.Enabled = true;
                     Telega.IsRunning = false;
                     await Telega.SendMessageToAll("Сканирование завершено");
+                    return;
                 });
             });
         }
@@ -236,7 +237,6 @@ public partial class FrmWin1 : Form
             btnReload.Enabled = true;
             Telega.IsRunning = false;
         }
-
     }
 
     private void btnBot1_Click(object sender, EventArgs e)

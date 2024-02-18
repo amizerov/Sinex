@@ -32,10 +32,10 @@
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
             tabPage2 = new TabPage();
-            tabPage3 = new TabPage();
-            tabPage4 = new TabPage();
             txtTrace = new TextBox();
+            tabPage3 = new TabPage();
             txtInfo = new TextBox();
+            tabPage4 = new TabPage();
             txtError = new TextBox();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
@@ -88,6 +88,15 @@
             tabPage2.Text = "Trace";
             tabPage2.UseVisualStyleBackColor = true;
             // 
+            // txtTrace
+            // 
+            txtTrace.Dock = DockStyle.Fill;
+            txtTrace.Location = new Point(3, 3);
+            txtTrace.Multiline = true;
+            txtTrace.Name = "txtTrace";
+            txtTrace.Size = new Size(786, 401);
+            txtTrace.TabIndex = 0;
+            // 
             // tabPage3
             // 
             tabPage3.Controls.Add(txtInfo);
@@ -98,6 +107,15 @@
             tabPage3.Text = "Info";
             tabPage3.UseVisualStyleBackColor = true;
             // 
+            // txtInfo
+            // 
+            txtInfo.Dock = DockStyle.Fill;
+            txtInfo.Location = new Point(0, 0);
+            txtInfo.Multiline = true;
+            txtInfo.Name = "txtInfo";
+            txtInfo.Size = new Size(792, 407);
+            txtInfo.TabIndex = 1;
+            // 
             // tabPage4
             // 
             tabPage4.Controls.Add(txtError);
@@ -107,24 +125,6 @@
             tabPage4.TabIndex = 3;
             tabPage4.Text = "Error";
             tabPage4.UseVisualStyleBackColor = true;
-            // 
-            // txtTrace
-            // 
-            txtTrace.Dock = DockStyle.Fill;
-            txtTrace.Location = new Point(3, 3);
-            txtTrace.Multiline = true;
-            txtTrace.Name = "txtTrace";
-            txtTrace.Size = new Size(786, 401);
-            txtTrace.TabIndex = 0;
-            // 
-            // txtInfo
-            // 
-            txtInfo.Dock = DockStyle.Fill;
-            txtInfo.Location = new Point(0, 0);
-            txtInfo.Multiline = true;
-            txtInfo.Name = "txtInfo";
-            txtInfo.Size = new Size(792, 407);
-            txtInfo.TabIndex = 1;
             // 
             // txtError
             // 
@@ -142,6 +142,8 @@
             ClientSize = new Size(800, 450);
             Controls.Add(tabControl1);
             Name = "FrmLog";
+            ShowIcon = false;
+            ShowInTaskbar = false;
             Text = "FrmLog";
             Load += FrmLog_Load;
             tabControl1.ResumeLayout(false);

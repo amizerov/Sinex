@@ -25,15 +25,16 @@ public class Bandle
     public async Task TryToPublish()
     {
         var (profit, proc, msg) = CreateMessage();
+        Params pars = TelegramBot1.Db.LoadParams();
 
-        if (profit > 99 && proc > 1.2 && proc < 15)
+        if (profit > pars.minProf && proc > pars.minProc && proc < 15)
         {
             await Telega.SendMessageToAll(msg);
             await Db.SaveBandle(this);
             return;
         }
-        if (profit < 99) Log.Trace("Telega", $"profit {profit} < 99");
-        if (proc < 1.2) Log.Trace("Telega", $"proc {proc} < 1.2%");
+        if (profit < pars.minProf) Log.Trace("Telega", $"profit {profit} < {pars.minProf}");
+        if (proc < pars.minProc) Log.Trace("Telega", $"proc {proc} < {pars.minProc}%");
         if (proc > 15) Log.Trace("Telega", $"proc {proc} > 15%");
     }
 
