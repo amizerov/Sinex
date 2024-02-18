@@ -92,10 +92,10 @@ public partial class Telega
         {
             msg = $"<b>Сканирование запущено</b>\n";
         }
-        msg += $"/spread  Мин. спрэд: {p.minProc}\n" +
-               $"/minvol  Мин. объем: {p.minVolu}\n" +
-               $"/maxvol  Макс. объем: {p.maxVolu}\n" +
-               $"/minpro  Мин. профит: {p.minProf}";
+        msg += $"/spread  Мин. спрэд: {p.minProc}%\n" +
+               $"/minvol  Мин. объем: {p.minVolu}$\n" +
+               $"/maxvol  Макс. объем: {p.maxVolu}$\n" +
+               $"/minpro  Мин. профит: {p.minProf}$";
 
         await SendMessageToOne(chatId, msg);
         try

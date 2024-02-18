@@ -34,14 +34,19 @@ public partial class FrmWin1 : Form
 
         _loaded = true;
         statusCount.Text = dgvProds.Rows.Count.ToString();
+    }
 
-        Telega.Init();
-        Telega.cmdStart += () 
-            => Invoke(() => { 
-                btnReload_Click(this, new EventArgs()); 
+    private async void FrmWin1_Load(object sender, EventArgs e)
+    {
+        LoadProducts();
+
+        await Telega.Init();
+        Telega.cmdStart += ()
+            => Invoke(() => {
+                btnReload_Click(this, new EventArgs());
                 btnScan_Click(this, new EventArgs());
-        });
-        Telega.cmdReset += () 
+            });
+        Telega.cmdReset += ()
             => Invoke(() => {
                 try
                 {
@@ -54,12 +59,7 @@ public partial class FrmWin1 : Form
                 {
                     Log.Error("Telega", ex.Message);
                 }
-        });
-    }
-
-    private void FrmWin1_Load(object sender, EventArgs e)
-    {
-        LoadProducts();
+            });
     }
 
     private void btnReload_Click(object sender, EventArgs e)

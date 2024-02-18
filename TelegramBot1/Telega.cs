@@ -1,5 +1,6 @@
 ﻿using amLogger;
 using CaSecrets;
+using System.Reflection;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
@@ -29,9 +30,10 @@ public partial class Telega
     TelegramBotClient _botClient;
     CancellationTokenSource _cts;
 
-    public static void Init()
+    public static async Task Init()
     {
         if (_this == null) _this = new();
+        await SendMessageToAll($"Бот версии {Assembly.GetExecutingAssembly().GetName().Version} запущен");
     }
 
     Telega()
