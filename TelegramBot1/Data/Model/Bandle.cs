@@ -33,9 +33,10 @@ public class Bandle
             await Db.SaveBandle(this);
             return;
         }
-        if (profit < pars.minProf) Log.Trace("Telega", $"profit {profit} < {pars.minProf}");
-        if (proc < pars.minProc) Log.Trace("Telega", $"proc {proc} < {pars.minProc}%");
-        if (proc > 15) Log.Trace("Telega", $"proc {proc} > 15%");
+        if (profit < pars.minProf) Log.Trace("TryToPublish", $"profit {profit} < {pars.minProf}");
+        if (proc < pars.minProc) Log.Trace("TryToPublish", $"proc {proc} < {pars.minProc}%");
+        if (proc > 15) Log.Trace("TryToPublish", $"proc {proc} > 15%");
+        await Db.CloseBandle(this);
     }
 
     public (double, double, string) CreateMessage()

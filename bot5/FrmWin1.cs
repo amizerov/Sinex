@@ -60,6 +60,12 @@ public partial class FrmWin1 : Form
                     Log.Error("Telega", ex.Message);
                 }
             });
+        Telega.cmdRecheckCoin += (coin)
+            => Invoke(() =>
+            {
+                txtSearch.Text = coin;
+                ShowAllStatistics();
+            });
     }
 
     private void btnReload_Click(object sender, EventArgs e)

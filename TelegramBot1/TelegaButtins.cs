@@ -12,21 +12,19 @@ public partial class Telega
         
         foreach (string btn in btns)
         {
-            if ((inlineBtnRow.Count + 1) % 5 == 0)
+            if (inlineBtnRow.Count % 4 == 0)
             {
                 List<InlineKeyboardButton> r = new();
                 foreach (var b in inlineBtnRow) r.Add(b);
                 
                 inlineBtns.Add(r);
-                inlineBtnRow = new();
+                inlineBtnRow.Clear();
             }
             var kb = new InlineKeyboardButton(btn);
             kb.CallbackData = btn;
             inlineBtnRow.Add(kb);
         }
-
-        if(inlineBtnRow.Count < 4)
-            inlineBtns.Add(inlineBtnRow);
+        if(inlineBtnRow.Count > 0) inlineBtns.Add(inlineBtnRow);
 
         InlineKeyboardMarkup inlineCoinBtns = new(inlineBtns);
         return inlineCoinBtns;

@@ -1,4 +1,5 @@
-﻿using CaDb;
+﻿using amLogger;
+using CaDb;
 using Microsoft.EntityFrameworkCore;
 
 namespace TelegramBot1;
@@ -83,6 +84,29 @@ public class Db
 
             ");
     }
+    public static async Task CloseBandle(Bandle b)
+    {
+        using CaDbContext db = new();
+        try
+        {
+            await db.Database
+                .ExecuteSqlAsync(@$"
+                    declare @id int
+
+                    select top 1 @id=ID from Sinex_Bundles 
+                    where coin={b.coin} 
+                      and exchBuy={b.exchBuy} 
+                      and exchSell={b.exchSell}
+                      and dtu is null
+                    order by dtc desc
+
+                    update Sinex_Bundles set dtu=getdate() where id=@id
+                ");
+        } catch (Exception ex)
+        {
+            Log.Error("CloseBandle", ex.Message);
+        }
+    }
     public static List<string> GetCurBandles()
     {
         using CaDbContext db = new();
@@ -90,7 +114,7 @@ public class Db
         List<string> bandles = db.Database
             .SqlQuery<string>(@$"	
                     SELECT distinct coin FROM Sinex_Bundles 
-	                where datediff(HOUR, dtc, getdate()) < 5"
+	                where datediff(HOUR, dtc, getdate()) < 5 and dtu is null"
                 ).ToList();
 
         return bandles;

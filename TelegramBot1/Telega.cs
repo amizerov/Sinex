@@ -15,6 +15,9 @@ public partial class Telega
 {
     public static event Action? cmdStart; void CmdStart() => cmdStart?.Invoke();
     public static event Action? cmdReset; void CmdReset() => cmdReset?.Invoke();
+    public static event Action<string>? cmdRecheckCoin; 
+    void CmdRecheckCoin(string coin) => cmdRecheckCoin?.Invoke(coin);
+
 
     public static bool IsRunning { get => _isRunning; 
         set
@@ -66,7 +69,7 @@ public partial class Telega
         {
             var cid = update.CallbackQuery.From.Id;
             var data = update.CallbackQuery.Data ?? "пусто";
-            await SendMessageToOne(cid, data);
+            CmdRecheckCoin(data);
         }
 
         var message = update.Message;

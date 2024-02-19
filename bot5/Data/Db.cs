@@ -70,7 +70,6 @@ class Db
             
             return chatIds;
         }
-
     }
     public static async Task AddCaTeleBotUser(long chatId)
     {

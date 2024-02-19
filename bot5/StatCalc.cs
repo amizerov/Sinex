@@ -127,13 +127,34 @@ class FullStat : List<CoinExchStat>
     async Task TryAddMeToBundles()
     {
         if (coin == null || excSell == null || excBuy == null) return;
-        if ((float)proc < pars.minProc) return;
+        Bandle b = new()
+        {
+            coin = coin,
+            exchBuy = excBuy.Name,
+            exchSell = excSell.Name
+        };
+        proc = Math.Round(proc, 2);
+        if ((float)proc < pars.minProc)
+        {
+            Log.Trace("1", $"{coin}({excBuy.Name}|{excSell.Name}) proc({proc}) < minProc({pars.minProc})");
+            await TelegramBot1.Db.CloseBandle(b);
+            return;
+        }
 
         bool allowDeposit = await Db.GetAllowDeposit(excSell.ID, coin);
-        if (!allowDeposit) return;
-
+        if (!allowDeposit)
+        {
+            Log.Trace("2", $"{coin}({excBuy.Name}|{excSell.Name}) allowDeposit({allowDeposit})");
+            await TelegramBot1.Db.CloseBandle(b);
+            return;
+        }
         bool allowWithraw = await Db.GetAllowWithdra(excBuy.ID, coin);
-        if (!allowWithraw) return;
+        if (!allowWithraw)
+        {
+            Log.Trace("3", $"{coin}({excBuy.Name}|{excSell.Name}) allowWithraw({allowWithraw})");
+            await TelegramBot1.Db.CloseBandle(b);
+            return;
+        }
 
         List<CoinChain> chainsBuy = await Db.GetCoinChains(excBuy.ID, coin!);
         List<CoinChain> chainsSell = await Db.GetCoinChains(excSell.ID, coin!);
@@ -146,7 +167,7 @@ class FullStat : List<CoinExchStat>
                 if (chBuy.chainId == 0) continue;
 
                 Log.Trace("TryAddMeToBundles", 
-                    $"{coin} {excBuy.Name}->({chBuy.chainName}|{chSell.chainName})->{excSell.Name}");
+                    $"{coin} {excBuy.Name}->({chSell.chainName})->{excSell.Name}");
 
                 string symbolBuy = excBuy.ValidateSymbol(coin, "USDT");
                 string symbolSell = excSell.ValidateSymbol(coin, "USDT");
@@ -155,16 +176,19 @@ class FullStat : List<CoinExchStat>
                 Ticker tSell = await excSell.GetTickerAsync(symbolSell);
                 if (tBuy.LastPrice == null || tSell.LastPrice == null)
                 {
-                    Log.Trace("1", "Ticker.LastPrice is null");
+                    Log.Trace("4", "Ticker.LastPrice is null");
+                    await TelegramBot1.Db.CloseBandle(b);
                     continue;
                 }
                 decimal pb = (decimal)tBuy.LastPrice;
                 decimal ps = (decimal)tSell.LastPrice;
                 decimal proc = 100 * (ps - pb) / Math.Max(ps, pb);
+                proc = Math.Round(proc, 2);
 
                 if ((float)proc < pars.minProc)
                 {
-                    Log.Trace("2", $"proc({proc}) < minProc({pars.minProc})");
+                    Log.Trace("5", $"{coin} proc({proc}) < minProc({pars.minProc})");
+                    await TelegramBot1.Db.CloseBandle(b);
                     continue;
                 }
 
@@ -172,7 +196,8 @@ class FullStat : List<CoinExchStat>
                 CaOrderBook obSell = await excSell.GetOrderBook(symbolSell);
                 if (obBuy == null || obSell == null)
                 {
-                    Log.Trace("3", $"obBuy null or obSell null");
+                    Log.Trace("6", $"{coin} obBuy null or obSell null");
+                    await TelegramBot1.Db.CloseBandle(b);
                     continue;
                 }
                 Ticker tb = await excBuy.GetTickerAsync(symbolBuy);
@@ -183,12 +208,14 @@ class FullStat : List<CoinExchStat>
                 var lastVolSell = ts.Volume ?? 0;
                 if(lastBuy == 0 || lastSell == 0)
                 {
-                    Log.Trace("4", $"lastBuy 0 or lastSell 0");
+                    Log.Trace("7", $"{coin} lastBuy 0 or lastSell 0");
+                    await TelegramBot1.Db.CloseBandle(b);
                     continue;
                 }
                 if (lastVolBuy == 0 || lastVolSell == 0)
                 {
-                    Log.Trace("5", $"lastVolBuy 0 or lastVolSell  0");
+                    Log.Trace("8", $"{coin} lastVolBuy 0 or lastVolSell  0");
+                    await TelegramBot1.Db.CloseBandle(b);
                     continue;
                 }
 
@@ -199,11 +226,12 @@ class FullStat : List<CoinExchStat>
 
                 if (volSell < (decimal)pars.minVolu || volBuy < (decimal)pars.minVolu)
                 {
-                    Log.Trace("6", $"volSell or volBuy < {pars.minVolu}");
+                    Log.Trace("9", $"{coin} volSell or volBuy < {pars.minVolu}");
+                    await TelegramBot1.Db.CloseBandle(b);
                     continue;
                 }
 
-                Bandle b = new()
+                Bandle band = new()
                 {
                     coin = coin,
                     exchBuy = excBuy.Name,
@@ -221,7 +249,7 @@ class FullStat : List<CoinExchStat>
                     chain = chBuy.chainName!,
                     withdrawFee = (float)(chBuy.withdrawFee ?? 0),
                 };
-                await b.TryToPublish();
+                await band.TryToPublish();
             }
         }
 
