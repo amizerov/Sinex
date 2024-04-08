@@ -27,23 +27,26 @@ class CoinExchStat
         var t = await exchange.GetTickerAsync(symbol);
         if (t == null) return;
 
-
         price = t.LastPrice;
-        volum = t.Volume;
+        volum = Math.Round(t.Volume ?? 0, 2);
 
         //var ob = await exchange.GetOrderBook(symbol);
+        //if (ob == null || ob.Asks.Count == 0 || ob.Bids.Count == 0) return;
+
         //var pa = (decimal)ob.Asks.Min(a => a.Price);
         //var pb = (decimal)ob.Bids.Max(b => b.Price);
         //price = (pa + pb) / 2;
         //volum = ob.Asks.Sum(a => a.Quantity * a.Price) +
         //    ob.Bids.Sum(b => b.Quantity * b.Price);
+        //volum = Math.Round((decimal)volum, 2);
     }
     public async Task LoadData()
     {
-        allowDeposit = await Db.GetAllowDeposit(exchange!.ID, coin!);
-        allowWithraw = await Db.GetAllowWithdra(exchange!.ID, coin!);
-        withdrawaFee = await Db.GetWithdrawaFee(exchange!.ID, coin!);
-        coinChains = await Db.GetCoinChains(exchange!.ID, coin!);
+        if (coin == null || exchange == null) return;
+        allowDeposit = await Db.GetAllowDeposit(exchange.ID, coin);
+        allowWithraw = await Db.GetAllowWithdra(exchange.ID, coin);
+        withdrawaFee = await Db.GetWithdrawaFee(exchange.ID, coin);
+        coinChains = await Db.GetCoinChains(exchange.ID, coin);
     }
 }
 class FullStat : List<CoinExchStat>
@@ -55,6 +58,7 @@ class FullStat : List<CoinExchStat>
     public decimal proc { get; set; } = 0;
     public decimal volSell { get; set; }
     public decimal volBuy { get; set; }
+    public string? chain { get; set; }
 
     public static async Task<FullStat> Calculate(
         string exchengesString, string baseAsset,
@@ -92,31 +96,31 @@ class FullStat : List<CoinExchStat>
     }
     private void Calc()
     {
-        foreach (var st in this)
+        foreach (var coinExchStat1 in this)
         {
-            foreach (var j in this.Where(s => s.exchange!.ID != st.exchange!.ID))
+            foreach (var coinExchStat2 in this.Where(s => s.exchange!.ID != coinExchStat1.exchange!.ID))
             {
-                if (st.price == null || j.price == null)
+                if (coinExchStat1.price == null || coinExchStat2.price == null)
                 { 
                     Log.Warn("Calc", 
-                        $"{st.coin}({st.exchange!.ID}).price is null OR" + 
-                        $"{j.coin}({j.exchange!.ID}).price is null");
+                        $"{coinExchStat1.coin}({coinExchStat1.exchange!.ID}).price is null OR" + 
+                        $"{coinExchStat2.coin}({coinExchStat2.exchange!.ID}).price is null");
                     continue; 
                 }
 
-                var d = (decimal)(st.price - j.price)!;
-                if (proc < Math.Abs(d) && st.volum > 0 && j.volum > 0)
+                var d = (decimal)(coinExchStat1.price - coinExchStat2.price)!;
+                if (proc < Math.Abs(d) && coinExchStat1.volum > 0 && coinExchStat2.volum > 0)
                 {
                     proc = d;
-                    if (st.price > j.price)
+                    if (coinExchStat1.price > coinExchStat2.price)
                     {
-                        excSell = st.exchange; volSell = (decimal)st.volum!;
-                        excBuy = j.exchange; volBuy = (decimal)j.volum!;
+                        excSell = coinExchStat1.exchange; volSell = (decimal)coinExchStat1.volum!;
+                        excBuy = coinExchStat2.exchange; volBuy = (decimal)coinExchStat2.volum!;
                     }
                     else
                     {
-                        excBuy = st.exchange; volBuy = (decimal)j.volum!;
-                        excSell = j.exchange; volSell = (decimal)st.volum!;
+                        excBuy = coinExchStat1.exchange; volBuy = (decimal)coinExchStat2.volum!;
+                        excSell = coinExchStat2.exchange; volSell = (decimal)coinExchStat1.volum!;
                     }
                 }
             }
@@ -166,8 +170,9 @@ class FullStat : List<CoinExchStat>
                 if (chBuy.chainId == null) continue;
                 if (chBuy.chainId == 0) continue;
 
+                chain = chBuy.chainName;
                 Log.Trace("TryAddMeToBundles", 
-                    $"{coin} {excBuy.Name}->({chSell.chainName})->{excSell.Name}");
+                    $"{coin} {excBuy.Name}->({chain})->{excSell.Name}");
 
                 string symbolBuy = excBuy.ValidateSymbol(coin, "USDT");
                 string symbolSell = excSell.ValidateSymbol(coin, "USDT");
@@ -182,7 +187,7 @@ class FullStat : List<CoinExchStat>
                 }
                 decimal pb = (decimal)tBuy.LastPrice;
                 decimal ps = (decimal)tSell.LastPrice;
-                decimal proc = 100 * (ps - pb) / Math.Max(ps, pb);
+                proc = 100 * (ps - pb) / Math.Max(ps, pb);
                 proc = Math.Round(proc, 2);
 
                 if ((float)proc < pars.minProc)

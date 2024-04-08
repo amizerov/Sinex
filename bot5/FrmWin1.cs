@@ -78,16 +78,16 @@ public partial class FrmWin1 : Form
         if (!_loaded) return; _loaded = false;
 
         panel.Controls.Clear();
-        lblExc1.Text = lblExc2.Text = lblMaxProc.Text = "";
+        lblExc1.Text = lblChain.Text = lblExc2.Text = lblMaxProc.Text = "";
         if (dgvProds.Rows.Count == 0) return;
 
-        var ass = dgvProds.CurrentRow.Cells[0].Value.ToString();
-        var ens = dgvProds.CurrentRow.Cells[1].Value.ToString();
-        if (ens == null || ass == null) return;
+        var ass = dgvProds.SelectedRows[0].Cells[0].Value.ToString();
+        var exs = dgvProds.SelectedRows[0].Cells[1].Value.ToString();
+        if (exs == null || ass == null) return;
 
         lblSym.Text = ass;
-        FullStat st = await FullStat.Calculate(ens, ass, s => AddLabel(s));
-        dgvProds.CurrentRow.Cells[2].Value = st.proc.ToString();
+        FullStat st = await FullStat.Calculate(exs, ass, coinStat => AddLabel(coinStat));
+        dgvProds.SelectedRows[0].Cells[2].Value = st.proc.ToString();
 
         if (st == null || st.excSell == null || st.excBuy == null)
         {
@@ -98,6 +98,7 @@ public partial class FrmWin1 : Form
         await st.Update();
 
         lblExc1.Text = st.excBuy.Name;
+        lblChain.Text = st.chain;
         lblExc2.Text = st.excSell.Name;
         lblMaxProc.Text = st.proc + "%";
 
@@ -106,20 +107,26 @@ public partial class FrmWin1 : Form
 
     void AddLabel(CoinExchStat s)
     {
-        int c = panel.Controls.Count + 3;
+        int c = panel.Controls.Count + 4;
         Label lblEx = new();
-        lblEx.Text = s.exchange!.Name;
-        lblEx.Width = 60; lblEx.Top = 30 * c / 3; lblEx.Left = 10;
+        lblEx.Text = s.exchange!.ID + " - " + s.exchange!.Name;
+        lblEx.Width = 90; lblEx.Top = 30 * c / 4; lblEx.Left = 10;
         Label lblPr = new();
         lblPr.Text = s.price.ToString();
-        lblPr.Width = 100; lblPr.Top = lblEx.Top; lblPr.Left = 80;
+        lblPr.Width = 100; lblPr.Top = lblEx.Top; lblPr.Left = lblEx.Left + lblEx.Width + 5;
         Label lblVo = new();
         lblVo.Text = s.volum.ToString();
-        lblVo.Width = 200; lblVo.Top = lblEx.Top; lblVo.Left = 200;
+        lblVo.Width = 110; lblVo.Top = lblEx.Top; lblVo.Left = lblPr.Left + lblPr.Width + 5;
+        Label lblCh = new();
+        lblCh.Text = s.coinChains
+            .Aggregate<CoinChain, string>("", (cs, c) => cs = cs + "," + c.chainName);
+        lblCh.Text = lblCh.Text.Length > 0 ? lblCh.Text.Substring(1) : "";
+        lblCh.Width = 500; lblCh.Top = lblEx.Top; lblCh.Left = lblVo.Left + lblVo.Width + 5;
 
         panel.Controls.Add(lblEx);
         panel.Controls.Add(lblPr);
         panel.Controls.Add(lblVo);
+        panel.Controls.Add(lblCh);
     }
 
     private void txtSearch_TextChanged(object sender, EventArgs e)
@@ -208,7 +215,14 @@ public partial class FrmWin1 : Form
             green = (int)((2 - 2 * Num / 100) * 255);
             blue = 0;
         }
-        r.DefaultCellStyle.BackColor = Color.FromArgb(red, green, blue);
+        try
+        {
+            r.DefaultCellStyle.BackColor = Color.FromArgb(red, green, blue);
+        }
+        catch (Exception ex)
+        {
+            Log.Error("ColorizeRow", ex.Message);
+        }
     }
 
     private void dgvProds_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -249,6 +263,8 @@ public partial class FrmWin1 : Form
     {
         // Укажите путь к исполняемому файлу
         string pathToExe = "D:\\Projects\\CryptoTrading\\Sinex\\bot1\\bin\\Debug\\net8.0-windows\\bot1.exe";
+        if(sender == btnBot6)
+            pathToExe = "D:\\Projects\\CryptoTrading\\Sinex\\bot6\\bin\\Debug\\net8.0-windows\\bot6.exe";
 
         // Создаем новый процесс
         Process process = new Process();

@@ -89,19 +89,23 @@ public class Db
         using CaDbContext db = new();
         try
         {
-            await db.Database
-                .ExecuteSqlAsync(@$"
-                    declare @id int
-
-                    select top 1 @id=ID from Sinex_Bundles 
+            List<int> ids = db.Database
+                .SqlQuery<int>(@$"
+                    select top 1 ID from Sinex_Bundles 
                     where coin={b.coin} 
                       and exchBuy={b.exchBuy} 
                       and exchSell={b.exchSell}
                       and dtu is null
                     order by dtc desc
-
-                    update Sinex_Bundles set dtu=getdate() where id=@id
+                ").ToList();
+            if (ids.Count > 0)
+            {
+                int id = ids[0];
+                await db.Database
+                    .ExecuteSqlAsync(@$"
+                    update Sinex_Bundles set dtu=getdate() where id={id}
                 ");
+            }
         } catch (Exception ex)
         {
             Log.Error("CloseBandle", ex.Message);

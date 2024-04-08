@@ -17,7 +17,9 @@ public partial class Form1 : Form
 
     private void Form1_Load(object sender, EventArgs e)
     {
-        amTools.Utils.RestoreFormPosition(this);
+        if(ModifierKeys != Keys.Control)
+            amTools.Utils.RestoreFormPosition(this);
+
         Logger.Instance.Init((Log log) => DoLog(log));
 
         xtraTabControl1.SelectedTabPageIndex = 1;
@@ -34,6 +36,8 @@ public partial class Form1 : Form
         gridLayoutXml = amTools.Utils.GetFileName(this, "xml");
         if (File.Exists(gridLayoutXml))
             gvLog.RestoreLayoutFromXml(gridLayoutXml);
+
+        version.Text = "Version: " + Application.ProductVersion.Substring(0, 7);
     }
     void DoLog(Log log)
     {
@@ -56,7 +60,7 @@ public partial class Form1 : Form
             if (textBox1.Text.Length > 5000)
                 textBox1.Text = textBox1.Text.Substring(0, 5000);
 
-            status.Text = logs.Count + " - " + logs.Where(l => l.id == 6).Count();
+            status.Text = logs.Count + " - " + logs.Where(l => l.id == 5).Count();
         }));
     }
 
@@ -84,7 +88,7 @@ public partial class Form1 : Form
         textBox1.Text += CaInfo.Exchanges.Count.ToString();
     }
 
-    private void button3_Click(object sender, EventArgs e)
+    private void btnStart_Click(object sender, EventArgs e)
     {
         if (btnStart.Tag == null)
             Task.Run(ExecuteAsync);
@@ -119,7 +123,19 @@ public partial class Form1 : Form
             logs.Add(new LogLine() { dt = DateTime.Now, src = "OnComplete", msg = "Task Completed" });
             gcLog.DataSource = logs.OrderByDescending(l => l.dt);
             gcLog.RefreshDataSource();
+
+            btnStart.Tag = null;
+            btnStart.Text = "Ќачать обновление продуктов всех бирж.";
+            timer1.Interval = 1000 * 60 * 60 * 3;
+            timer1.Enabled = true;
+            timer1.Start();
         }));
+    }
+
+    private void timer1_Tick(object sender, EventArgs e)
+    {
+        btnStart.PerformClick();
+        timer1.Stop();
     }
 }
 

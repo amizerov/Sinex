@@ -41,6 +41,8 @@
             btnScan = new Button();
             statusStrip1 = new StatusStrip();
             statusCount = new ToolStripStatusLabel();
+            lblChain = new Label();
+            btnBot6 = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvProds).BeginInit();
             statusStrip1.SuspendLayout();
             SuspendLayout();
@@ -55,25 +57,25 @@
             dgvProds.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             dgvProds.CellBorderStyle = DataGridViewCellBorderStyle.None;
             dgvProds.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvProds.Location = new Point(7, 50);
-            dgvProds.Margin = new Padding(2, 2, 2, 2);
+            dgvProds.Location = new Point(12, 100);
+            dgvProds.Margin = new Padding(3, 4, 3, 4);
             dgvProds.MultiSelect = false;
             dgvProds.Name = "dgvProds";
             dgvProds.ReadOnly = true;
             dgvProds.RowHeadersVisible = false;
             dgvProds.RowHeadersWidth = 72;
             dgvProds.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvProds.Size = new Size(268, 471);
+            dgvProds.Size = new Size(459, 942);
             dgvProds.TabIndex = 0;
             dgvProds.CellMouseClick += dgvProds_CellMouseClick;
             // 
             // txtSearch
             // 
             txtSearch.Font = new Font("Segoe UI", 15.8571434F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            txtSearch.Location = new Point(7, 7);
-            txtSearch.Margin = new Padding(2, 2, 2, 2);
+            txtSearch.Location = new Point(12, 14);
+            txtSearch.Margin = new Padding(3, 4, 3, 4);
             txtSearch.Name = "txtSearch";
-            txtSearch.Size = new Size(230, 36);
+            txtSearch.Size = new Size(391, 57);
             txtSearch.TabIndex = 1;
             txtSearch.TextChanged += txtSearch_TextChanged;
             // 
@@ -81,20 +83,19 @@
             // 
             panel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             panel.BackColor = SystemColors.ControlLight;
-            panel.Location = new Point(284, 125);
-            panel.Margin = new Padding(2, 2, 2, 2);
+            panel.Location = new Point(487, 277);
+            panel.Margin = new Padding(3, 4, 3, 4);
             panel.Name = "panel";
-            panel.Size = new Size(590, 396);
+            panel.Size = new Size(1011, 765);
             panel.TabIndex = 2;
             // 
             // lblSym
             // 
             lblSym.AutoSize = true;
             lblSym.Font = new Font("Segoe UI", 36F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            lblSym.Location = new Point(291, 19);
-            lblSym.Margin = new Padding(2, 0, 2, 0);
+            lblSym.Location = new Point(499, 38);
             lblSym.Name = "lblSym";
-            lblSym.Size = new Size(155, 65);
+            lblSym.Size = new Size(268, 112);
             lblSym.TabIndex = 3;
             lblSym.Text = "label1";
             // 
@@ -102,42 +103,39 @@
             // 
             lblExc1.AutoSize = true;
             lblExc1.Font = new Font("Segoe UI", 15.8571434F);
-            lblExc1.Location = new Point(284, 94);
-            lblExc1.Margin = new Padding(2, 0, 2, 0);
+            lblExc1.Location = new Point(487, 188);
             lblExc1.Name = "lblExc1";
-            lblExc1.Size = new Size(71, 30);
+            lblExc1.Size = new Size(156, 50);
             lblExc1.TabIndex = 3;
-            lblExc1.Text = "label1";
+            lblExc1.Text = "ExchBuy";
             // 
             // lblExc2
             // 
             lblExc2.AutoSize = true;
             lblExc2.Font = new Font("Segoe UI", 15.8571434F);
-            lblExc2.Location = new Point(357, 94);
-            lblExc2.Margin = new Padding(2, 0, 2, 0);
+            lblExc2.Location = new Point(818, 188);
             lblExc2.Name = "lblExc2";
-            lblExc2.Size = new Size(71, 30);
+            lblExc2.Size = new Size(153, 50);
             lblExc2.TabIndex = 3;
-            lblExc2.Text = "label1";
+            lblExc2.Text = "ExchSell";
             // 
             // lblMaxProc
             // 
             lblMaxProc.AutoSize = true;
             lblMaxProc.Font = new Font("Segoe UI", 15.8571434F);
-            lblMaxProc.Location = new Point(435, 94);
-            lblMaxProc.Margin = new Padding(2, 0, 2, 0);
+            lblMaxProc.Location = new Point(1031, 188);
             lblMaxProc.Name = "lblMaxProc";
-            lblMaxProc.Size = new Size(71, 30);
+            lblMaxProc.Size = new Size(95, 50);
             lblMaxProc.TabIndex = 3;
-            lblMaxProc.Text = "label1";
+            lblMaxProc.Text = "Proc";
             // 
             // btnReload
             // 
             btnReload.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnReload.Location = new Point(796, 13);
-            btnReload.Margin = new Padding(2, 2, 2, 2);
+            btnReload.Location = new Point(1365, 26);
+            btnReload.Margin = new Padding(3, 4, 3, 4);
             btnReload.Name = "btnReload";
-            btnReload.Size = new Size(76, 27);
+            btnReload.Size = new Size(130, 54);
             btnReload.TabIndex = 4;
             btnReload.Text = "Обновить";
             btnReload.UseVisualStyleBackColor = true;
@@ -146,10 +144,10 @@
             // btnArbit
             // 
             btnArbit.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnArbit.Location = new Point(796, 42);
-            btnArbit.Margin = new Padding(2, 2, 2, 2);
+            btnArbit.Location = new Point(1365, 83);
+            btnArbit.Margin = new Padding(3, 4, 3, 4);
             btnArbit.Name = "btnArbit";
-            btnArbit.Size = new Size(76, 27);
+            btnArbit.Size = new Size(130, 54);
             btnArbit.TabIndex = 4;
             btnArbit.Text = "Арбитраж";
             btnArbit.UseVisualStyleBackColor = true;
@@ -158,10 +156,10 @@
             // btnBot1
             // 
             btnBot1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnBot1.Location = new Point(796, 70);
-            btnBot1.Margin = new Padding(2, 2, 2, 2);
+            btnBot1.Location = new Point(1365, 140);
+            btnBot1.Margin = new Padding(3, 4, 3, 4);
             btnBot1.Name = "btnBot1";
-            btnBot1.Size = new Size(76, 27);
+            btnBot1.Size = new Size(130, 54);
             btnBot1.TabIndex = 4;
             btnBot1.Text = "Бот1";
             btnBot1.UseVisualStyleBackColor = true;
@@ -170,10 +168,10 @@
             // btnScan
             // 
             btnScan.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnScan.Location = new Point(707, 13);
-            btnScan.Margin = new Padding(2, 2, 2, 2);
+            btnScan.Location = new Point(1212, 26);
+            btnScan.Margin = new Padding(3, 4, 3, 4);
             btnScan.Name = "btnScan";
-            btnScan.Size = new Size(76, 27);
+            btnScan.Size = new Size(130, 54);
             btnScan.TabIndex = 4;
             btnScan.Text = "Scan";
             btnScan.UseVisualStyleBackColor = true;
@@ -183,26 +181,49 @@
             // 
             statusStrip1.ImageScalingSize = new Size(28, 28);
             statusStrip1.Items.AddRange(new ToolStripItem[] { statusCount });
-            statusStrip1.Location = new Point(0, 528);
+            statusStrip1.Location = new Point(0, 1061);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Padding = new Padding(1, 0, 8, 0);
-            statusStrip1.Size = new Size(888, 22);
+            statusStrip1.Padding = new Padding(2, 0, 14, 0);
+            statusStrip1.Size = new Size(1522, 39);
             statusStrip1.TabIndex = 5;
             statusStrip1.Text = "statusStrip1";
             // 
             // statusCount
             // 
             statusCount.Name = "statusCount";
-            statusCount.Size = new Size(118, 17);
+            statusCount.Size = new Size(206, 30);
             statusCount.Text = "toolStripStatusLabel1";
+            // 
+            // lblChain
+            // 
+            lblChain.AutoSize = true;
+            lblChain.Location = new Point(695, 199);
+            lblChain.Name = "lblChain";
+            lblChain.Size = new Size(66, 30);
+            lblChain.TabIndex = 6;
+            lblChain.Text = "Chain";
+            // 
+            // btnBot6
+            // 
+            btnBot6.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnBot6.Location = new Point(1365, 197);
+            btnBot6.Margin = new Padding(3, 4, 3, 4);
+            btnBot6.Name = "btnBot6";
+            btnBot6.Size = new Size(130, 54);
+            btnBot6.TabIndex = 4;
+            btnBot6.Text = "Бот6";
+            btnBot6.UseVisualStyleBackColor = true;
+            btnBot6.Click += btnBot1_Click;
             // 
             // FrmWin1
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(12F, 30F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(888, 550);
+            ClientSize = new Size(1522, 1100);
+            Controls.Add(lblChain);
             Controls.Add(statusStrip1);
             Controls.Add(btnScan);
+            Controls.Add(btnBot6);
             Controls.Add(btnBot1);
             Controls.Add(btnArbit);
             Controls.Add(btnReload);
@@ -213,7 +234,7 @@
             Controls.Add(panel);
             Controls.Add(txtSearch);
             Controls.Add(dgvProds);
-            Margin = new Padding(2, 2, 2, 2);
+            Margin = new Padding(3, 4, 3, 4);
             MaximizeBox = false;
             Name = "FrmWin1";
             StartPosition = FormStartPosition.CenterScreen;
@@ -241,5 +262,7 @@
         private Button btnScan;
         private StatusStrip statusStrip1;
         private ToolStripStatusLabel statusCount;
+        private Label lblChain;
+        private Button btnBot6;
     }
 }
