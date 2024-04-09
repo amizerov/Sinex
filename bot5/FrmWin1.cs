@@ -66,6 +66,8 @@ public partial class FrmWin1 : Form
                 txtSearch.Text = coin;
                 ShowAllStatistics();
             });
+
+        Text = "Sinex bot 5, version: " + Application.ProductVersion;
     }
 
     private void btnReload_Click(object sender, EventArgs e)

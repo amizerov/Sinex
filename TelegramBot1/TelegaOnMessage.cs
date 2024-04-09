@@ -1,6 +1,7 @@
 ﻿using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot;
 using amLogger;
+using ChatGPT1;
 
 namespace TelegramBot1;
 
@@ -80,6 +81,12 @@ public partial class Telega
                     }
                     _update = 0;
                     await SendMessageToOne(chatId, "Значение обновлено");
+                }
+                else
+                {
+                    if(txt == null) return;
+                    string ansver = await CharGPT.GetAnswer(txt);
+                    await SendMessageToOne(chatId, ansver);
                 }
                 break;
         }

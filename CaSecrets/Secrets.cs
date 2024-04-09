@@ -238,4 +238,20 @@ public static class Secrets
             return cs;
         }
     }
+    static public string OPENAI_API_KEY
+    {
+        get
+        {
+            string cs = "";
+            string path = "D:\\Projects\\Common\\Secrets\\OPENAI_API_KEY.txt";
+            if (File.Exists(path))
+            {
+                cs = File.ReadAllText(path);
+            }
+            else
+                throw new Exception("File with Sql Connection is not found");
+
+            return cs;
+        }
+    }
 }
