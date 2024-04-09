@@ -5,7 +5,7 @@ namespace ChatGPT1
 {
     public class Db
     {
-        public static void SaveQAToDb(string q, string a)
+        public static void SaveQA(string q, string a)
         {
             using (CaDbContext db = new())
             {
