@@ -18,6 +18,25 @@ public class Db
             return chatIds;
         }
     }
+    public static User? GetCaTeleBotUser(long chatId)
+    {
+        User? u = null;
+        using (CaDbContext db = new())
+        {
+            try
+            {
+                u = db.Database.SqlQuery<User>(
+                    $"select ID, chatId, userName, dtc from Sinex_CaTeleBotUsers where chatId={chatId}"
+                ).FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                Log.Error("GetCaTeleBotUser", ex.Message);
+            }
+        }
+        return u;
+    }
+
     public static Params LoadParams()
     {
         using CaDbContext db = new();
@@ -71,6 +90,10 @@ public class Db
                     ,lastVolSell
                     ,chain
                     ,withdrawFee
+                    ,profit
+                    ,procen
+                    ,recVol
+                    ,comiss
                 )
                 VALUES(
                     {b.coin},
@@ -79,7 +102,8 @@ public class Db
                     {b.priceSellBid},{b.priceSellAsk},
                     {b.volBuy},{b.volSell},
                     {b.lastBuy},{b.lastSell},{b.lastVolBuy},{b.lastVolSell},
-                    {b.chain},{b.withdrawFee}
+                    {b.chain},{b.withdrawFee},
+                    {b.profit},{b.procen},{b.recVol},{b.comiss}
                 )
 
             ");

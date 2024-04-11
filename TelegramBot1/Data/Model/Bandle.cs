@@ -20,26 +20,30 @@ public class Bandle
     public float lastVolSell { get; set; }
     public string chain { get; set; } = "";
     public float withdrawFee { get; set; }
+    public float profit { get; set; }
+    public float procen { get; set; }
+    public float recVol { get; set; }
+    public float comiss { get; set; }
     public DateTime? dtu { get; set; }
 
     public async Task TryToPublish()
     {
-        var (profit, proc, msg) = CreateMessage();
-        Params pars = TelegramBot1.Db.LoadParams();
+        var msg = CreateMessage();
+        Params pars = Db.LoadParams();
 
-        if (profit > pars.minProf && proc > pars.minProc && proc < 15)
+        if (profit > pars.minProf && procen > pars.minProc && procen < 15)
         {
             await Telega.SendMessageToAll(msg);
             await Db.SaveBandle(this);
             return;
         }
         if (profit < pars.minProf) Log.Trace("TryToPublish", $"profit {profit} < {pars.minProf}");
-        if (proc < pars.minProc) Log.Trace("TryToPublish", $"proc {proc} < {pars.minProc}%");
-        if (proc > 15) Log.Trace("TryToPublish", $"proc {proc} > 15%");
+        if (procen < pars.minProc) Log.Trace("TryToPublish", $"proc {procen} < {pars.minProc}%");
+        if (procen > 15) Log.Trace("TryToPublish", $"proc {procen} > 15%");
         await Db.CloseBandle(this);
     }
 
-    public (double, double, string) CreateMessage()
+    public string CreateMessage()
     {
         var pbb = priceBuyBid;
         var pba = priceBuyAsk;
@@ -47,10 +51,11 @@ public class Bandle
         var psb = priceSellBid;
         var psa = priceSellAsk;
         var psm = (psb + psa) / 2;
-        var proc = Math.Round(100 * (psm - pbm) / pbm, 2);
-        var recVol = Math.Round(Math.Min(volBuy, volSell)/3, 2);
-        var commis = Math.Round(withdrawFee * pbm, 2);
-        var profit = Math.Round(recVol * proc / 100 - commis, 2);
+
+        procen = (float)Math.Round(100 * (psm - pbm) / pbm, 2);
+        recVol = (float)Math.Round(Math.Min(volBuy, volSell)/3, 2);
+        comiss = (float)Math.Round(withdrawFee * pbm, 2);
+        profit = (float)Math.Round(recVol * procen / 100 - comiss, 2);
 
         string msg = $"<b>{coin}</b> {exchBuy}->({chain})->{exchSell}\n\r";
         msg += $"<b>{exchBuy}</b> вывод (тут покупаем) \n\r";
@@ -61,13 +66,13 @@ public class Bandle
         msg += $"Цена в стакане: {psm} [{psb}-{psa}]\n\r";
         msg += $"Цена последней сделки: {lastSell}\n\r";
         msg += $"Объем в стакане на покупку: {volSell}$\n\r";
-        msg += $"Комиссия за вывод: {commis}$\n\r";
+        msg += $"Комиссия за вывод: {comiss}$\n\r";
         msg += $"Сеть: <b>{chain}</b>\n\r";
-        msg += $"Процент прибыли: <b>{proc}%</b>\n\r";
+        msg += $"Процент прибыли: <b>{procen}%</b>\n\r";
         msg += $"Рекомендуемая сумма вложения: <b>{recVol}</b>$\n\r";
         msg += $"Прибыль с учетом комиссии: <b>{profit}</b>$";
 
-        return (profit, proc, msg);
+        return msg;
     }
 }
 

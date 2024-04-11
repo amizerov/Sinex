@@ -1,11 +1,13 @@
 ﻿using CaSecrets;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace ChatGPT1;
 
-public class CharGPT
+public class AmChat
 {
     static string questionTemplate = @"{
         ""model"": ""gpt-3.5-turbo"",
@@ -21,9 +23,10 @@ public class CharGPT
         ]
     }";
 
-    public static async Task<string> GetAnswer(string question)
+    public static async Task<string> GetAnswer(string question, int uid = 0)
     {
-        string jsonContent = questionTemplate.Replace("{0}", question.Replace("\"", "\\\""));
+        //question = CleanseString(question);
+        string jsonContent = questionTemplate.Replace("{0}", question);
 
         var httpClient = new HttpClient();
         var request = new HttpRequestMessage
@@ -41,9 +44,8 @@ public class CharGPT
         var response = await httpClient.SendAsync(request);
         string answer = await GetClearAnswerFromResponse(response);
 
-        Db.SaveQA(question, answer);
+        Db.SaveQA(question, answer, uid);
         return answer;
-
     }
 
     static async Task<string> GetClearAnswerFromResponse(HttpResponseMessage response)
@@ -67,5 +69,9 @@ public class CharGPT
 
         var errorContent = await response.Content.ReadAsStringAsync();
         return $"Error: {response.StatusCode}, Content: {errorContent}";
+    }
+    static string CleanseString(string input)
+    {
+        return JsonConvert.ToString(input);
     }
 }

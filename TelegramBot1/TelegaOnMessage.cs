@@ -10,6 +10,7 @@ public partial class Telega
     int _update = 0;
     async Task OnMessage(string? txt, long chatId)
     {
+        User? u = Db.GetCaTeleBotUser(chatId);
         switch (txt)
         {
             case "/status":
@@ -85,7 +86,7 @@ public partial class Telega
                 else
                 {
                     if(txt == null) return;
-                    string ansver = await CharGPT.GetAnswer(txt);
+                    string ansver = await AmChat.GetAnswer(txt, u?.ID ?? 0);
                     await SendMessageToOne(chatId, ansver);
                 }
                 break;
